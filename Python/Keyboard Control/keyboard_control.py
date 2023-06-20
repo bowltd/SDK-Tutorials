@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020, Cyberselves Universal Ltd.
+# Copyright (c) 2023, Bettering Our Worlds (BOW) Ltd.
 # All Rights Reserved
-# Author: Daniel Camilleri <daniel@cyberselves.com>
+# Author: Daniel Camilleri <daniel.camilleri@bow.ltd>
 
 import animus_client as animus
 import animus_utils
