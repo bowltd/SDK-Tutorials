@@ -4,7 +4,7 @@ Welcome to the Bettering Our Worlds (BOW) SDK Python tutorial. In this guide, we
 
 **Prerequisites:**
 1. Install Python3
-2. Install the BOW SDK (including `animus_client`, `animus_utils`)
+2. Install the BOW SDK (including `bow_client`, `bow_utils`)
 3. Install the `pynput` and `opencv-python` packages (for keyboard inputs and image processing respectively).
 
 **Step 1: Importing necessary modules**
@@ -12,9 +12,8 @@ Welcome to the Bettering Our Worlds (BOW) SDK Python tutorial. In this guide, we
 Our first step is to import all the necessary Python modules that our application will be using:
 
 ```python
-import animus_client as animus
-import animus_utils
-import animus_utils as utils
+import bow_client as bow
+import bow_utils as utils
 import sys
 import logging
 import cv2
@@ -31,49 +30,35 @@ def on_press(key):
     ...
 ```
 
-**Step 3: Logging and Initializing Animus**
+**Step 3: Logging and Quick Connecting to a Systray chosen robot**
 
-In the following block, we initialize the logging functionality, get the animus version, setup the Animus system, log into Animus, and search for available robots:
+In the following block, we initialize the logging functionality, get the BOW version, and run a QuickConnect which takes in the log created and a list of channels to open. QuickConnect talks to the system tray application to login, get a list of robots, chonnect to the robot chosen via the system tray and open the requested channels returning a robot if successful or None otherwise.
 
 ```python
-log = utils.create_logger("MyAnimusApp", logging.INFO)
+log = utils.create_logger("MyBOWApp", logging.INFO)
 log.info(animus.version())
 ...
-login_result = animus.login_user("", "", True)
-...
-get_robots_result = animus.get_robots(True, True, True)
-...
-```
-
-**Step 4: Connecting to the Robot**
-
-Next, we connect to a robot. We take the first robot we find from the previous step and attempt to connect to it:
-
-```python
-chosen_robot_details = get_robots_result.robots[0]
-myrobot = animus.Robot(chosen_robot_details)
-connected_result = myrobot.connect()
-...
-```
-
-**Step 5: Opening the Modalities**
-
-In this step, we open the modalities (channels of interaction) that we want to use with the robot. In this case, we open "vision", "motor", "audition" and "voice":
-
-```python
-open_success = myrobot.open_modality("vision")
-...
-open_success = myrobot.open_modality("motor")
-...
-open_result = myrobot.open_modality("audition")
-...
-open_result = myrobot.open_modality("voice")
+myrobot = bow.quick_connect(log, ["motor", "vision"])
+if myrobot is None:
+    sys.exit(-1)
 ...
 ```
 
 **Step 6: Initializing the Keyboard Listener**
 
-Next, we start a keyboard listener that will monitor for key presses:
+Next, we start a keyboard listener that will monitor for key presses. The commands are:
+- Arrow Keys to control head position
+- W: Move forward
+- S: Move backward
+- A: Rotate left
+- D: Move right
+- Q: Move sideways left (Nao/Pepper)
+- E: Move sideways right (Nao/Pepper)
+- Z: Extend torso up (Tiago)
+- C: Extend torso down (Tiago)
+- R: Select next joint
+- T: Increase current joint angle
+- G: Decrease current joint angle
 
 ```python
 listener = keyboard.Listener(on_press=on_press)
@@ -82,7 +67,7 @@ listener.start()
 
 **Step 7: Main Program Loop**
 
-Finally, we enter a main loop where we continuously fetch images from the robot's vision modality and display them:
+Finally, we enter a main loop where we continuously fetch images from the robot's vision modality and display them while reading command line inputs to control the robot's movement.
 
 ```python
 cv2.namedWindow("RobotView")
