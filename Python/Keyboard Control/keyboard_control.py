@@ -4,9 +4,8 @@
 # All Rights Reserved
 # Author: Daniel Camilleri <daniel.camilleri@bow.ltd>
 
-import animus_client as animus
-import animus_utils
-import animus_utils as utils
+import bow_client as bow
+import bow_utils as utils
 import sys
 import logging
 import numpy as np
@@ -88,8 +87,6 @@ def on_press(key):
         angleIndex += 1
         if angleIndex > 6:
             angleIndex = 0
-    else:
-    	pass
 
     motor_sample.end_effectors[0].name = "Arm"
     motor_sample.end_effectors[0].enabled = True
@@ -111,67 +108,11 @@ def on_press(key):
 
 stopFlag = False
 
-log = utils.create_logger("MyAnimusApp", logging.INFO)
-log.info(animus.version())
+log = utils.create_logger("MyBOWApp", logging.INFO)
+log.info(bow.version())
 
-audio_params = utils.AudioParams(
-    Backends=["notinternal"],
-    SampleRate=16000,
-    Channels=1,
-    SizeInFrames=True,
-    TransmitRate=30
-)
-
-setup_result = animus.setup(audio_params, "Python3AnimusBasics", True)
-if not setup_result.success:
-    sys.exit(-1)
-
-login_result = animus.login_user("", "", True)
-if login_result.success:
-    log.info("Logged in")
-else:
-    sys.exit(-1)
-
-get_robots_result = animus.get_robots(True, True, True)
-if not get_robots_result.localSearchError.success:
-    log.error(get_robots_result.localSearchError.description)
-
-if not get_robots_result.remoteSearchError.success:
-    log.error(get_robots_result.remoteSearchError.description)
-
-if len(get_robots_result.robots) == 0:
-    log.info("No Robots found")
-    animus.close_client_interface()
-    sys.exit(-1)
-
-chosen_robot_details = get_robots_result.robots[0]
-
-myrobot = animus.Robot(chosen_robot_details)
-connected_result = myrobot.connect()
-if not connected_result.success:
-    print("Could not connect with robot {}".format(myrobot.robot_details.robot_id))
-    animus.close_client_interface()
-    sys.exit(-1)
-
-
-open_success = myrobot.open_modality("vision")
-if not open_success:
-    log.error("Could not open robot vision modality")
-    sys.exit(-1)
-
-open_success = myrobot.open_modality("motor")
-if not open_success:
-    log.error("Could not open robot motor modality")
-    sys.exit(-1)
-
-open_result = myrobot.open_modality("audition")
-if not open_result.success:
-    log.error("Could not open robot audition modality")
-    sys.exit(-1)
-
-open_result = myrobot.open_modality("voice")
-if not open_result.success:
-    log.error("Could not open robot audition modality")
+myrobot = bow.quick_connect(log, ["motor", "vision"])
+if myrobot is None:
     sys.exit(-1)
 
 angleArray = [-1.1, 1.47, 2.71, 1.71, -1.57, 1.39, 0]
@@ -208,8 +149,8 @@ except SystemExit:
 cv2.destroyAllWindows()
 if stopFlag:
     myrobot.disconnect()
-    animus.close_client_interface()
+    bow.close_client_interface()
     sys.exit(-1)
 
 myrobot.disconnect()
-animus.close_client_interface()
+bow.close_client_interface()
