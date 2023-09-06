@@ -10,6 +10,8 @@ To set up your debian based machine for BOW development check out these tutorial
 ## Windows
 To set up your Windows machine for BOW development check out these tutorials:
 
+- [Windows - Setting up your BOW developer environment](https://github.com/bowltd/SDK-Tutorials/blob/main/Windows%20-%20Setting%20up%20your%20BOW%20developer%20environment.md)
+
 # Example Projects
 Below are some example projects for each of our currently supported programming languages.
 ## Python
