@@ -33,7 +33,7 @@ sudo apt-get install ./BOWSystray*.deb
 
 <img src="Screenshots/linux-setup/5-image.png" alt="drawing"/>
 
-3. Now let's log in. Click the "Login" button, and you will be navigated to a page where you can enter your BOW-associated email address and password to log in to your account. Once complete, you can close this browser window.
+3. Now let's log in. Click the "Login" button, and you will be taken to a page where you can enter your BOW-associated email address and password to log in to your account. Once complete, you can close this browser window.
 
 <img src="Screenshots/linux-setup/6-image.png" alt="drawing" width="500"/>
 
