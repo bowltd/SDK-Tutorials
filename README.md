@@ -1,4 +1,4 @@
-# SDK-Tutorials
+# Installation and Setup
 This repository contains tutorials and example projects for the BOW SDK.
 
 ## Ubuntu/Debian
