@@ -9,6 +9,7 @@ This tutorial assumes you have already installed the BOW System Tray application
 2. Follow the onscreen prompts and wait for the installation to complete.
     1. If you receive the following error, then you will first need to install Python.
     <img src="Screenshots/windows-python-sdk/2-image.png" alt="drawing" width="500"/>
+
         1. To install Python, simply search for "Python 3" in the microsoft store and install. At the time of writing Python 3.11 is the latest version (3.7 or greater is required).
         <img src="Screenshots/windows-python-sdk/3-image.png" alt="drawing"/>
 
