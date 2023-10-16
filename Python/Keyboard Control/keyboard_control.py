@@ -5,6 +5,7 @@
 # Author: Daniel Camilleri <daniel.camilleri@bow.ltd>
 
 import bow_client as bow
+import bow_utils
 import bow_utils as utils
 import sys
 import logging
@@ -17,92 +18,126 @@ from pynput import keyboard
 
 def on_press(key):
 
-    global angleArray, angleIndex
-    motor_sample = utils.PyMotorSample()
-    motor_sample.head = utils.AnimusVector3()
-    motor_sample.head.x = 0
-    motor_sample.head.y = 0
-    motor_sample.head.z = 0
-    motor_sample.locomotion = utils.Locomotion()
-    motor_sample.locomotion.Position.x = 0
-    motor_sample.locomotion.Position.y = 0
-    motor_sample.locomotion.Position.z = 0
-    motor_sample.locomotion.Rotation.x = 0
-    motor_sample.locomotion.Rotation.y = 0
-    motor_sample.locomotion.Rotation.z = 0
-    motor_sample.end_effectors = [utils.EndEffector(), utils.EndEffector()]
+    cartesian_update = False
+    global gripperState, cartesianTarget
+    motor_sample = utils.MotorSample()
+    motor_sample.Head.X = 0
+    motor_sample.Head.Y = 0
+    motor_sample.Head.Z = 0
+    motor_sample.Locomotion.Position.X = 0
+    motor_sample.Locomotion.Position.Y = 0
+    motor_sample.Locomotion.Position.Z = 0
+    motor_sample.Locomotion.Rotation.X = 0
+    motor_sample.Locomotion.Rotation.Y = 0
+    motor_sample.Locomotion.Rotation.Z = 0
+    motor_sample.EndEffectors.extend([utils.EndEffector(), utils.EndEffector()])
 
     if key == keyboard.Key.up:
         print("Head Up")
-        motor_sample.head.y = -20
+        motor_sample.Head.Y = -20
     elif key == keyboard.Key.down:
         print("Head Down")
-        motor_sample.head.y = 20
+        motor_sample.Head.Y = 20
+
     elif key == keyboard.Key.left:
         print("Head Left")
-        motor_sample.head.x = 20
+        motor_sample.Head.X = 20
     elif key == keyboard.Key.right:
         print("Head Right")
-        motor_sample.head.x = -20
+        motor_sample.Head.X = -20
 
-    elif key.char == "w":
-        print("Locomotion Forward")
-        motor_sample.locomotion.Position.x = 1
-    elif key.char == "s":
-        print("Locomotion Backward")
-        motor_sample.locomotion.Position.x = -1
-    elif key.char == "a":
-        print("Locomotion Rotate Left")
-        motor_sample.locomotion.Rotation.z = 2
-    elif key.char == "d":
-        print("Locomotion Rotate Right")
-        motor_sample.locomotion.Rotation.z = -2
+    elif key == keyboard.Key.space:
+        print("Toggle Grippers")
+        gripperState = not gripperState
 
-    elif key.char == "a":
-        print("Locomotion Rotate Left")
-        motor_sample.locomotion.Rotation.z = 2
-    elif key.char == "d":
-        print("Locomotion Rotate Right")
-        motor_sample.locomotion.Rotation.z = -2
+    elif key == keyboard.Key.backspace:
+        print("Reset Cartesian Target")
+        cartesianTarget.X = 0
+        cartesianTarget.Y = 0
+        cartesianTarget.Z = 0
+        cartesian_update = True
 
-    elif key.char == "q":
-        print("Locomotion Left")
-        motor_sample.locomotion.Position.y = 1
-    elif key.char == "e":
-        print("Locomotion Right")
-        motor_sample.locomotion.Position.y = -1
+    elif hasattr(key, 'char'):
 
-    elif key.char == "z":
-        print("Locomotion Up")
-        motor_sample.locomotion.Position.z = 1
-    elif key.char == "c":
-        print("Locomotion Down")
-        motor_sample.locomotion.Position.z = -1
+        if key.char == "w":
+            print("Locomotion Forward")
+            motor_sample.Locomotion.Position.X = 1
+        elif key.char == "s":
+            print("Locomotion Backward")
+            motor_sample.Locomotion.Position.X = -1
 
-    elif key.char == "t":
-        angleArray[angleIndex] += 0.2
-    elif key.char == "g":
-        angleArray[angleIndex] -= 0.2
-    elif key.char == "r":
-        angleIndex += 1
-        if angleIndex > 6:
-            angleIndex = 0
+        elif key.char == "a":
+            print("Locomotion Rotate Left")
+            motor_sample.Locomotion.Rotation.Z = 0.5
+        elif key.char == "d":
+            print("Locomotion Rotate Right")
+            motor_sample.Locomotion.Rotation.Z = -0.5
 
-    motor_sample.end_effectors[0].name = "Arm"
-    motor_sample.end_effectors[0].enabled = True
-    motor_sample.end_effectors[0].angles.extend(angleArray)
-    motor_sample.end_effectors[0].angle_units = utils.RADIANS
-    motor_sample.end_effectors[0].gripper.thumb = 0
-    motor_sample.end_effectors[1].name = "Arm"
-    motor_sample.end_effectors[1].enabled = True
-    motor_sample.end_effectors[1].angles.extend(angleArray)
-    motor_sample.end_effectors[1].angle_units = utils.RADIANS
-    motor_sample.end_effectors[1].gripper.thumb = 0
-    motor_sample.end_effectors[1].gripper.index = 0
-    motor_sample.end_effectors[1].gripper.middle = 0
-    motor_sample.end_effectors[1].gripper.ring = 0
-    motor_sample.end_effectors[1].gripper.pinky = 0
-    motor_sample.playback_flag = False
+        elif key.char == "q":
+            print("Locomotion Left")
+            motor_sample.Locomotion.Position.Y = 1
+        elif key.char == "e":
+            print("Locomotion Right")
+            motor_sample.Locomotion.Position.Y = -1
+
+        elif key.char == "z":
+            print("Locomotion Up")
+            motor_sample.Locomotion.Position.Z = 1
+        elif key.char == "c":
+            print("Locomotion Down")
+            motor_sample.Locomotion.Position.Z = -1
+
+        elif key.char == "r":
+            # Move target forwards
+            cartesianTarget.X += 0.1
+            cartesian_update = True
+        elif key.char == "f":
+            # Move target backwards
+            cartesianTarget.X -= 0.1
+            cartesian_update = True
+
+        elif key.char == "t":
+            # Move target to the left
+            cartesianTarget.Y += 0.1
+            cartesian_update = True
+        elif key.char == "g":
+            # Move target to the right
+            cartesianTarget.Y -= 0.1
+            cartesian_update = True
+
+        elif key.char == "y":
+            # Move target up
+            cartesianTarget.Z += 0.1
+            cartesian_update = True
+        elif key.char == "h":
+            # Move target down
+            cartesianTarget.Z -= 0.1
+            cartesian_update = True
+
+    if cartesian_update:
+        log.info(f"{cartesianTarget.X} {cartesianTarget.Y} {cartesianTarget.Z}")
+
+    motor_sample.EndEffectors[0].Name = "LeftArm"
+    motor_sample.EndEffectors[0].Enabled = True
+    motor_sample.EndEffectors[0].Transform.Position.X = cartesianTarget.X
+    motor_sample.EndEffectors[0].Transform.Position.Y = cartesianTarget.Y
+    motor_sample.EndEffectors[0].Transform.Position.Z = cartesianTarget.Z
+    motor_sample.EndEffectors[0].Transform.LocationTag = bow_utils.RelativeToEnum.BASE
+    motor_sample.EndEffectors[0].Gripper.Thumb = gripperState
+    motor_sample.EndEffectors[0].Gripper.Index = gripperState
+    motor_sample.EndEffectors[0].ControlMode = bow_utils.MotionGeneration.IK
+    motor_sample.EndEffectors[0].MovementDurationMs = 500
+
+    motor_sample.EndEffectors[1].Name = "RightArm"
+    motor_sample.EndEffectors[1].Enabled = True
+    motor_sample.EndEffectors[1].Transform.Position.X = cartesianTarget.X
+    motor_sample.EndEffectors[1].Transform.Position.Y = cartesianTarget.Y
+    motor_sample.EndEffectors[1].Transform.Position.Z = cartesianTarget.Z
+    motor_sample.EndEffectors[1].Transform.LocationTag = bow_utils.RelativeToEnum.BASE
+    motor_sample.EndEffectors[1].Gripper.Thumb = gripperState
+    motor_sample.EndEffectors[1].Gripper.Index = gripperState
+    motor_sample.EndEffectors[1].ControlMode = bow_utils.MotionGeneration.IK
+    motor_sample.EndEffectors[1].MovementDurationMs = 500
 
     ret = myrobot.set_modality("motor", motor_sample)
 
@@ -111,12 +146,22 @@ stopFlag = False
 log = utils.create_logger("MyBOWApp", logging.INFO)
 log.info(bow.version())
 
-myrobot = bow.quick_connect(log, ["motor", "vision"])
-if myrobot is None:
-    sys.exit(-1)
+audio_params = utils.AudioParams(
+    Backends=["notinternal"],
+    SampleRate=16000,
+    Channels=1,
+    SizeInFrames=True,
+    TransmitRate=30
+)
 
-angleArray = [-1.1, 1.47, 2.71, 1.71, -1.57, 1.39, 0]
-angleIndex = 0
+myrobot, error = bow.quick_connect(pylog=log, modalities=["vision", "motor"])
+
+gripperState = False
+cartesianTarget = bow_utils.Vector3()
+cartesianTarget.Z = 0.5
+cartesianTarget.Y = 0
+cartesianTarget.X = 0.5
+
 
 # Create listener objects
 listener = keyboard.Listener(on_press=on_press)
@@ -124,15 +169,28 @@ listener = keyboard.Listener(on_press=on_press)
 # Start the listener
 listener.start()
 
-cv2.namedWindow("RobotView")
+window_names = []
 try:
+    windows_created = False
     while listener.is_alive():
         image_list, err = myrobot.get_modality("vision", True)
-        if err.success:
+        if err.Success:
             if len(image_list) > 0:
-                myim = image_list[0].image
-                cv2.cvtColor(myim, cv2.COLOR_RGB2BGR, myim)
-                cv2.imshow("RobotView", myim)
+
+                # Create windows only once
+                if not windows_created:
+                    for i in range(len(image_list)):
+                        window_name = f"RobotView{i} - {image_list[i].source}"
+                        window_names.append(window_name)
+                        cv2.namedWindow(window_name)
+                    windows_created = True  # Set the flag to true
+
+                # Display images in created windows
+                for i, img_data in enumerate(image_list):
+                    myim = img_data.image
+                    cv2.cvtColor(myim, cv2.COLOR_RGB2BGR, myim)
+                    cv2.imshow(window_names[i], myim)
+
                 j = cv2.waitKeyEx(1)
                 if j == 27:
                     break
