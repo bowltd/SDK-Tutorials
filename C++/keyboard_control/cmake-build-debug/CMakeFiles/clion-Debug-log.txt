@@ -1,0 +1,15 @@
+/snap/clion/250/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/250/bin/ninja/linux/x64/ninja -G Ninja -S /home/george/lib/SDK-Tutorials/C++/keyboard_control -B /home/george/lib/SDK-Tutorials/C++/keyboard_control/cmake-build-debug
+-- Compiling for Linux
+-- Requested SFML configuration (Static) was not found
+CMake Warning at CMakeLists.txt:57 (find_package):
+  Found package configuration file:
+
+    /usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfig.cmake
+
+  but it set SFML_FOUND to FALSE so package "SFML" is considered to be NOT
+  FOUND.
+
+
+-- Configuring done (0.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/george/lib/SDK-Tutorials/C++/keyboard_control/cmake-build-debug

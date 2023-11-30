@@ -1,0 +1,3 @@
+/home/george/lib/SDK-Tutorials/C++/keyboard_control/cmake-build-debug/CMakeFiles/bow_keyboard_control.dir
+/home/george/lib/SDK-Tutorials/C++/keyboard_control/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/george/lib/SDK-Tutorials/C++/keyboard_control/cmake-build-debug/CMakeFiles/rebuild_cache.dir
