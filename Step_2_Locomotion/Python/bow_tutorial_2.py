@@ -50,10 +50,32 @@ try:
             continue
 
         show_all_images(image_list)
+        # Decide
+        decision = cv2.waitKey(1)
 
-        j = cv2.waitKeyEx(1)
-        if j == 27:
-            break
+        # Act
+        motorSample = bow_utils.MotorSample()
+        if decision > 0:
+            if decision == ord('w'):
+                print("Moving forward")
+                motorSample.Locomotion.TranslationalVelocity.X = 1
+            elif decision == ord('s'):
+                print("Moving backward")
+                motorSample.Locomotion.TranslationalVelocity.X = -1
+            elif decision == ord('d'):
+                print("Rotate right")
+                motorSample.Locomotion.RotationalVelocity.Z = -1
+            elif decision == ord('a'):
+                print("Rotate left")
+                motorSample.Locomotion.RotationalVelocity.Z = 1
+            elif decision == ord('e'):
+                print("Strafe right")
+                motorSample.Locomotion.TranslationalVelocity.Y = -1
+            elif decision == ord('q'):
+                print("Strafe left")
+                motorSample.Locomotion.TranslationalVelocity.Y = 1
+        myrobot.set_modality("motor", motorSample)
+
 
 except KeyboardInterrupt or SystemExit:
     cv2.destroyAllWindows()

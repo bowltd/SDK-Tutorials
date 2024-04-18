@@ -1,6 +1,7 @@
 ﻿using BOW.Common;
 using BOW.Data;
 using BOW.SDK.Core;
+using BOW.Structs;
 using OpenCvSharp;
 
 class Program
@@ -10,7 +11,6 @@ class Program
         Console.WriteLine(BowClient.Version());
 
         List<string> modalities = new List<string>() { "vision", "motor" };
-
         Error quickConnectError;
         var myRobot = BowClient.QuickConnect("Tutorial 1 Dotnet", modalities, out quickConnectError);
         
@@ -27,6 +27,7 @@ class Program
         {
             try
             {
+                //Sense
                 var getModalitySample = myRobot.GetModality("vision", true);
                 if (getModalitySample.Data is ImageSamples imageSamples && imageSamples.Samples[0].NewDataFlag)
                 {
@@ -53,13 +54,13 @@ class Program
                     yuvImage.SetArray(imageSamples.Samples[0].Data.ToByteArray());
                     Cv2.CvtColor(yuvImage, rgbImage, ColorConversionCodes.YUV2RGB_IYUV);
                     window.ShowImage(rgbImage);
-                    Cv2.WaitKey(1);
-                }
+                } 
+                Cv2.WaitKey(1);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception occurred: " + ex.Message);
-                break; // Optionally break or handle differently
+                break;
             }
         }
         yuvImage.Dispose();
