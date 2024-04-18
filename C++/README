@@ -1,3 +1,0 @@
-Libraries required to run C++ tutorials
-
-sudo apt-get install qt5-default pkg-config build-essential libopencv-dev
