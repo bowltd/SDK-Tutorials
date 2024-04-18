@@ -1,13 +1,13 @@
 # BOW SDK Tutorials Repository
 
-Welcome to the BOW SDK Tutorials repository. This repository contains tutorial projects demonstrating the use of the BOW SDK across various programming languages and operating systems. The tutorials cover a range of topics, from setting up dependencies to developing vision applications with the BOW SDK.
+Welcome to the BOW SDK Tutorials repository. This repository contains tutorial projects demonstrating the use of the BOW SDK across various programming languages and operating systems. The tutorials cover an ever-increasing range of topics.
 
 ## Repository Structure
 
 The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK:
 
-- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies.
-- `Step_1_Vision`: Sample applications demonstrating vision-related functionalities using the BOW SDK.
+- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials.
+- `Step_1_Vision`: Sample applications demonstrating sampling and visualisation of images coming from Vision Modality.
 
 ## Getting Started
 
