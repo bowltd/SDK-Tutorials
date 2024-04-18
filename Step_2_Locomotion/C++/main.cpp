@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
     string window_name = "Robot view";
     cv::namedWindow("Image", cv::WINDOW_NORMAL);
     auto receivedRGB = new Mat();
+    std::cout << "Select the 'Image' window to make it active and enable reading of key presses" << std::endl;
 
     while (!shutdownFlag.load()) {
         std::this_thread::sleep_for(delay);
@@ -63,7 +64,10 @@ int main(int argc, char *argv[]) {
                     auto receivedYuv = new cv::Mat(s.datashape(1)*3/2, s.datashape(0), CV_8UC1, const_cast<char*>(s.data().data()));
                     cv::cvtColor(*receivedYuv, *receivedRGB, cv::COLOR_YUV2RGB_IYUV);
                     cv::imshow("Image", *receivedRGB);
-                    cv::waitKey(1);
+                    int key = cv::waitKey(1);
+                    if (key != -1) {
+                        std::cout << "Key pressed has ASCII value: " << key << std::endl;
+                    }
                 }
             }
         } catch (const std::exception& ex) {
