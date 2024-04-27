@@ -22,8 +22,8 @@ Ensure you have Git installed on your system to clone the repository. Depending 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/bowltd/bow-sdk-tutorials.git
-cd bow-sdk-tutorials
+git clone https://github.com/bowltd/SDK-Tutorials.git
+cd SDK-Tutorials
 ```
 
 ## Installation
@@ -38,7 +38,7 @@ Navigate to the `Step_0_Dependencies` directory to set up the necessary environm
 
 ```bash
 cd C++/Linux
-sh install_opencv_local.sh
+./install_opencv_local.sh
 ```
 
 **Windows**
@@ -53,7 +53,7 @@ This step contains basic vision applications implemented in C++, .NET, and Pytho
 
 ```bash
 cd ../Step_1_Vision/C++
-sh build.sh
+./build.sh
 ./bow_tutorial_1
 ```
 
