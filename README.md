@@ -22,7 +22,7 @@ Ensure you have Git installed on your system to clone the repository. Depending 
 ### Clone the Repository
 
 ```bash
-git clone https://example.com/bow-sdk-tutorials.git
+git clone https://github.com/bowltd/bow-sdk-tutorials.git
 cd bow-sdk-tutorials
 ```
 
