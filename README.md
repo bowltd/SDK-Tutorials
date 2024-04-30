@@ -6,9 +6,10 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 
 The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK:
 
-- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials.
+- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials based on your operating system and programming language.
 - `Step_1_Vision`: Sample applications demonstrating sampling and visualisation of images coming from Vision Modality.
-
+- `Step_2_Locomotion`: Sample applications combining sampling images from the Vision Modality with controlling Locomotion via the Motor Modality to navigate an environment.
+  
 ## Getting Started
 
 ### Prerequisites
@@ -17,7 +18,7 @@ Ensure you have Git installed on your system to clone the repository. Depending 
 
 - **C++**: GCC or MSVC, CMake
 - **.NET**: .NET SDK
-- **Python**: Python 3.x
+- **Python**: Python 3.7 or higher
 
 ### Clone the Repository
 
@@ -26,11 +27,11 @@ git clone https://github.com/bowltd/SDK-Tutorials.git
 cd SDK-Tutorials
 ```
 
-## Installation
+## Usage
 
 ### Step 0: Dependencies
 
-Navigate to the `Step_0_Dependencies` directory to set up the necessary environment for your chosen language and platform.
+Navigate to the `Step_0_Dependencies` directory to set up the necessary environment for your chosen language and operating system.
 
 #### C++
 
