@@ -38,6 +38,9 @@ log = bow_utils.create_logger("Bow Tutorial 1", logging.INFO)
 log.info(bow.version())
 
 myrobot, error = bow.quick_connect(pylog=log, modalities=["vision", "motor"])
+if not error.Success:
+    log.error("Failed to connect to robot", error)
+    sys.exit()
 
 try:
     while True:
