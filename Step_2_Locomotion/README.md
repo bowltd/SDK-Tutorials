@@ -37,4 +37,12 @@ To achieve this we will have the following:
 The key libraries are:
 - **OpenCV** - a library of programming functions mainly for real-time computer vision
 
-If you are trying the C++ version of these tutorials make sure you have followed Step_0_Dependencies to set up your system 
+Before trying these tutorials make sure you have followed the instructions from Step_0_Dependencies to set up the development environment for your chosen programming language.
+
+These tutorials also assume you have installed the BOW Hub available for download from https://bow.software and that you have registered for a Standard Subscription or using the 30 day free trial which is required to simulate robots.
+
+Go ahead and open a simulated robot of your choice. For this tutorial we recommend:
+- a quadruped like the DEEP Robotics - Lite 3 
+- a humanoid like the Softbank Robotics - Nao.
+
+You can still try connecting to one of the industrial robots if only to check the SDK's behaviour when the vision modality is not available. However, if you do want to get a video stream from the robot select a robot that has a vision modality.
