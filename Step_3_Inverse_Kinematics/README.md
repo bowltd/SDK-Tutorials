@@ -29,7 +29,7 @@ These positions can be related to objects within the scene or to a specific traj
 
 - Then input the target position and orientation for one of the robot's effectors by changing the list of effector targets within the code
 
-If you select the Epson - G451s robot simulation, the list of movements has been preselected for you and this demo will touch all the bolts within the scene that are accessible to the robot.
+If you select the LewanSoul - xArm robot simulation, the list of movements has been preselected for you and this demo will touch all the bolts within the scene that are accessible to the robot.
 
 
 #### Sense 
@@ -51,4 +51,4 @@ Before trying these tutorials make sure you have followed the instructions from 
 These tutorials also assume you have installed the BOW Hub available for download from https://bow.software and that you have registered for a Standard Subscription or using the 30 day free trial which is required to simulate robots.
 
 Go ahead and open a simulated robot of your choice. For this tutorial we recommend:
-- Epson - G451s
+- LewanSoul - xArm
