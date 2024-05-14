@@ -38,16 +38,88 @@ class RobotControlApp:
 
         # Placeholder for joint information
         self.joints = []
-        self.myrobot = None
+        self.RealRobot = None
+        self.SimRobot = None
         self.stop_threads = False
         self.slider_vars = {}  # For interactive slider variables
         self.current_vars = {}  # For non-interactive current position indicators
 
     def connect_to_robot(self):
-        self.myrobot, error = bow.quick_connect(pylog=self.log, modalities=["proprioception", "motor"])
-        if not error.Success:
-            self.log.error("Failed to connect to robot", error)
-            sys.exit()
+        modalities = ["proprioception", "motor"]
+        audio_params = bow_utils.AudioParams(
+                                                Backends=[""],
+                                                SampleRate=16000,
+                                                Channels=1,
+                                                SizeInFrames=True,
+                                                TransmitRate=30)
+        setup_result = bow.setup(audio_params, self.log.name, True)
+        if not setup_result.Success:
+            return None, setup_result
+
+        login_result = bow.login_user("", "", True)
+        if login_result.Success:
+            self.log.info("Logged in")
+        else:
+            return None, login_result
+
+        get_robots_result = bow.get_robots(False, True, False)
+        if not get_robots_result.localSearchError.Success:
+            self.log.error(get_robots_result.localSearchError.Description)
+
+        if not get_robots_result.remoteSearchError.Success:
+            self.log.error(get_robots_result.remoteSearchError.Description)
+
+        if len(get_robots_result.robots) == 0:
+            self.log.info("No Robots found")
+            bow.close_client_interface()
+            return None, bow_utils.Error(Success=False, Code=62, Description="No Robots Found")
+
+        realRobotDetails = None
+        simRobotDetails = None
+        for robot in get_robots_result.robots:
+            if robot.name == "leArm Sim":
+                realRobotDetails = robot
+
+            if robot.name == "RealArm":
+                simRobotDetails = robot
+
+
+
+        self.RealRobot = bow.Robot(realRobotDetails)
+        connected_result = self.RealRobot.connect()
+        if not connected_result.Success:
+            self.log.error("Could not connect with robot {}".format(self.RealRobot.robot_details.robot_id))
+            bow.close_client_interface()
+            return None, connected_result
+
+        all_robot_modalities = (list(realRobotDetails.robot_config.input_modalities)
+                                + list(realRobotDetails.robot_config.output_modalities))
+        print(all_robot_modalities)
+        for modality in modalities:
+            if modality in all_robot_modalities:
+                open_result = self.RealRobot.open_modality(modality)
+                if not open_result.Success:
+                    self.log.error(f"Failed to open {modality} modality: {open_result.Description}")
+            else:
+                self.log.warning(f"{modality} modality is not available for the chosen robot. Modality ignored")
+
+        self.SimRobot = bow.Robot(simRobotDetails)
+        connected_result = self.SimRobot.connect()
+        if not connected_result.Success:
+            self.log.error("Could not connect with robot {}".format(self.SimRobot.robot_details.robot_id))
+            bow.close_client_interface()
+            return None, connected_result
+
+        all_robot_modalities = (list(simRobotDetails.robot_config.input_modalities)
+                                + list(simRobotDetails.robot_config.output_modalities))
+        print(all_robot_modalities)
+        for modality in modalities:
+            if modality in all_robot_modalities:
+                open_result = self.SimRobot.open_modality(modality)
+                if not open_result.Success:
+                    self.log.error(f"Failed to open {modality} modality: {open_result.Description}")
+            else:
+                self.log.warning(f"{modality} modality is not available for the chosen robot. Modality ignored")
 
         # Initialize the slider frames once connection is established
         self.initialize_sliders()
@@ -57,7 +129,7 @@ class RobotControlApp:
 
     def initialize_sliders(self):
         while True:
-            prop_msg, err = self.myrobot.get_modality("proprioception", True)
+            prop_msg, err = self.SimRobot.get_modality("proprioception", True)
             if err.Success and len(prop_msg.RawJoints) > 0:
                 for joint in prop_msg.RawJoints:
                     if joint.Type == bow_utils.Joint.FIXED:
@@ -76,6 +148,10 @@ class RobotControlApp:
                     self.current_vars[joint_name] = current_var
                     joint_label = ttk.Label(joint_frame, text=f"{joint_name}: Current: {current_deg}°")
                     joint_label.pack()
+
+                    if not hasattr(self, 'current_labels'):
+                        self.current_labels = {}
+                    self.current_labels[joint_name] = joint_label
 
                     # Interactive slider
                     slider_var = tk.DoubleVar(value=current_deg)
@@ -100,7 +176,7 @@ class RobotControlApp:
 
     def update_proprioception(self):
         while not self.stop_threads:
-            prop_msg, err = self.myrobot.get_modality("proprioception", True)
+            prop_msg, err = self.SimRobot.get_modality("proprioception", True)
             if err.Success and len(prop_msg.RawJoints) > 0:
                 for joint in prop_msg.RawJoints:
                     if joint.Type == bow_utils.Joint.FIXED:
@@ -109,6 +185,7 @@ class RobotControlApp:
                     joint_name = joint.Name
                     position_deg = round(math.degrees(joint.Position), 2)
                     self.current_vars[joint_name].set(position_deg)
+                    self.current_labels[joint_name].config(text=f"{joint_name}: Current: {position_deg}°")
             time.sleep(0.1)  # Sample rate control
 
     def send_joint_commands(self):
@@ -118,7 +195,8 @@ class RobotControlApp:
             motorSample.ControlMode = bow_utils.MotorSample.USE_DIRECT_JOINTS
             for k, v in joint_commands.items():
                 motorSample.RawJoints.append(bow_utils.Joint(Name=k, Position=v))
-            self.myrobot.set_modality("motor", motorSample)
+            self.SimRobot.set_modality("motor", motorSample)
+            self.RealRobot.set_modality("motor", motorSample)
             time.sleep(0.03)
 
     def reset_all_joints(self):
@@ -128,9 +206,12 @@ class RobotControlApp:
 
     def quit_app(self):
         self.stop_threads = True
-        if self.myrobot:
-            self.myrobot.disconnect()  # Disconnect from the robot
-            self.log.info("Robot disconnected")
+        if self.SimRobot:
+            self.SimRobot.disconnect()  # Disconnect from the robot
+            self.log.info("Sim Robot disconnected")
+        if self.RealRobot:
+            self.RealRobot.disconnect()  # Disconnect from the robot
+            self.log.info("Real Robot disconnected")
         self.log.info("Application quitting")
         self.root.quit()  # Quit the Tkinter GUI
 

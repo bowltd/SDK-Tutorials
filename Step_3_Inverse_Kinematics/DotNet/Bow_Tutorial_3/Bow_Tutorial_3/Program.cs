@@ -87,83 +87,95 @@ class Program
         }
         
         //Decide
-        var selectedEffector = "";
-        while (true)
-        {
-            Console.WriteLine("Please select an option:");
-            for (int i = 0; i < listOfEffectors.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {listOfEffectors[i]}");
-            }
-        
-            // Get user input
-            Console.Write("Enter your choice (number): ");
-            int userInput = Convert.ToInt32(Console.ReadLine());
-        
-            // Check if the input is valid
-            
-            if (userInput > 0 && userInput <= listOfEffectors.Count)
-            {
-                selectedEffector = listOfEffectors[userInput - 1];
-                Console.WriteLine($"You selected: {selectedEffector}");
-                break;
-            }
-            
-            Console.WriteLine("Invalid choice. Please run the program again and select a valid number.");
-        }
+        var selectedEffector = "joint6_flange";
+        // while (true)
+        // {
+        //     Console.WriteLine("Please select an option:");
+        //     for (int i = 0; i < listOfEffectors.Count; i++)
+        //     {
+        //         Console.WriteLine($"{i + 1}. {listOfEffectors[i]}");
+        //     }
+        //
+        //     // Get user input
+        //     Console.Write("Enter your choice (number): ");
+        //     int userInput = Convert.ToInt32(Console.ReadLine());
+        //
+        //     // Check if the input is valid
+        //     
+        //     if (userInput > 0 && userInput <= listOfEffectors.Count)
+        //     {
+        //         selectedEffector = listOfEffectors[userInput - 1];
+        //         Console.WriteLine($"You selected: {selectedEffector}");
+        //         break;
+        //     }
+        //     
+        //     Console.WriteLine("Invalid choice. Please run the program again and select a valid number.");
+        // }
         
         //Act
-        foreach (var obj in positionObjectives)
-        { 
-            Console.WriteLine($"Sending objective: {obj.X}, {obj.Y}, {obj.Z}");
-            try
+        var circleRadius = 0.2; // Radius of the circle
+        var circleHeight = 0.3; // Z-axis height of the circle
+        var stepSize = 0.05; // Step size in radians
+        var repeatCount = 100; // Number of repetitions at the final angle
+
+        double x = 0, y = 0, z = 0;
+        while (true) // Loop continuously
+        {
+            for (double angle = 0; angle <= 2 * Math.PI; angle += stepSize)
+            { 
+                x = circleRadius * Math.Cos(angle);
+                y = circleRadius * Math.Sin(angle);
+                z = circleHeight;
+
+                SendObjective(myRobot, selectedEffector, x, y, z);
+                Thread.Sleep(200);
+            }
+        }
+    }
+    
+    static void SendObjective(BowRobot myRobot, string selectedEffector, double x, double y, double z)
+    {
+        Console.WriteLine($"Sending objective: {x}, {y}, {z}");
+        try
+        {
+            var mSamp = new MotorSample();
+            mSamp.Objectives.Clear();
+            mSamp.Objectives.Add(new ObjectiveCommand
             {
-                var mSamp = new MotorSample();
-                mSamp.Objectives.Clear();
-                mSamp.Objectives.Add(new ObjectiveCommand
+                TargetEffector = selectedEffector,
+                ControlMode = ControllerEnum.PositionController,
+                PoseTarget = new PoseTarget
                 {
-                    TargetEffector = selectedEffector,
-                    ControlMode = ControllerEnum.PositionController,
-                    PoseTarget = new PoseTarget
+                    Action = ActionEnum.Goto,
+                    TargetType = PoseTarget.Types.TargetTypeEnum.Transform,
+                    TargetScheduleType = PoseTarget.Types.SchedulerEnum.Instantaneous,
+                    Transform = new Transform
                     {
-                        Action = ActionEnum.Goto,
-                        TargetType = PoseTarget.Types.TargetTypeEnum.Transform,
-                        Transform = new Transform
+                        Position = new Vector3
                         {
-                            Position = new Vector3
-                            {
-                                X = obj.X,
-                                Y = obj.Y,
-                                Z = obj.Z
-                            },
-                            //Try experimenting with setting different target orientations for the movement
-                            // EulerAngles = new Vector3
-                            // {
-                            //     X = -90,
-                            //     Y = 0,
-                            //     Z = 0
-                            // }
-                        },
-                        OptimiserSettings = new IKOptimiser
-                        {
-                            Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
-                        },
+                            X = (float)x,
+                            Y = (float)y,
+                            Z = (float)z
+                        }
                     },
-                    Enabled = true,
-                });
-                
-                var setError = myRobot.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
-                if (!setError.Success)
-                {
-                    Console.WriteLine($"Error calling setModality motor: {setError.Description}");
-                }
-            }
-            catch (Exception ex)
+                    OptimiserSettings = new IKOptimiser
+                    {
+                        Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
+                    },
+                },
+                Enabled = true,
+            });
+
+            var setError = myRobot.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
+            if (!setError.Success)
             {
-                Console.WriteLine("Exception occurred: " + ex.Message);
-                break;
+                Console.WriteLine($"Error calling setModality motor: {setError.Description}");
             }
-            Thread.Sleep(2000);   
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception occurred: " + ex.Message);
+            return;
         }
     }
 }
