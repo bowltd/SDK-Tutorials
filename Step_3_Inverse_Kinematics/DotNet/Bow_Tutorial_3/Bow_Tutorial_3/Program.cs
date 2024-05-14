@@ -7,37 +7,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        //Sense (Hard coded)
-        
-        var hoverDistance = 0.20f;
-        var touchDistance = 0.15f;
-        var startObjective = new System.Numerics.Vector3(0.02f, -0.18f, 0f);
-        
-        List<System.Numerics.Vector3> positionObjectives = new List<System.Numerics.Vector3>();
-        
-        //Move to straight up
-        positionObjectives.Add(new System.Numerics.Vector3(0, 0,1));
-        //Move to max and min X
-        positionObjectives.Add(new System.Numerics.Vector3(0.3f, 0,0.2f));
-        positionObjectives.Add(new System.Numerics.Vector3(0.3f, 0,0.2f));
-        //Move to max and min Y
-        positionObjectives.Add(new System.Numerics.Vector3(0, 0.3f,0.2f));
-        positionObjectives.Add(new System.Numerics.Vector3(0, -0.3f,0.2f));
-        
-        //Move to position staying above bolt
-        startObjective.Z = hoverDistance;
-        positionObjectives.Add(startObjective);
-        
-        // Touch bolt
-        startObjective.Z = touchDistance;
-        positionObjectives.Add(startObjective);
-        
-        // Move back to hover
-        startObjective.Z = hoverDistance;
-        positionObjectives.Add(startObjective);
-        
-        //Back to neutral position
-        positionObjectives.Add(new System.Numerics.Vector3(0, 0,1));
         
         // Connect to Robot
         Console.WriteLine(BowClient.Version());
@@ -87,30 +56,30 @@ class Program
         }
         
         //Decide
-        var selectedEffector = "joint6_flange";
-        // while (true)
-        // {
-        //     Console.WriteLine("Please select an option:");
-        //     for (int i = 0; i < listOfEffectors.Count; i++)
-        //     {
-        //         Console.WriteLine($"{i + 1}. {listOfEffectors[i]}");
-        //     }
-        //
-        //     // Get user input
-        //     Console.Write("Enter your choice (number): ");
-        //     int userInput = Convert.ToInt32(Console.ReadLine());
-        //
-        //     // Check if the input is valid
-        //     
-        //     if (userInput > 0 && userInput <= listOfEffectors.Count)
-        //     {
-        //         selectedEffector = listOfEffectors[userInput - 1];
-        //         Console.WriteLine($"You selected: {selectedEffector}");
-        //         break;
-        //     }
-        //     
-        //     Console.WriteLine("Invalid choice. Please run the program again and select a valid number.");
-        // }
+        var selectedEffector = "";
+        while (true)
+        {
+            Console.WriteLine("Please select an option:");
+            for (int i = 0; i < listOfEffectors.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {listOfEffectors[i]}");
+            }
+        
+            // Get user input
+            Console.Write("Enter your choice (number): ");
+            int userInput = Convert.ToInt32(Console.ReadLine());
+        
+            // Check if the input is valid
+            
+            if (userInput > 0 && userInput <= listOfEffectors.Count)
+            {
+                selectedEffector = listOfEffectors[userInput - 1];
+                Console.WriteLine($"You selected: {selectedEffector}");
+                break;
+            }
+            
+            Console.WriteLine("Invalid choice. Please run the program again and select a valid number.");
+        }
         
         //Act
         var circleRadius = 0.2; // Radius of the circle
