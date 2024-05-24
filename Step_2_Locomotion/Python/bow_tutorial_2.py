@@ -3,20 +3,39 @@
 # Copyright (c) 2023, Bettering Our Worlds (BOW) Ltd.
 # All Rights Reserved
 # Author: Daniel Camilleri <daniel.camilleri@bow.ltd>
+import time
 
 import bow_client as bow
 import bow_utils
 import sys
 import logging
-import numpy as np
-import random
 import cv2
-import time
+from pynput import keyboard
 
 stopFlag = False
 window_names = dict()
 windows_created = False
 
+# A set to keep track of the pressed keys
+pressed_keys = set()
+
+def on_press(key):
+    try:
+        pressed_keys.add(key.char)
+    except AttributeError:
+        pass
+
+def on_release(key):
+    try:
+        pressed_keys.discard(key.char)
+    except AttributeError:
+        pass
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+listener.start()
 
 def show_all_images(images_list):
     global windows_created, window_names
@@ -53,32 +72,33 @@ try:
             continue
 
         show_all_images(image_list)
+
         # Decide
-        decision = cv2.waitKey(1)
+        motorSample = bow_utils.MotorSample()
+        if 'w' in pressed_keys:
+            print("Moving forward")
+            motorSample.Locomotion.TranslationalVelocity.X = 0.2
+        if 's' in pressed_keys:
+            print("Moving backward")
+            motorSample.Locomotion.TranslationalVelocity.X = -0.2
+        if 'd' in pressed_keys:
+            print("Rotate right")
+            motorSample.Locomotion.RotationalVelocity.Z = -1
+        if 'a' in pressed_keys:
+            print("Rotate left")
+            motorSample.Locomotion.RotationalVelocity.Z = 1
+        if 'e' in pressed_keys:
+            print("Strafe right")
+            motorSample.Locomotion.TranslationalVelocity.Y = -1
+        if 'q' in pressed_keys:
+            print("Strafe left")
+            motorSample.Locomotion.TranslationalVelocity.Y = 1
 
         # Act
-        motorSample = bow_utils.MotorSample()
-        if decision > 0:
-            if decision == ord('w'):
-                print("Moving forward")
-                motorSample.Locomotion.TranslationalVelocity.X = 1
-            elif decision == ord('s'):
-                print("Moving backward")
-                motorSample.Locomotion.TranslationalVelocity.X = -1
-            elif decision == ord('d'):
-                print("Rotate right")
-                motorSample.Locomotion.RotationalVelocity.Z = -1
-            elif decision == ord('a'):
-                print("Rotate left")
-                motorSample.Locomotion.RotationalVelocity.Z = 1
-            elif decision == ord('e'):
-                print("Strafe right")
-                motorSample.Locomotion.TranslationalVelocity.Y = -1
-            elif decision == ord('q'):
-                print("Strafe left")
-                motorSample.Locomotion.TranslationalVelocity.Y = 1
         myrobot.set_modality("motor", motorSample)
 
+        # Allow for cv2 window operations and refresh rate
+        cv2.waitKey(1)
 
 except KeyboardInterrupt or SystemExit:
     cv2.destroyAllWindows()
