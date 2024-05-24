@@ -39,10 +39,11 @@ int main(int argc, char *argv[]) {
 
     // Setup
     auto* Robot = new bow_sdk::bow_robot();
-    std::vector<std::string> strArray = {"vision", "motor"};
-    bow::common::Error* setup_result = bow_sdk::client_sdk::QuickConnect(Robot, "CppBOWTutorial", strArray, true);
+    std::vector<std::string> strArray = {"vision", "motor"};                                                            // Chosen modalities
+    bow::common::Error* setup_result = bow_sdk::client_sdk::QuickConnect(Robot, "CppBOWTutorial", strArray, true);      // QuickConnect
     if (!setup_result->success()) {
         cout << setup_result->description() << endl;
+        delete Robot; // Free allocated memory
         return -1;
     }
 
@@ -55,12 +56,14 @@ int main(int argc, char *argv[]) {
     int decision = 0;
 
     while (!shutdownFlag.load()) {
-        auto* sample = Robot->GetModality("vision", false);
+        auto* sample = Robot->GetModality("vision", false);                                                             // GetModality vision
         auto image_samples = new bow::data::ImageSamples();
         image_samples->MergeFromString(sample->mutable_sample()->data());
         try {
             // Step 1 - Sense
             if (image_samples->samples_size() == 0) {
+                delete sample;
+                delete image_samples;
                 continue;
             }
 
@@ -68,15 +71,20 @@ int main(int argc, char *argv[]) {
             int expectedSize = s.datashape(1) * s.datashape(0) * 3 / 2;
 
             if (s.data().size() != expectedSize) {
+                delete sample;
+                delete image_samples;
                 continue;
             }
 
             if (!s.newdataflag()) {
+                delete sample;
+                delete image_samples;
                 continue;
             }
 
             auto receivedYuv = new cv::Mat(s.datashape(1)*3/2, s.datashape(0), CV_8UC1, const_cast<char*>(s.data().data()));
             cv::cvtColor(*receivedYuv, *receivedRGB, cv::COLOR_YUV2RGB_IYUV);
+            delete receivedYuv; // Free allocated memory
         } catch (const std::exception& ex) {
             std::cerr << "Exception caught: " << ex.what() << std::endl;
         }
@@ -110,7 +118,10 @@ int main(int argc, char *argv[]) {
             motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_y(1);
             std::cout << "Strafe left" << std::endl;
         }
-        Robot->SetModality("motor", bow::structs::DataMessage_DataType_MOTOR, motorSample);
+        Robot->SetModality("motor", bow::structs::DataMessage_DataType_MOTOR, motorSample);                             //SetModality motor
+//        delete motorSample; // Free allocated memory
+        delete sample; // Free allocated memory
+        delete image_samples; // Free allocated memory
     }
 
     cv::destroyWindow(window_name);
@@ -118,9 +129,13 @@ int main(int argc, char *argv[]) {
     bow::common::Error* disconnect_result = Robot->Disconnect();
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
+        delete Robot; // Free allocated memory
+        delete receivedRGB; // Free allocated memory
         return -1;
     }
 
-    bow_sdk::client_sdk::CloseClientInterface();
+    bow_sdk::client_sdk::CloseClientInterface();                                                                        //Close Client
+    delete Robot; // Free allocated memory
+    delete receivedRGB; // Free allocated memory
     return 0;
 }
