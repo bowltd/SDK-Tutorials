@@ -1,5 +1,8 @@
 .idea/
-
+*/C++/build
+bow_tutorial_2
+bin
+obj
 Step_0_Dependencies/C++/install
 Step_0_Dependencies/C++/Linux/opencv
-
+./Demos

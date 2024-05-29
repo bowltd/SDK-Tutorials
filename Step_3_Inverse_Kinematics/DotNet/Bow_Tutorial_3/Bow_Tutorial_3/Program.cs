@@ -18,9 +18,13 @@ class Program
         if (myRobot == null)
         {
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
+            System.Environment.Exit(1);
         }
 
         var listOfEffectors = new List<string>();
+        var listOfReach = new List<float>();
+        var listOfUpDown = new List<float>();
+        var listOfParts = new List<string>();
         // We will wait until we have successfully received a proprioception message in order to get a list of effectors
         while (true)
         {
@@ -35,13 +39,30 @@ class Program
                         {
                             continue;
                         }
-                        
-                        foreach (var eff in propSample.Effectors)
+
+                        foreach (var b in propSample.Parts)
                         {
-                            //only get controllable effectors
-                            if (eff.IsControllable)
+                            foreach (var eff in b.Effectors)
                             {
+                                //only get controllable effectors. This removes all effectors that don't have moveable joints within their kinematic chain
+                                if (!eff.IsControllable)
+                                {
+                                    continue;
+                                }
+
+                                listOfParts.Add(b.Type.ToString());
                                 listOfEffectors.Add(eff.EffectorLinkName);
+                                listOfReach.Add(eff.Reach);
+                                if (eff.EndTransform.Position.Z > eff.RootTransform.Position.Z)
+                                {
+                                    //Effector is by default higher than root hence height offset should be positive
+                                    listOfUpDown.Add(1f);
+                                }
+                                else
+                                {
+                                    //Effector is by default lower than effector root hence height offset should be negative
+                                    listOfUpDown.Add(-1f);
+                                }
                             }
                         }
                         break;
@@ -57,12 +78,16 @@ class Program
         
         //Decide
         var selectedEffector = "";
+        var selectedReach = 0f;
+        var selectedUpDown = 1f;
         while (true)
         {
             Console.WriteLine("Please select an option:");
             for (int i = 0; i < listOfEffectors.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {listOfEffectors[i]}");
+                Console.WriteLine($"{i + 1}. {listOfEffectors[i]} of type {listOfParts[i]} " +
+                                  $"with reach of {listOfReach[i]}m and " +
+                                  $"default direction {listOfUpDown[i]}");
             }
         
             // Get user input
@@ -74,6 +99,8 @@ class Program
             if (userInput > 0 && userInput <= listOfEffectors.Count)
             {
                 selectedEffector = listOfEffectors[userInput - 1];
+                selectedReach = listOfReach[userInput - 1];
+                selectedUpDown = listOfUpDown[userInput - 1];
                 Console.WriteLine($"You selected: {selectedEffector}");
                 break;
             }
@@ -82,8 +109,10 @@ class Program
         }
         
         //Act
-        var circleRadius = 0.2; // Radius of the circle
-        var circleHeight = 0.3; // Z-axis height of the circle
+        var circleRadius = selectedReach * 0.25; // Radius of the circle
+        var circleHeight = selectedReach * 0.3; // Z-axis height of the circle
+        var wobbleAmplitude = selectedReach * 0.05f;
+        var wobbleFreqMultiplier = 6f;
         var stepSize = 0.05; // Step size in radians
         var repeatCount = 100; // Number of repetitions at the final angle
 
@@ -94,7 +123,7 @@ class Program
             { 
                 x = circleRadius * Math.Cos(angle);
                 y = circleRadius * Math.Sin(angle);
-                z = circleHeight;
+                z = selectedUpDown*(circleHeight + (wobbleAmplitude * Math.Cos(angle*wobbleFreqMultiplier))) ;
 
                 SendObjective(myRobot, selectedEffector, x, y, z);
                 Thread.Sleep(200);
