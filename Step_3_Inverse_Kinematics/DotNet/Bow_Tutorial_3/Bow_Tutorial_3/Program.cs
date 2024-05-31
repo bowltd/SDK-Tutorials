@@ -50,7 +50,7 @@ class Program
                                     continue;
                                 }
 
-                                listOfParts.Add(b.Type.ToString());
+                                listOfParts.Add(eff.Type.ToString());
                                 listOfEffectors.Add(eff.EffectorLinkName);
                                 listOfReach.Add(eff.Reach);
                                 if (eff.EndTransform.Position.Z > eff.RootTransform.Position.Z)
