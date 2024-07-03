@@ -4,11 +4,14 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 
 ## Repository Structure
 
-The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK:
+The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK and answering a common question in robotics:
 
-- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials based on your operating system and programming language.
-- `Step_1_Vision`: Sample applications demonstrating sampling and visualisation of images coming from Vision Modality.
-- `Step_2_Locomotion`: Sample applications combining sampling images from the Vision Modality with controlling Locomotion via the Motor Modality to navigate an environment.
+- `Step_0_Dependencies`: Scripts and instructions for setting up the dependencies needed for the tutorials based on your operating system and programming language.
+- `Step_1_Vision`: How can I capture and visualise all the cameras on a robot?
+- `Step_2_Locomotion`: How do I use a keyboard to move a robot around?
+- `Step_3_Inverse_Kinematics`: How can I control the 3D position and orientation of a robot's gripper?
+- `Step_4_Direct_Joint_Control`: How do I individually control a robot's joints?
+- `Step_5_Multi_Robot_Control`: How do I control multiple robots at the same time?
   
 ## Getting Started
 
@@ -29,55 +32,21 @@ cd SDK-Tutorials
 
 ## Usage
 
-### Step 0: Dependencies
+### Starting Point
 
 Navigate to the `Step_0_Dependencies` directory to set up the necessary environment for your chosen language and operating system.
 
-#### C++
+### Explore
 
-**Linux**
+After setting up the dependencies feel free to explore the tutorials in order or go directly to the one that is the most interesting. 
 
-```bash
-cd C++/Linux
-./install_opencv_local.sh
-```
+Every tutorial contains its own README describing a different aspect of the BOW SDK and how it can be used. 
 
-**Windows**
-
-Coming Soon
-
-### Step 1: Vision Applications
-
-This step contains basic vision applications implemented in C++, .NET, and Python. Navigate to the respective directory for detailed instructions.
-
-#### C++
-
-```bash
-cd ../Step_1_Vision/C++
-./build.sh
-./bow_tutorial_1
-```
-
-#### .NET
-
-```bash
-cd ../Step_1_Vision/DotNet/Bow_Tutorial_1
-dotnet build Bow_Tutorial_1.sln
-dotnet run --project Bow_Tutorial_1/Bow_Tutorial_1.csproj
-```
-In case of libOpenCvSharpExtern.so errors please consult README in Step_1_Vision/DotNet
-
-#### Python
-
-```bash
-cd ../Step_1_Vision/Python
-pip install -r requirements.txt
-python bow_tutorial_1.py
-```
+Within every tutorial, you will find subfolders implementing that specific aspect using different programming languages.
 
 ## Support
 
-For any issues or queries, please refer to our support guidelines or contact the community support team through the BOW SDK community app store.
+For any issues or queries, please refer to our support guidelines or contact the community support team through the BOW Developer Portal at https://bow.software.
 
 ## Contributing
 
