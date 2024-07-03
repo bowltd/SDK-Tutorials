@@ -53,7 +53,7 @@ def show_all_images(images_list):
             cv2.imshow(window_names[img_data.source], myim)
 
 
-log = bow_utils.create_logger("Bow Tutorial 1", logging.INFO)
+log = bow_utils.create_logger("Bow Tutorial 2", logging.INFO)
 log.info(bow.version())
 
 myrobot, error = bow.quick_connect(pylog=log, modalities=["vision", "motor"])
