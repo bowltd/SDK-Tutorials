@@ -7,8 +7,12 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK:
 
 - `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials based on your operating system and programming language.
-- `Step_1_Vision`: Sample applications demonstrating sampling and visualisation of images coming from Vision Modality.
+- `Step_1_Vision`: Sample applications demonstrating sampling and visualization of images coming from Vision Modality.
 - `Step_2_Locomotion`: Sample applications combining sampling images from the Vision Modality with controlling Locomotion via the Motor Modality to navigate an environment.
+- `Step_3_Inverse_Kinematics`: Sample applications combining earlier the earlier locomotion step with inverse kinematics
+- `Step_4_Direct_Joint_Control`: Sample applications showing how to directly control joint angles with BOW
+- `Step_5_Multi_Robot_Control`: Sample applications showing how direct multiple robots at once.
+- `Step_6_Speech`: Sample applications showing how to use Audio with BOW
   
 ## Getting Started
 
@@ -29,51 +33,9 @@ cd SDK-Tutorials
 
 ## Usage
 
-### Step 0: Dependencies
-
-Navigate to the `Step_0_Dependencies` directory to set up the necessary environment for your chosen language and operating system.
-
-#### C++
-
-**Linux**
-
-```bash
-cd C++/Linux
-./install_opencv_local.sh
-```
-
-**Windows**
-
-Coming Soon
-
-### Step 1: Vision Applications
-
-This step contains basic vision applications implemented in C++, .NET, and Python. Navigate to the respective directory for detailed instructions.
-
-#### C++
-
-```bash
-cd ../Step_1_Vision/C++
-./build.sh
-./bow_tutorial_1
-```
-
-#### .NET
-
-```bash
-cd ../Step_1_Vision/DotNet/Bow_Tutorial_1
-dotnet build Bow_Tutorial_1.sln
-dotnet run --project Bow_Tutorial_1/Bow_Tutorial_1.csproj
-```
-In case of libOpenCvSharpExtern.so errors please consult README in Step_1_Vision/DotNet
-
-#### Python
-
-```bash
-cd ../Step_1_Vision/Python
-pip install -r requirements.txt
-python bow_tutorial_1.py
-```
+Each tutorial will have a folder for each Language implementation of that specific tutorial.
+To run that tutorial,
+navigate to the folder of the Language implementation that you would like to run and follow its README.
 
 ## Support
 

@@ -6,3 +6,9 @@ obj
 Step_0_Dependencies/C++/install
 Step_0_Dependencies/C++/Linux/opencv
 ./Demos
+
+**/.venv/**
+**/venv/**
+
+.vscode/
+**/.env
