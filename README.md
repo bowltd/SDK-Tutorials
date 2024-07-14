@@ -4,17 +4,18 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 
 ## Repository Structure
 
-The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK:
+The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK and answering a common question in robotics:
 
-- `Step_0_Dependencies`: Scripts and instructions for setting up necessary dependencies needed for the tutorials based on your operating system and programming language.
-- `Step_1_Vision`: Sample applications demonstrating sampling and visualization of images coming from Vision Modality.
-- `Step_2_Locomotion`: Sample applications combining sampling images from the Vision Modality with controlling Locomotion via the Motor Modality to navigate an environment.
-- `Step_3_Inverse_Kinematics`: Sample applications combining earlier the earlier locomotion step with inverse kinematics
-- `Step_4_Direct_Joint_Control`: Sample applications showing how to directly control joint angles with BOW
-- `Step_5_Multi_Robot_Control`: Sample applications showing how direct multiple robots at once.
-- `Step_6_Speech`: Sample applications showing how to use Audio with BOW
-  
+- [`Step_0_Dependencies`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_0_Dependencies): Scripts and instructions for setting up the dependencies needed for the tutorials based on your operating system and programming language.
+- [`Step_1_Vision`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_1_Vision): How can I capture and visualise all the cameras on a robot?
+- [`Step_2_Locomotion`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_2_Locomotion): How do I use a keyboard to move a robot around?
+- [`Step_3_Inverse_Kinematics`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_3_Inverse_Kinematics): How can I control the 3D position and orientation of a robot's gripper?
+- [`Step_4_Direct_Joint_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_4_Direct_Joint_Control): How do I individually control a robot's joints?
+- [`Step_5_Multi_Robot_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_5_Multi_Robot_Control): How do I control multiple robots at the same time?
+- [`Step_6_Speech`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_6_Speech): How do I make my robot make noise?
+- 
 ## Getting Started
+
 
 ### Prerequisites
 
@@ -31,12 +32,21 @@ git clone https://github.com/bowltd/SDK-Tutorials.git
 cd SDK-Tutorials
 ```
 
-## Usage
+### Usage
 
-Each tutorial will have a folder for each Language implementation of that specific tutorial.
-To run that tutorial,
-navigate to the folder of the Language implementation that you would like to run and follow its README.
+#### Starting Point
 
+Navigate to the `Step_0_Dependencies` directory
+to set up the necessary environment for your chosen language and operating system.
+
+#### Explore
+
+After setting up the dependencies,
+feel free to explore the tutorials in order or go directly to the one that is the most interesting. 
+
+Every tutorial contains its own README describing a different aspect of the BOW SDK and how it can be used. 
+
+Within every tutorial, you will find subfolders implementing that specific aspect using different programming languages.
 ## Support
 
 For any issues or queries, please refer to our support guidelines or contact the community support team through the BOW SDK community app store.
