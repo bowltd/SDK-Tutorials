@@ -12,7 +12,8 @@ The repository is organized into different steps, each focusing on a specific as
 - [`Step_3_Inverse_Kinematics`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_3_Inverse_Kinematics): How can I control the 3D position and orientation of a robot's gripper?
 - [`Step_4_Direct_Joint_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_4_Direct_Joint_Control): How do I individually control a robot's joints?
 - [`Step_5_Multi_Robot_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_5_Multi_Robot_Control): How do I control multiple robots at the same time?
-  
+- [`Step_6_Speech`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_6_Speech): How do I make my robot make noise?
+- 
 ## Getting Started
 
 ### Prerequisites
@@ -30,20 +31,21 @@ git clone https://github.com/bowltd/SDK-Tutorials.git
 cd SDK-Tutorials
 ```
 
-## Usage
+### Usage
 
-### Starting Point
+#### Starting Point
 
-Navigate to the `Step_0_Dependencies` directory to set up the necessary environment for your chosen language and operating system.
+Navigate to the `Step_0_Dependencies` directory
+to set up the necessary environment for your chosen language and operating system.
 
-### Explore
+#### Explore
 
-After setting up the dependencies feel free to explore the tutorials in order or go directly to the one that is the most interesting. 
+After setting up the dependencies,
+feel free to explore the tutorials in order or go directly to the one that is the most interesting. 
 
 Every tutorial contains its own README describing a different aspect of the BOW SDK and how it can be used. 
 
 Within every tutorial, you will find subfolders implementing that specific aspect using different programming languages.
-
 ## Support
 
 For any issues or queries, please refer to our support guidelines or contact the community support team through the BOW Developer Portal at https://bow.software.

@@ -1,6 +1,6 @@
-# BOW Tutorial: Locomotion: Python 
+# BOW Tutorial: Vision: Python 
 
-Welcome to the BOW Tutorial on Locomotion with Python. Check out our running guide below.
+Welcome to the BOW Tutorial on Vision with Python. Check out our running guide below.
 
 ## Prerequisites
 

@@ -1,2 +1,2 @@
-bow-client
 pynput
+bow-client
