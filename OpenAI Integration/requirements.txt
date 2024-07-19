@@ -1,0 +1,5 @@
+opencv-python
+ultralytics
+openai
+pygments
+bow_client
