@@ -1,7 +1,9 @@
+import math
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import cv2
+import imutils
 
 from openai_brain import Brain
 from PIL import Image, ImageTk
@@ -151,6 +153,7 @@ def main():
         if err.Success:
             if len(image_list) > 0:
                 img_data = image_list[0]
+                img_data.image = imutils.rotate_bound(img_data.image, img_data.transform.EulerAngles.X * 180 / math.pi)
                 # Set camera parameters on first instance
                 if controller.VFOV is None:
                     if img_data.vfov == 0:
