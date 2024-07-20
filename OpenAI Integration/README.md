@@ -1,7 +1,7 @@
 # OpenAI Integration
 
 To view the tutorial,
-head to our [write-up]()
+head to our [write-up](https://docs.bow.software/tutorials/external_integrations/OpenAI_Integration)
 
 ## Running the Tutorial
 
