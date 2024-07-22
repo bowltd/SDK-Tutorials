@@ -32,7 +32,7 @@ class EventHandler(AssistantEventHandler):
         self.gui.output_text.insert(tkinter.END, "\n")
         self.gui.output_text.see(tkinter.END)
         self.gui.master.update()
-        print("Message Created", message.content)
+        print("\n", "OpenAI Assistant - Message Created")
 
     @override
     def on_message_done(self, message: Message) -> None:
@@ -42,6 +42,7 @@ class EventHandler(AssistantEventHandler):
         self.gui.master.update()
         full_message = message.content
         self.robot.set_modality("speech", full_message[0].text.value)
+        print("\n", "OpenAI Assistant - Message Done")
 
 
     @override
@@ -51,6 +52,7 @@ class EventHandler(AssistantEventHandler):
         if event.event == 'thread.run.requires_action':
             run_id = event.data.id  # Retrieve the run ID from the event data
             self.handle_requires_action(event.data, run_id)
+            print("\n", "OpenAI Assistant - Event Requires Action")
 
     def handle_requires_action(self, data, run_id):
         # Iterate through tool calls and create list of required outputs
@@ -59,6 +61,7 @@ class EventHandler(AssistantEventHandler):
             if tool_call.function.name == "retrieveItems":
                 output = self.brain.robot_controller.retrieve_items()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": output})
+                print("\n", "OpenAI Assistant - retrieveItems tool call requested: ", tool_call.id)
 
             elif tool_call.function.name == "search":
                 parsed_data = json.loads(tool_call.function.arguments)
@@ -66,14 +69,17 @@ class EventHandler(AssistantEventHandler):
                 direction = parsed_data['direction']
                 output = self.brain.robot_controller.startSearch(target, direction)
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
+                print("\n", "OpenAI Assistant - search tool call requested: ", tool_call.id)
 
             elif tool_call.function.name == "stop":
                 output = self.brain.robot_controller.stop()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
+                print("\n", "OpenAI Assistant - stop tool call requested: ", tool_call.id)
 
             elif tool_call.function.name == "getRunning":
                 output = self.brain.robot_controller.get_running()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": output})
+                print("\n", "OpenAI Assistant - getRunning tool call requested: ", tool_call.id)
 
         # Submit all tool_outputs at the same time
         self.submit_tool_outputs(tool_outputs)
@@ -87,11 +93,15 @@ class EventHandler(AssistantEventHandler):
         ) as self.brain.stream_tool:
             self.brain.stream_tool.until_done()
 
+        print("\n", "OpenAI Assistant - Submit Tool Outputs Complete")
+
 
 class Brain:
     def __init__(self, controller):
         self.client = OpenAI()
+        print("OpenAI Client Created")
         self.thread = self.client.beta.threads.create()
+        print("OpenAI Thread Created")
         self.tool_outputs = []
         self.robot_controller = controller
         self.stream = None
@@ -111,3 +121,5 @@ class Brain:
                 event_handler=EventHandler(gui, self, self.robot_controller.robot),
         ) as self.stream:
             self.stream.until_done()
+
+        print("OpenAI Message Sent")
