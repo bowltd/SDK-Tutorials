@@ -1,4 +1,4 @@
-# Step 2 Locomotion
+# Step 1 Vision
 
 To view the tutorial,
 head to our [write-up](https://docs.bow.software/tutorials/tutorial_1/step_1) otherwise feel
