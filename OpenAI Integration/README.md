@@ -1,8 +1,7 @@
-# Step 1 Vision
+# OpenAI Integration
 
 To view the tutorial,
-head to our [write-up](https://docs.bow.software/tutorials/tutorial_1/step_1) otherwise feel
-free to explore our language implementations.
+head to our [write-up](https://docs.bow.software/tutorials/external_integrations/OpenAI_Integration)
 
 ## Running the Tutorial
 

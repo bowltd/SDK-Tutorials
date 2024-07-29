@@ -12,3 +12,4 @@ Step_0_Dependencies/C++/Linux/opencv
 
 .vscode/
 **/.env
+/Vision - Object Detection/Python/yolov8n.pt

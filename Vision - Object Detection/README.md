@@ -1,7 +1,7 @@
-# Step 1 Vision
+# Vision - Object Detection
 
 To view the tutorial,
-head to our [write-up](https://docs.bow.software/tutorials/tutorial_1/step_1) otherwise feel
+head to our [write-up]() otherwise feel
 free to explore our language implementations.
 
 ## Running the Tutorial
