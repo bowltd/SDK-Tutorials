@@ -8,6 +8,7 @@ import time
 import sys
 import logging
 import threading
+from queue import Queue
 from typing import List, Dict
 
 import bow_client as bow
@@ -17,12 +18,15 @@ from pynput import keyboard
 from tts import TTS  # Import the TTS class
 
 # Constants for audio settings and control logic
-SAMPLE_RATE = 16000
-CHUNK_SIZE = SAMPLE_RATE // 4  # 250 ms chunks
+SAMPLE_RATE = 24_000
 NUM_CHANNELS = 1
 COMPRESSION_FORMAT = bow_utils.AudioSample.CompressionFormatEnum.RAW
-AUDIO_BACKENDS = ["alsa"]
-AUDIO_TRANSMIT_RATE = 30
+AUDIO_BACKENDS = ["notinternal"]
+AUDIO_TRANSMIT_RATE = 25
+NUM_SAMPLES = SAMPLE_RATE // AUDIO_TRANSMIT_RATE
+CHUNK_SIZE = NUM_CHANNELS * NUM_SAMPLES
+
+
 SPEECH_RATE_LIMIT = 15  # 15 seconds
 DEBOUNCE_TIME = 1  # 1 second debounce time for 'v' key
 
@@ -56,10 +60,14 @@ class RobotController:
         self.last_spoken_action = None
         self.last_v_press_time = 0
 
+        # Queue for speech commands
+        self.speech_queue = Queue()
+
+
         # Connect to the robot
         self.robot, error = bow.quick_connect(
             pylog=self.log,
-            modalities=["vision", "motor", "voice"],
+            modalities=["voice", "vision", "motor"],
             verbose=True,
             audio_params=self.audio_params
         )
@@ -74,6 +82,11 @@ class RobotController:
         # Start keyboard listener for capturing key presses and releases
         self.listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
         self.listener.start()
+
+        # Start the speech processing thread
+        self.speech_thread = threading.Thread(target=self.process_speech_queue)
+        self.speech_thread.daemon = True
+        self.speech_thread.start()
 
     def on_press(self, key: keyboard.Key):
         """Handle key press events."""
@@ -105,6 +118,8 @@ class RobotController:
                 cv2.imshow(self.window_names[img_data.source], img_data.image)
 
     def send_speech_command(self, text: str):
+        # TODO open thread once and queue in speech to be processed.
+
         """Convert text to speech and stream to the robot in chunks."""
         # Use TTS service to convert text to speech
 
@@ -121,22 +136,36 @@ class RobotController:
 
         raw_audio = audio_segment.raw_data
 
+
         # Stream audio data in chunks to the robot
         for i in range(0, len(raw_audio), CHUNK_SIZE):
+            print("sending chunk")
             chunk = raw_audio[i:i + CHUNK_SIZE]
             audio_sample = bow_utils.AudioSample(
                 Source="Client",
                 Data=chunk,
                 Channels=NUM_CHANNELS,
                 SampleRate=SAMPLE_RATE,
-                NumSamples=len(chunk) // 2,  # Assuming 16-bit audio
+                NumSamples=CHUNK_SIZE // NUM_CHANNELS,
                 Compression=COMPRESSION_FORMAT
             )
             result = self.robot.set_modality("voice", audio_sample)
             if not result.Success:
+                self.log.error(result.Description, result.Code)
                 self.log.error(f"Failed to send audio sample chunk {i // CHUNK_SIZE} to the robot.")
                 break
-            time.sleep(0.25)  # Wait for 250 ms before sending the next chunk
+            time.sleep(1 / (AUDIO_TRANSMIT_RATE * 2))
+
+    def process_speech_queue(self):
+        """Process the speech queue, sending commands to the robot."""
+        while True:
+            text = self.speech_queue.get()
+            if text is None:  # Allows for graceful shutdown
+                break
+            self.send_speech_command(text)
+            self.speech_queue.task_done()
+            time.sleep(0.2) # 200 ms
+
 
     def control_loop(self):
         """Main control loop for handling vision, motor, and voice modalities."""
@@ -181,15 +210,13 @@ class RobotController:
                         # Speak the action if 'v' key is pressed and debounce time has passed
                         if action:
                             print(action)
-                            speech_thread = threading.Thread(target=self.send_speech_command, args=(action,))
-                            speech_thread.start()
+                            self.speech_queue.put(action)
                         self.last_v_press_time = current_time
                 elif (
                         current_time - self.last_speech_time > SPEECH_RATE_LIMIT) and action and action != self.last_spoken_action:
                     # Speak the action if rate limit has passed and it's a new action
                     print(action)
-                    speech_thread = threading.Thread(target=self.send_speech_command, args=(action,))
-                    speech_thread.start()
+                    self.speech_queue.put(action)
                     self.last_speech_time = current_time
                     self.last_spoken_action = action
 
