@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="bow_ext_sonar"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\..\usr\local\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\;CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\opencv4\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bow_ext_sonar">
+				<Option output="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug/bow_ext_sonar" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/include"/>
+					<Add directory="/usr/local/include/bow_client"/>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 bow_ext_sonar"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="bow_ext_sonar/fast">
+				<Option output="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug/bow_ext_sonar" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/include"/>
+					<Add directory="/usr/local/include/bow_client"/>
+					<Add directory="/usr/local/include/opencv4"/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 bow_ext_sonar/fast"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j20 -f &quot;/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception\ -\ Sonar/C++/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/main.cpp">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_client.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_client_sdk.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_common.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_audio.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_common.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_exteroception.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_interoception.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_motor.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_octree.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_tactile.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_data_vision.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_robot.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/include/bow_client/bow_structs.pb.h">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_any_cast_impl.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_any_cast_impl.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_optional_access.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_optional_access.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_variant_access.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_bad_variant_access.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_base.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_base.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_city.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_city.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_civil_time.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_civil_time.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cord.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cord.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cord_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cord_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_functions.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_functions.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_handle.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_handle.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_info.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_info.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_sample_token.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_cordz_sample_token.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc32c.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc32c.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_cord_state.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_cord_state.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_cpu_detect.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_cpu_detect.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_crc_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_debugging_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_debugging_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_demangle_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_demangle_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_die_if_null.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_die_if_null.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_examine_stack.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_examine_stack.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_exponential_biased.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_exponential_biased.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_failure_signal_handler.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_failure_signal_handler.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_commandlineflag.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_commandlineflag.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_commandlineflag_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_commandlineflag_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_config.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_config.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_marshalling.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_marshalling.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_parse.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_parse.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_private_handle_accessor.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_private_handle_accessor.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_program_name.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_program_name.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_reflection.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_reflection.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_usage.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_usage.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_usage_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_flags_usage_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_graphcycles_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_graphcycles_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_hash.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_hash.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_hashtablez_sampler.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_hashtablez_sampler.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_int128.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_int128.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_leak_check.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_leak_check.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_entry.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_entry.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_flags.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_flags.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_globals.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_globals.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_initialize.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_initialize.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_check_op.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_check_op.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_conditions.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_conditions.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_format.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_format.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_globals.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_globals.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_log_sink_set.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_log_sink_set.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_message.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_message.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_nullguard.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_nullguard.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_proto.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_internal_proto.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_severity.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_severity.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_sink.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_log_sink.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_low_level_hash.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_low_level_hash.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_malloc_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_malloc_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_periodic_sampler.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_periodic_sampler.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_distributions.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_distributions.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_distribution_test_util.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_distribution_test_util.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_platform.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_platform.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_pool_urbg.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_pool_urbg.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_hwaes.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_hwaes.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_hwaes_impl.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_hwaes_impl.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_slow.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_randen_slow.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_seed_material.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_internal_seed_material.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_seed_gen_exception.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_seed_gen_exception.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_seed_sequences.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_random_seed_sequences.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_raw_hash_set.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_raw_hash_set.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_raw_logging_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_raw_logging_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_scoped_set_env.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_scoped_set_env.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_spinlock_wait.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_spinlock_wait.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_stacktrace.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_stacktrace.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_status.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_status.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_statusor.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_statusor.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_str_format_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_str_format_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strerror.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strerror.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strings.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strings.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strings_internal.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_strings_internal.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_symbolize.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_symbolize.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_synchronization.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_synchronization.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_throw_delegate.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_throw_delegate.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_time.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_time.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_time_zone.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libabsl_time_zone.so.2301.0.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libanimus_client.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libbow_client.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotobuf-lite.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotobuf-lite.so.23.4.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotobuf.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotobuf.so.23.4.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotoc.so">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libprotoc.so.23.4.0">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libutf8_range.a">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/usr/local/lib/bow/libutf8_validity.a">
+			<Option target="bow_ext_sonar"/>
+		</Unit>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/../../../../../../../usr/local/lib/cmake/opencv4/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/../../../../../../../usr/local/lib/cmake/opencv4/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/../../../../../../../usr/local/lib/cmake/opencv4/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+		<Unit filename="/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/../../../../../../../usr/local/lib/cmake/opencv4/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\usr\local\lib\cmake\opencv4\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

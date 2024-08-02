@@ -1,3 +1,0 @@
-bow-client
-ultralytics
-opencv-python

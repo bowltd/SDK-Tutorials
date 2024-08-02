@@ -1,4 +1,0 @@
-bow-hub
-requests
-pydub
-openai
