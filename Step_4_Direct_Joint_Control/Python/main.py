@@ -67,6 +67,11 @@ class RobotControlApp:
         self.start_sampling()
 
     def initialize_sliders(self):
+        # Assuming a 3-column layout for the sliders
+        num_columns = 3
+        current_row = 0
+        current_column = 0
+
         while True:
             prop_msg, err = self.Robot.get_modality("proprioception", True)
             if err.Success and len(prop_msg.RawJoints) > 0:
@@ -80,7 +85,7 @@ class RobotControlApp:
                     current_deg = round(math.degrees(joint.Position), 2)
 
                     joint_frame = ttk.Frame(self.sliders_frame)
-                    joint_frame.pack(fill='x', padx=10, pady=5)
+                    joint_frame.grid(row=current_row, column=current_column, padx=10, pady=5, sticky='nsew')
 
                     # Current position label
                     current_var = tk.DoubleVar(value=current_deg)
@@ -107,6 +112,13 @@ class RobotControlApp:
                     # Min and Max labels
                     ttk.Label(joint_frame, text=f"Min: {min_deg}°").pack(side='left')
                     ttk.Label(joint_frame, text=f"Max: {max_deg}°").pack(side='right')
+
+                    # Update column and row
+                    current_column += 1
+                    if current_column >= num_columns:
+                        current_column = 0
+                        current_row += 1
+
                 break
 
     def start_sampling(self):
