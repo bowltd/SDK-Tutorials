@@ -6,7 +6,7 @@ Welcome to the BOW Tutorial on Speech (Streaming Text) with Python. Check out ou
 
 - A [Virtual Environment](https://docs.bow.software/tutorials/tutorial_resources/python/venv) with the requirements installed from `requirements.txt`
 
-- One of the [inference methods mentioned in the tutorial](https://docs.bow.software/tutorials/tutorial_1/step_6#generating-the-tts-voice) ready to use.
+- One of the [inference methods mentioned in the tutorial](https://docs.bow.software/tutorials/examples/speech-streaming-text#generating-the-tts-voice) ready to use.
 
 - A BOW Standard Subscription or higher to simulate a robot to connect to. (Remember to use our Free Trial!)
 
