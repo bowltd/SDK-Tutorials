@@ -4,16 +4,13 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 
 ## Repository Structure
 
-The repository is organized into different steps, each focusing on a specific aspect of using the BOW SDK and answering a common question in robotics:
+The repository is organized into 2 sections, examples and tutorials:
 
-- [`Step_0_Dependencies`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_0_Dependencies): Scripts and instructions for setting up the dependencies needed for the tutorials based on your operating system and programming language.
-- [`Step_1_Vision`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_1_Vision): How can I capture and visualise all the cameras on a robot?
-- [`Step_2_Locomotion`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_2_Locomotion): How do I use a keyboard to move a robot around?
-- [`Step_3_Inverse_Kinematics`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_3_Inverse_Kinematics): How can I control the 3D position and orientation of a robot's gripper?
-- [`Step_4_Direct_Joint_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_4_Direct_Joint_Control): How do I individually control a robot's joints?
-- [`Step_5_Multi_Robot_Control`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_5_Multi_Robot_Control): How do I control multiple robots at the same time?
-- [`Step_6_Speech`](https://github.com/bowltd/SDK-Tutorials/tree/main/Step_6_Speech): How do I make my robot make noise?
-- 
+- Tutorials are step by step guides, each focusing on a specific aspect of using the BOW SDK or answering a common question in robotics. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/tutorials)
+
+- Examples are designed to showcase some complete applications which combine multiple elements from the tutorials and demonstrate how you can integrate external applications and programs with BOW to bring your robots alive. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/tutorials#examples)
+
+ 
 ## Getting Started
 
 ### Prerequisites
@@ -35,7 +32,7 @@ cd SDK-Tutorials
 
 #### Starting Point
 
-Navigate to the `Step_0_Dependencies` directory
+Navigate to the `Tutorials/basics/Step_0_Dependencies` directory
 to set up the necessary environment for your chosen language and operating system.
 
 #### Explore
