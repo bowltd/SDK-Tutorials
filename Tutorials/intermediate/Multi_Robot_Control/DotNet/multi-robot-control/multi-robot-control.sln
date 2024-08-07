@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bow_Tutorial_5", "Bow_Tutorial_5\Bow_Tutorial_5.csproj", "{40D64D7E-2D56-414C-B9EF-8998F859952C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "multi-robot-control", "multi-robot-control\multi-robot-control.csproj", "{40D64D7E-2D56-414C-B9EF-8998F859952C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
