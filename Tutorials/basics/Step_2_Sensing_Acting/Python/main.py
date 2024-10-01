@@ -23,16 +23,28 @@ def on_press(key):
     try:
         pressed_keys.add(key.char)
     except AttributeError:
-        pass
+        # Check for special keys (like spacebar)
+        if key == keyboard.Key.space:
+            pressed_keys.add("space")
 
 def on_release(key):
     try:
         pressed_keys.discard(key.char)
     except AttributeError:
-        pass
+        # Check for special keys (like spacebar)
+        if key == keyboard.Key.space:
+            pressed_keys.discard("space")
     if key == keyboard.Key.esc:
         # Stop listener
         return False
+
+def reset_locomotion(motorSample) :
+    motorSample.Locomotion.TranslationalVelocity.Y = 0
+    motorSample.Locomotion.TranslationalVelocity.X = 0
+    motorSample.Locomotion.TranslationalVelocity.Z = 0
+    motorSample.Locomotion.RotationalVelocity.X = 0
+    motorSample.Locomotion.RotationalVelocity.Y = 0
+    motorSample.Locomotion.RotationalVelocity.Z = 0
 
 listener = keyboard.Listener(on_press=on_press, on_release=on_release)
 listener.start()
@@ -93,6 +105,33 @@ try:
         if 'q' in pressed_keys:
             print("Strafe left")
             motorSample.Locomotion.TranslationalVelocity.Y = 1
+        if 'space' in pressed_keys:
+            print("Stop moving")
+            reset_locomotion(motorSample)
+        if 'i' in pressed_keys:
+            print("Look up")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.Y = -0.2
+        if 'k' in pressed_keys:
+            print("Look down")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.Y = 0.2
+        if 'j' in pressed_keys:
+            print("Look left")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.X = -0.2
+        if 'l' in pressed_keys:
+            print("Look right")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.X = 0.2
+        if 'o' in pressed_keys:
+            print("Tilt left")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.Z = -0.2
+        if 'u' in pressed_keys:
+            print("Tilt right")
+            # reset_locomotion(motorSample)
+            motorSample.GazeTarget.GazeVector.Z = 0.2
 
         # Act
         myrobot.set_modality("motor", motorSample)
