@@ -1,11 +1,18 @@
+import asyncio
 import math
+import os
+from pathlib import Path
+
+import dotenv
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import cv2
 import imutils
+import openai
 
 from openai_brain import Brain
+from openai_helper import OpenAIHelper
 from PIL import Image, ImageTk
 import bow_client as bow
 from ultralytics import YOLO
@@ -13,12 +20,53 @@ from robot_controller import RobotController
 
 class GUI:
     def __init__(self, master, brain, controller):
+        self.select_assistant_button = None
+        self.button_frame = None
+        self.entry_frame = None
+        self.api_frame = None
         self.master = master
         self.master.title("BOW >< OpenAI")
-        self.master.geometry("1700x830")
+        self.master.geometry("1700x880")
         self.master.configure(bg="#656665")  # Updated background color to WHITE
 
         self.controller = controller
+
+        self.firstCommand = True
+        self.openai_helper = None
+        self.api_key = None
+        self.ass_id = None
+
+        self.env_file = Path("keys.env")
+        dotenv.load_dotenv(self.env_file)
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.ass_id = os.getenv("ASSISTANT_ID")
+
+        if self.api_key is None or self.ass_id is None:
+            # Create a frame for the API key entry and button
+            self.api_frame = ttk.Frame(self.master, style="BW.TLabel")
+            self.api_frame.pack(side=tk.TOP, pady=10, fill=tk.X)
+
+            # Create a frame specifically for the button, and center it
+            self.button_frame = ttk.Frame(self.api_frame)
+            self.button_frame.pack(side=tk.TOP, pady=5)
+
+            # Create the button and pack it to center
+            self.list_assistants_button = ttk.Button(self.button_frame, text="List Assistants",
+                                                      command=self.list_assistants, style="TButton")
+            self.list_assistants_button.pack(side=tk.TOP, ipadx=25)
+
+            # Create a frame specifically for the entry box, and center it
+            self.entry_frame = ttk.Frame(self.api_frame)
+            self.entry_frame.pack(side=tk.TOP, pady=5)
+
+            # Create an entry box for the OpenAI API key and pack it to center
+            if self.api_key is None:
+                input_text = "Enter your OpenAI API key here..."
+            else:
+                input_text = "Enter Assistant ID here..."
+            self.api_key_entry = ttk.Entry(self.entry_frame, font=("Arial", 10), width=80)
+            self.api_key_entry.insert(0, input_text)
+            self.api_key_entry.pack(side=tk.TOP, padx=5)
 
         # Define the style for the labels and buttons using the branding colors
         style = ttk.Style()
@@ -45,6 +93,9 @@ class GUI:
                                    insertbackground="#000000", highlightbackground="#F0F0F0", highlightcolor="#EBE726",  # YELLOW cursor and highlights
                                    font=("Arial", 18), wrap=tk.WORD)
         self.output_text.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
+        if self.api_key is not None and self.ass_id is None:
+            self.output_text.insert(tk.END, "OpenAI Key found. ", "system")
+            self.list_assistants()
 
         # Create a frame for text input and buttons
         self.input_button_frame = ttk.Frame(self.text_frame, style="BW.TLabel")
@@ -59,11 +110,14 @@ class GUI:
         self.SendButton = ttk.Button(self.input_button_frame, text="Send", command=self.SendButton_click, style="TButton")
         self.SendButton.pack(side=tk.TOP, pady=5)
 
-
         # Set button styles using branding colors
         self.style = ttk.Style()
         self.style.configure("TButton", foreground="#000000", background="#97C93D",  # GREEN button
                              font=("Proxima Nova Medium", 18), width=10)
+        self.style.configure("Assistant.TButton", foreground="#000000", background="#97C93D",  # GREEN button
+                             font=("Proxima Nova Medium", 10), width=12)
+        self.style.configure("DelAssistant.TButton", foreground="#000000", background="#F36C24",  # GREEN button
+                             font=("Proxima Nova Medium", 10), width=12)
         self.style.configure("Stop.TButton", foreground="#000000", background="#F36C24",  # YELLOW button
                              font=("Proxima Nova Bold", 18, "bold"), width=10)
         self.output_text.tag_config("user", foreground="#97C93D")  # GREEN text for user
@@ -72,7 +126,35 @@ class GUI:
         # Logic
         self.brain = brain
 
+    async def generate_request(self, message):
+        await self.brain.request(message, "user", self)
+
     def SendButton_click(self):
+
+        if self.firstCommand:
+            dotenv.load_dotenv(self.env_file)
+            openai_api_key = os.getenv("OPENAI_API_KEY")
+            if openai_api_key is None:
+                self.input_text.delete("1.0", tk.END)
+                self.output_text.insert(tk.END, "\n No OpenAI API Key present, please supply one and create an assistant \n"  , "system")
+                self.output_text.see(tk.END)
+                self.master.update()
+                return
+
+            assistant_id = os.getenv('ASSISTANT_ID')
+            if assistant_id is None:
+                self.input_text.delete("1.0", tk.END)
+                self.output_text.insert(tk.END,
+                                        "\n No Assistant Key present, please create an assistant \n",
+                                        "system")
+                self.output_text.see(tk.END)
+                self.master.update()
+                return
+
+            asyncio.create_task(self.brain.start())
+            self.firstCommand = False
+            self.delete_assistant_buttons()
+
         # Get the text from the input box and then delete it
         message_content = self.input_text.get("1.0", tk.END).strip()
         self.input_text.delete("1.0", tk.END)
@@ -87,12 +169,83 @@ class GUI:
         self.output_text.see(tk.END)
         self.master.update()
 
-        # Pass message to OpenAI assistant
-        self.brain.request(message_content, "user", self)
+        # Create a new thread for the API request
+        asyncio.create_task(self.generate_request(message_content))
 
     def StopButton_click(self):
         self.controller.stop()
         self.output_text.insert(tk.END, "\nStopping\n")
+
+    def create_assistant(self):
+        assistant_id = self.openai_helper.CreateAssistant()
+        if assistant_id is not None:
+            self.env_file.touch(mode=0o600, exist_ok=False)
+            dotenv.set_key(self.env_file, "OPENAI_API_KEY", api_key)
+            dotenv.set_key(self.env_file, "ASSISTANT_ID", assistant_id)
+            dotenv.load_dotenv(self.env_file)
+            print(f"File '{self.env_file}' created and populated.")
+            print(f"Creating assistant with OpenAI API Key: {api_key}")
+            self.output_text.insert(tk.END,
+                                    "\n Assistant Created \n",
+                                    "system")
+            self.output_text.see(tk.END)
+            self.master.update()
+        else:
+            self.output_text.insert(tk.END,
+                                    "\n Please enter a valid OpenAI API Key \n",
+                                    "system")
+            self.output_text.see(tk.END)
+            self.master.update()
+
+    def list_assistants(self):
+        print("Listing assistants...")
+        # Get the API key from the entry box and process it
+        if self.api_key is None:
+            self.api_key = self.api_key_entry.get()
+        self.openai_helper = OpenAIHelper(self.api_key)
+        try:
+            assistants = self.openai_helper.ListAssistants()
+        except openai.AuthenticationError as e:
+            print(e.message)
+            self.output_text.insert(tk.END, e.message, "system")
+            return
+
+        # Create a button to select an assistant, positioned next to the entry box
+        self.select_assistant_button = ttk.Button(self.entry_frame, text="Select Assistant",
+                                                  command=self.select_assistant, style="Assistant.TButton")
+        self.select_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+
+        # Create a button to delete an assistant, positioned next to the select button
+        self.delete_assistant_button = ttk.Button(self.entry_frame, text="Delete Assistant",
+                                                  command=self.delete_assistant, style="DelAssistant.TButton")
+        self.delete_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+        self.output_text.insert(tk.END, "Listing assistants...\n", "system")
+        self.output_text.insert(tk.END, assistants, "system")
+
+    def select_assistant(self):
+        ass_id = self.api_key_entry.get()
+        self.env_file.touch(mode=0o600, exist_ok=False)
+        dotenv.set_key(dotenv_path=self.env_file, key_to_set="ASSISTANT_ID", value_to_set=ass_id)
+        dotenv.load_dotenv(self.env_file)
+        print(f"File '{self.env_file}' created and populated.")
+        print("Assistant selected!")
+
+    def delete_assistant(self):
+        ass_id = self.api_key_entry.get()
+        response = self.openai_helper.DeleteAssistant(ass_id)
+        if response.deleted:
+            print("Assistant deleted!")
+            self.output_text.insert(tk.END, "Assistant deleted!", "system")
+        else:
+            print("Assistant deletion failed: " + response)
+            self.output_text.insert(tk.END, "Assistant deletion failed: " + response, "system")
+
+    def delete_assistant_buttons(self):
+        # Destroy the frames which will also remove the widgets inside them
+        self.output_text.delete('1.0', tk.END)
+        if self.button_frame is not None: self.button_frame.destroy()  # Destroys the frame with the "List Assistants" button
+        if self.entry_frame is not None: self.entry_frame.destroy()  # Destroys the frame with the input box and other buttons
+        if self.entry_frame is not None: self.api_frame.destroy()  # Destroys the parent frame containing all child frames
 
     def update_image(self, cv_image):
         # Convert OpenCV image to PIL format
@@ -121,8 +274,7 @@ def on_closing(window, robot):
         robot.disconnect()
         bow.close_client_interface()
 
-
-def main():
+async def main():
     # Create a Tkinter window
     root = tk.Tk()
 
@@ -148,10 +300,14 @@ def main():
                 brain.request("Search Failed", "assistant", gui)
             controller.searchComplete = None
 
+        if controller.locomoteComplete is not None:
+            if controller.locomoteComplete == "success":
+                brain.request("Locomote Complete", "assistant", gui)
+
         # Get camera images from BOW robot
         image_list, err = controller.robot.get_modality("vision", True)
         if err.Success:
-            if len(image_list) > 0:
+            if len(image_list) > 0 and image_list[0].image is not None:
                 img_data = image_list[0]
                 img_data.image = imutils.rotate_bound(img_data.image, img_data.transform.EulerAngles.X * 180 / math.pi)
                 # Set camera parameters on first instance
@@ -224,6 +380,7 @@ def main():
             objects = []
             root.update_idletasks()
             root.update()
+            await asyncio.sleep(0.01)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
