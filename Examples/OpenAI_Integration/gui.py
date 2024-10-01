@@ -21,6 +21,7 @@ from robot_controller import RobotController
 class GUI:
     def __init__(self, master, brain, controller):
         self.select_assistant_button = None
+        self.create_assistant_button = None
         self.button_frame = None
         self.entry_frame = None
         self.api_frame = None
@@ -136,7 +137,7 @@ class GUI:
             openai_api_key = os.getenv("OPENAI_API_KEY")
             if openai_api_key is None:
                 self.input_text.delete("1.0", tk.END)
-                self.output_text.insert(tk.END, "\n No OpenAI API Key present, please supply one and create an assistant \n"  , "system")
+                self.output_text.insert(tk.END, "\n No OpenAI API Key present, please supply one and create or select an assistant \n"  , "system")
                 self.output_text.see(tk.END)
                 self.master.update()
                 return
@@ -145,7 +146,7 @@ class GUI:
             if assistant_id is None:
                 self.input_text.delete("1.0", tk.END)
                 self.output_text.insert(tk.END,
-                                        "\n No Assistant Key present, please create an assistant \n",
+                                        "\n No Assistant Key present, please create or select an assistant \n",
                                         "system")
                 self.output_text.see(tk.END)
                 self.master.update()
@@ -177,14 +178,13 @@ class GUI:
         self.output_text.insert(tk.END, "\nStopping\n")
 
     def create_assistant(self):
-        assistant_id = self.openai_helper.CreateAssistant()
-        if assistant_id is not None:
-            self.env_file.touch(mode=0o600, exist_ok=False)
-            dotenv.set_key(self.env_file, "OPENAI_API_KEY", api_key)
-            dotenv.set_key(self.env_file, "ASSISTANT_ID", assistant_id)
+        self.ass_id = self.openai_helper.CreateAssistant()
+        if self.ass_id is not None:
+            self.env_file.touch(mode=0o600, exist_ok=True)
+            dotenv.set_key(self.env_file, "OPENAI_API_KEY", self.api_key)
+            dotenv.set_key(self.env_file, "ASSISTANT_ID", self.ass_id)
             dotenv.load_dotenv(self.env_file)
             print(f"File '{self.env_file}' created and populated.")
-            print(f"Creating assistant with OpenAI API Key: {api_key}")
             self.output_text.insert(tk.END,
                                     "\n Assistant Created \n",
                                     "system")
@@ -202,6 +202,9 @@ class GUI:
         # Get the API key from the entry box and process it
         if self.api_key is None:
             self.api_key = self.api_key_entry.get()
+            self.env_file.touch(mode=0o600, exist_ok=True)
+            dotenv.set_key(self.env_file, "OPENAI_API_KEY", self.api_key)
+            dotenv.load_dotenv(self.env_file)
         self.openai_helper = OpenAIHelper(self.api_key)
         try:
             assistants = self.openai_helper.ListAssistants()
@@ -210,21 +213,32 @@ class GUI:
             self.output_text.insert(tk.END, e.message, "system")
             return
 
-        # Create a button to select an assistant, positioned next to the entry box
-        self.select_assistant_button = ttk.Button(self.entry_frame, text="Select Assistant",
-                                                  command=self.select_assistant, style="Assistant.TButton")
-        self.select_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+        # Reset text in input box
+        self.api_key_entry.delete(0, tk.END)
+        self.api_key_entry.insert(0, "Enter Assistant ID here...")
 
-        # Create a button to delete an assistant, positioned next to the select button
-        self.delete_assistant_button = ttk.Button(self.entry_frame, text="Delete Assistant",
-                                                  command=self.delete_assistant, style="DelAssistant.TButton")
-        self.delete_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+        if self.select_assistant_button is None:
+            # Create a button to select an assistant, positioned next to the entry box
+            self.select_assistant_button = ttk.Button(self.entry_frame, text="Select Assistant",
+                                                      command=self.select_assistant, style="Assistant.TButton")
+            self.select_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+
+            # Create a button to select an assistant, positioned next to the entry box
+            self.create_assistant_button = ttk.Button(self.entry_frame, text="Create Assistant",
+                                                      command=self.create_assistant, style="Assistant.TButton")
+            self.create_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+
+            # Create a button to delete an assistant, positioned next to the select button
+            self.delete_assistant_button = ttk.Button(self.entry_frame, text="Delete Assistant",
+                                                      command=self.delete_assistant, style="DelAssistant.TButton")
+            self.delete_assistant_button.pack(side=tk.LEFT, padx=5, ipadx=10)
+
         self.output_text.insert(tk.END, "Listing assistants...\n", "system")
         self.output_text.insert(tk.END, assistants, "system")
 
     def select_assistant(self):
         ass_id = self.api_key_entry.get()
-        self.env_file.touch(mode=0o600, exist_ok=False)
+        self.env_file.touch(mode=0o600, exist_ok=True)
         dotenv.set_key(dotenv_path=self.env_file, key_to_set="ASSISTANT_ID", value_to_set=ass_id)
         dotenv.load_dotenv(self.env_file)
         print(f"File '{self.env_file}' created and populated.")
@@ -305,7 +319,7 @@ async def main():
                 brain.request("Locomote Complete", "assistant", gui)
 
         # Get camera images from BOW robot
-        image_list, err = controller.robot.get_modality("vision", True)
+        image_list, err = controller.robot.get_modality("vision", False)
         if err.Success:
             if len(image_list) > 0 and image_list[0].image is not None:
                 img_data = image_list[0]

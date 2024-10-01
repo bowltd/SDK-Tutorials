@@ -15,3 +15,4 @@ Step_0_Dependencies/C++/Linux/opencv
 /Vision - Object Detection/Python/yolov8n.pt
 /Exteroception - Sonar/C++/bow_ext_sonar
 /Exteroception - Sonar/C++/cmake-build-debug/
+*/keys.env
