@@ -81,7 +81,7 @@ class RobotController:
 
         # Wait for sim to stabilise?
         time.sleep(1)
-        self.robot.set_modality("speech", "Skynet embodied successfully, get to the chopper!")
+        self.robot.set_modality("speech", "ChatGPT embodied successfully")
 
         ext_sample, err = self.robot.get_modality("exteroception", True)
         while ext_sample is None:
@@ -200,11 +200,11 @@ class RobotController:
                 # Perform up-down search
                 elif self.rotateStopTime + self.safetyDelay <= time.time() < self.rotateStopTime + self.safetyDelay + self.upTime:
                     self.locoYaw = 0.0
-                    self.headUpDown = 0.2
+                    self.headUpDown = 1
 
                 elif self.rotateStopTime + self.safetyDelay + self.upTime <= time.time() < self.rotateStopTime + self.safetyDelay + self.upTime + self.downTime:
                     self.locoYaw = 0.0
-                    self.headUpDown = -0.4
+                    self.headUpDown = -1
 
                 elif self.rotateStopTime + self.safetyDelay + self.upTime + self.downTime <= time.time() < self.rotateStopTime + 2*self.safetyDelay + self.upTime + self.downTime:
                     self.locoYaw = 0.0
@@ -251,8 +251,16 @@ class RobotController:
             self.locoY = 0
             self.locoYaw = 0.0
         else:
-            if self.locoX > 0: self.locoX = self.linearVel
-            if self.locoX < 0: self.locoX = -self.linearVel
+            if self.sonar_data[0] > 0.4:
+                if self.locoX > 0: self.locoX = self.linearVel
+            else:
+                self.locoX = 0
+
+            if self.sonar_data[1] > 0.4:
+                if self.locoX < 0: self.locoX = -self.linearVel
+            else:
+                self.locoX = 0
+
             if self.locoY > 0: self.locoY = self.linearVel
             if self.locoY < 0: self.locoY = -self.linearVel
             if self.locoYaw > 0: self.locoYaw = self.rotationVel
