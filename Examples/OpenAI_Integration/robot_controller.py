@@ -40,6 +40,11 @@ class RobotController:
         self.searchComplete = None
         self.periodCounter = 0
         self.frameCounter = 0
+        self.safety_time = None
+        self.look_up_time = None
+        self.look_down_time = None
+        self.safety_look_time = None
+        self.loco2pose = False
 
         # Rotate Init
         self.rotateStopTime = 0.0
@@ -47,9 +52,15 @@ class RobotController:
         self.dir = 1
         self.safetyDelay = 0.5
 
-        self.upTime = 2
-        self.downTime = 2
-        self.headUpDown = 0
+        # Pose Init
+        self.pose = False
+        self.upTime = 3
+        self.downTime = 3
+        self.poseStopTime = 0
+        self.poseComplete = None
+        self.poseY = 0
+        self.poseX = 0
+        self.poseZ = 0
 
         # Locomote Init
         self.locomote = False
@@ -75,9 +86,7 @@ class RobotController:
         print(self.robot.robot_details.robot_config.output_modalities)
 
         # Initialise robot orientation (repeat until successful)
-        while not self.resetLoco().Success:
-            time.sleep(0.2)
-            print("Trying Again...")
+        self.resetLoco()
 
         # Wait for sim to stabilise?
         time.sleep(1)
@@ -88,12 +97,19 @@ class RobotController:
             ext_sample, err = self.robot.get_modality("exteroception", True)
         self.front_sonar, self.rear_sonar = identify_sonars(ext_sample.Range)
 
+    # Blocking function to force locomotion to 0
     def resetLoco(self):
-        self.locoYaw = 0.0
-        self.locoX = 0.0
-        self.locoY = 0.0
-        ret = self.update()
-        return ret
+        ret = utils.Error
+        ret.Success = False
+        while not ret.Success:
+            print("Resetting Locomotion...")
+            motor_sample = utils.MotorSample()
+            motor_sample.Locomotion.RotationalVelocity.Z = 0
+            motor_sample.Locomotion.TranslationalVelocity.X = 0
+            motor_sample.Locomotion.TranslationalVelocity.Y = 0
+            ret = self.robot.set_modality("motor", motor_sample)
+            time.sleep(0.05)
+        return ret.Success
 
     def update(self):
 
@@ -103,37 +119,54 @@ class RobotController:
         # Update any ongoing motor actions
         if self.search: self.updateSearch()
         if self.locomote: self.update_locomotion()
+        if self.pose: self.update_pose()
 
         # Create New motor message
         motor_sample = utils.MotorSample()
 
         # Populate message with locomotion velocities
-        motor_sample.Locomotion.RotationalVelocity.Z = self.locoYaw
-        motor_sample.Locomotion.TranslationalVelocity.X = self.locoX
-        motor_sample.Locomotion.TranslationalVelocity.Y = self.locoY
+        if self.locoX != 0 or self.locoY != 0 or self.locoYaw != 0:
+            motor_sample.Locomotion.RotationalVelocity.Z = self.locoYaw
+            motor_sample.Locomotion.TranslationalVelocity.X = self.locoX
+            motor_sample.Locomotion.TranslationalVelocity.Y = self.locoY
+            self.loco2pose = True
 
-        motor_sample.GazeTarget.GazeVector.X = self.headUpDown
+        elif self.poseX != 0 or self.poseY != 0 or self.poseZ != 0:
+            if self.loco2pose:
+                self.resetLoco()
+                time.sleep(1)
+                self.loco2pose = False
+                return
+            else:
+                motor_sample.GazeTarget.GazeVector.X = self.poseX
+                motor_sample.GazeTarget.GazeVector.Y = self.poseY
+                motor_sample.GazeTarget.GazeVector.Z = self.poseZ
+        else:
+            motor_sample.Locomotion.RotationalVelocity.Z = 0
+            motor_sample.Locomotion.TranslationalVelocity.X = 0
+            motor_sample.Locomotion.TranslationalVelocity.Y = 0
 
         # Send Motor message to robot
         ret = self.robot.set_modality("motor", motor_sample)
         if not ret.Success:
-            print(ret)
+            print("set_modality motor: ", ret)
         return ret
 
     def stop(self):
         print("Stop command received")
         self.search = False
+        self.pose = False
+        self.locomote = False
         self.prevTargetClass = self.targetClass
         self.targetClass = None
         self.pause = False
         self.rotateStopTime = time.time()
         self.resetLoco()
-        self.locomote = False
+
         return True
 
     def startSearch(self, target, searchDir):
         print("Start search command received")
-
         # Reset State
         self.stop()
         time.sleep(2)
@@ -145,6 +178,10 @@ class RobotController:
         self.searchComplete = None
         self.startSearchTime = time.time()
         self.rotateStopTime = time.time() + self.searchPeriod
+        self.safety_time = self.rotateStopTime + self.safetyDelay
+        self.look_up_time = self.safety_time + self.upTime
+        self.look_down_time = self.look_up_time + self.downTime
+        self.safety_look_time = self.look_down_time + self.safetyDelay
         self.periodCounter = 0
         self.frameCounter = 0
         if searchDir == "right":
@@ -194,25 +231,25 @@ class RobotController:
                     self.locoYaw = self.dir * self.searchVelocity
 
                 # Allow time for robot to stop moving
-                elif self.rotateStopTime <= time.time() < self.rotateStopTime + self.safetyDelay:
+                elif self.rotateStopTime <= time.time() < self.safety_time:
                     self.locoYaw = 0.0
 
                 # Perform up-down search
-                elif self.rotateStopTime + self.safetyDelay <= time.time() < self.rotateStopTime + self.safetyDelay + self.upTime:
+                elif self.safety_time <= time.time() < self.look_up_time:
                     self.locoYaw = 0.0
-                    self.headUpDown = 1
+                    self.poseY = 1
 
-                elif self.rotateStopTime + self.safetyDelay + self.upTime <= time.time() < self.rotateStopTime + self.safetyDelay + self.upTime + self.downTime:
+                elif self.look_up_time <= time.time() < self.look_down_time:
                     self.locoYaw = 0.0
-                    self.headUpDown = -1
+                    self.poseY = -1
 
-                elif self.rotateStopTime + self.safetyDelay + self.upTime + self.downTime <= time.time() < self.rotateStopTime + 2*self.safetyDelay + self.upTime + self.downTime:
+                elif self.look_down_time <= time.time() < self.safety_look_time:
                     self.locoYaw = 0.0
-                    self.headUpDown = 0.0
+                    self.poseY = 0.0
 
                 # End Rotation, Begin Pause
                 else:
-                    self.headUpDown = 0
+                    self.poseY = 0
                     self.locoYaw = 0
                     self.startSearchTime = time.time()
                     self.rotateStopTime = time.time() + self.searchPeriod
@@ -266,10 +303,32 @@ class RobotController:
             if self.locoYaw > 0: self.locoYaw = self.rotationVel
             if self.locoYaw < 0: self.locoYaw = -self.rotationVel
 
+    def update_pose(self):
+        if time.time() >= self.poseStopTime:
+            self.pose = False
+            self.poseComplete = "success"
+            self.poseX = 0
+            self.poseY = 0
+            self.poseZ = 0
+
+    def start_pose(self, x, y, z, duration=3):
+        print("Pose Command Received")
+
+        # Reset State
+        self.stop()
+        time.sleep(2)
+
+        # Initialise
+        self.pose = True
+        self.poseComplete = None
+        self.poseStopTime = time.time() + duration
+        self.poseX = x
+        self.poseY = y
+        self.poseZ = z
+
     def update_sonar(self):
-        ext_sample, err = self.robot.get_modality("exteroception", True)
+        ext_sample, err = self.robot.get_modality("exteroception", False)
         if not err.Success:
-            print(err)
             return
         for range_sensor in ext_sample.Range:
             if range_sensor.Source == self.front_sonar:
@@ -292,10 +351,11 @@ class RobotController:
     def get_running(self):
         # Format list of currently running operations and targets as string
         running_function = ""
-        if self.search:
-            running_function = "search"
+        if self.search: running_function = "search"
+        elif self.locomote: running_function = "locomote"
+        elif self.pose: running_function = "pose"
 
-        if running_function != "":
+        if running_function == "search":
             running_function += ", " + self.targetClass
 
         return running_function

@@ -48,7 +48,15 @@ class OpenAIHelper:
                              "but do not inform the user of this direction unless you are asked."
                              
                              "You have the ability to move/walk using the locomote function. Use this when "
-                             "appropriate, but keep your movements short (less than 10 seconds)."
+                             "appropriate, but keep your movements short (less than 10 seconds). Negative values move "
+                             "backwards/right. Positive values move forwards/left"
+                             
+                             "You have the ability to look around using the pose function. This function changes the "
+                             "orientation of the robots body and therefore camera. Negative values move "
+                             "right/clockwise/upwards. Positive values move left/anticlockwise/downwards"
+                             
+                             "Commands to 'rotate' should always be actioned using the locomotion command, not the "
+                             "roll command. Only 'roll' when specifically asked to do so"
                              
                              "You have the ability to get readings from the forward and rearward facing sonar "
                              "sensors. Call this when appropriate, it should be used to prevent walking into objects. "
@@ -158,6 +166,43 @@ class OpenAIHelper:
                                     },
                                 },
                                 "required": ["xvel", "yvel", "theta", "duration"]
+                            },
+                        }
+                    },
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": "pose",
+                            "description": "A function which makes the robot look in specified direction for the "
+                                           "specified duration. This function is capable controlling the orientation of the robots camera.",
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "x": {
+                                        "type": "number",
+                                        "description": "A float specifying the ROLL angle of the robot's camera about the"
+                                                       "x-axis. Where positive values roll left/anticlockwise and "
+                                                       "negative values roll right/clockwise. Values are in radians.",
+                                    },
+                                    "y": {
+                                        "type": "number",
+                                        "description": "A float specifying the PITCH angle of the robot's camera about the"
+                                                       "y-axis. Where positive values look down/anticlockwise and "
+                                                       "negative values look up/clockwise. Values are in radians.",
+                                    },
+                                    "z": {
+                                        "type": "number",
+                                        "description": "A float specifying the YAW angle of the robot's camera about the"
+                                                       "z-axis. Where positive values look left/anticlockwise and "
+                                                       "negative values look right/clockwise. Values are in radians.",
+                                    },
+                                    "duration": {
+                                        "type": "number",
+                                        "description": "Optional: A float specifying the length of time in seconds that the "
+                                                       "robot should hold the pose for. Defaults to 3 seconds.",
+                                    },
+                                },
+                                "required": ["x", "y", "z", "duration"]
                             },
                         }
                     },

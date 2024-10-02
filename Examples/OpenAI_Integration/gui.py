@@ -25,9 +25,13 @@ class GUI:
         self.button_frame = None
         self.entry_frame = None
         self.api_frame = None
+
+        # Create a BooleanVar to store the checkbox state
+        self.show_tool_call_requests = tk.BooleanVar(value=False)
+
         self.master = master
         self.master.title("BOW >< OpenAI")
-        self.master.geometry("1700x880")
+        self.master.geometry("1700x810")
         self.master.configure(bg="#656665")  # Updated background color to WHITE
 
         self.controller = controller
@@ -73,43 +77,52 @@ class GUI:
         style = ttk.Style()
         style.configure("BW.TLabel", background="#656665", foreground="#000000")  # WHITE background, BLACK text
 
-        # Create a frame for the OpenCV image
-        self.image_frame = ttk.Frame(self.master, style="BW.TLabel")
-        self.image_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10, expand=True)
+        # # Create a frame for the OpenCV image
+        # self.image_frame = ttk.Frame(self.master, style="BW.TLabel")
+        # self.image_frame.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH, anchor=tk.N)
 
         # Create a label for the image window
-        self.image_label = ttk.Label(self.image_frame, style="BW.TLabel")
-        self.image_label.pack(fill=tk.BOTH, expand=True)
-
-        # Create the Stop button and place it under the image
-        self.StopButton = ttk.Button(self.image_frame, text="STOP", command=self.StopButton_click, style="Stop.TButton")
-        self.StopButton.pack(side=tk.TOP, pady=20)
+        self.image_label = ttk.Label(self.master, style="BW.TLabel")
+        self.image_label.pack(side=tk.LEFT, padx=10, pady=10, expand=True, anchor=tk.N)  # Ensure the image stays at the top
 
         # Create a frame for text output
         self.text_frame = ttk.Frame(self.master, style="BW.TLabel")
-        self.text_frame.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH, expand=True)
+        self.text_frame.pack(side=tk.LEFT, padx=10, pady=5, fill=tk.BOTH, anchor=tk.N)
 
         # Create a text output box
-        self.output_text = tk.Text(self.text_frame, height=20, width=80, bg="#000000", fg="#FFFFFF",  # Light GREY background, BLACK text
-                                   insertbackground="#000000", highlightbackground="#F0F0F0", highlightcolor="#EBE726",  # YELLOW cursor and highlights
+        self.output_text = tk.Text(self.text_frame, height=17, width=80, bg="#000000", fg="#FFFFFF",
+                                   insertbackground="#000000", highlightbackground="#F0F0F0", highlightcolor="#EBE726",
                                    font=("Arial", 18), wrap=tk.WORD)
-        self.output_text.pack(side=tk.TOP, pady=5, fill=tk.BOTH, expand=True)
+        self.output_text.pack(side=tk.TOP, pady=5, fill=tk.BOTH, anchor=tk.N, expand=True)
+
         if self.api_key is not None and self.ass_id is None:
             self.output_text.insert(tk.END, "OpenAI Key found. ", "system")
             self.list_assistants()
 
         # Create a frame for text input and buttons
         self.input_button_frame = ttk.Frame(self.text_frame, style="BW.TLabel")
-        self.input_button_frame.pack(side=tk.BOTTOM, pady=5, fill=tk.BOTH, expand=True)
+        self.input_button_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=0)
 
         # Create a text input box with word wrapping
-        self.input_text = tk.Text(self.input_button_frame, height=4, width=50, font=("Arial", 18), wrap=tk.WORD, bg="#FFFFFF", fg="#000000", highlightcolor="#EBE726")  # WHITE background, BLACK text
-        self.input_text.pack(side=tk.TOP, pady=5, fill=tk.X)
+        self.input_text = tk.Text(self.input_button_frame, height=4, width=50, font=("Arial", 18), wrap=tk.WORD,
+                                  bg="#FFFFFF", fg="#000000", highlightcolor="#EBE726")  # WHITE background, BLACK text
+        self.input_text.pack(side=tk.TOP, fill=tk.X, pady=0, anchor ="n")
         self.input_text.bind("<Return>", lambda event: self.SendButton.invoke())
 
-        # Create the Send button and place it under the input text box
-        self.SendButton = ttk.Button(self.input_button_frame, text="Send", command=self.SendButton_click, style="TButton")
-        self.SendButton.pack(side=tk.TOP, pady=5)
+        # Create the Send button and pack it next to the Stop button
+        self.SendButton = ttk.Button(self.input_button_frame, text="Send", command=self.SendButton_click,
+                                     style="TButton")
+        self.SendButton.pack(side=tk.LEFT, anchor="n", pady=5)  # Send button to the right of Stop button
+
+        # Create the Stop button and pack it
+        self.StopButton = ttk.Button(self.input_button_frame, text="Stop Robot", command=self.StopButton_click,
+                                     style="Stop.TButton")
+        self.StopButton.pack(side=tk.LEFT, padx=5, pady=5, anchor="n")  # Stop button to the left
+
+        # Create the Checkbutton to show tool call requests, and pack it to the right of the Stop button
+        self.show_tool_checkbox = ttk.Checkbutton(self.input_button_frame, text="Show tool call requests",
+                                                  variable=self.show_tool_call_requests, style="CustomCheckbutton.TCheckbutton")
+        self.show_tool_checkbox.pack(side=tk.LEFT, padx=5, pady=5, anchor="n")  # Add checkbox to the right
 
         # Set button styles using branding colors
         self.style = ttk.Style()
@@ -121,6 +134,10 @@ class GUI:
                              font=("Proxima Nova Medium", 10), width=12)
         self.style.configure("Stop.TButton", foreground="#000000", background="#F36C24",  # YELLOW button
                              font=("Proxima Nova Bold", 18, "bold"), width=10)
+        style.configure("CustomCheckbutton.TCheckbutton", background="#656665", foreground="black")
+        style.map('CustomCheckbutton.TCheckbutton',
+                  background=[('selected', '#656665')],  # You can also adjust the background color here
+                  indicatorcolor=[('selected', '#97C93D')])  # Color of the checkbox when selected
         self.output_text.tag_config("user", foreground="#97C93D")  # GREEN text for user
         self.output_text.tag_config("system", foreground="#939799", font=("Arial", 12, "italic"))  # GREY text for system
 
@@ -198,6 +215,7 @@ class GUI:
             self.master.update()
 
     def list_assistants(self):
+        self.output_text.delete("1.0", tk.END)
         print("Listing assistants...")
         # Get the API key from the entry box and process it
         if self.api_key is None:
@@ -243,6 +261,8 @@ class GUI:
         dotenv.load_dotenv(self.env_file)
         print(f"File '{self.env_file}' created and populated.")
         print("Assistant selected!")
+        self.output_text.delete("1.0", tk.END)
+        self.output_text.insert(tk.END, "\n Assistant Selected!", "system")
 
     def delete_assistant(self):
         ass_id = self.api_key_entry.get()
@@ -309,14 +329,20 @@ async def main():
         # Test for completed functions and relay results to openai assistant as "assistant" messages
         if controller.searchComplete is not None:
             if controller.searchComplete == "success":
-                brain.request("Search Successful", "assistant", gui)
+                await brain.request("Search Successful", "assistant", gui)
             elif controller.searchComplete == "failure":
-                brain.request("Search Failed", "assistant", gui)
+                await brain.request("Search Failed", "assistant", gui)
             controller.searchComplete = None
 
         if controller.locomoteComplete is not None:
             if controller.locomoteComplete == "success":
-                brain.request("Locomote Complete", "assistant", gui)
+                await brain.request("Locomote Complete", "assistant", gui)
+            controller.locomoteComplete = None
+
+        if controller.poseComplete is not None:
+            if controller.poseComplete == "success":
+                await brain.request("Pose Complete", "assistant", gui)
+            controller.poseComplete = None
 
         # Get camera images from BOW robot
         image_list, err = controller.robot.get_modality("vision", False)

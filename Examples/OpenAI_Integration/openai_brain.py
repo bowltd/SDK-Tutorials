@@ -62,11 +62,17 @@ class EventHandler(AsyncAssistantEventHandler):
                 output = self.brain.robot_controller.retrieve_items()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": output})
                 print("\n", "OpenAI Assistant - retrieveItems tool call requested: ", tool_call.id)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: retrieveItems()\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
             elif tool_call.function.name == "retrieveSonar":
                 output = self.brain.robot_controller.retrieve_sonar()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": output})
                 print("\n", "OpenAI Assistant - retrieveSonar tool call requested: ", tool_call.id)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: retrieveSonar()\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
             elif tool_call.function.name == "search":
                 parsed_data = json.loads(tool_call.function.arguments)
@@ -74,7 +80,10 @@ class EventHandler(AsyncAssistantEventHandler):
                 direction = parsed_data['direction']
                 output = self.brain.robot_controller.startSearch(target, direction)
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
-                print("\n", "OpenAI Assistant - search tool call requested: ", tool_call.id)
+                print("\n", "OpenAI Assistant - search tool call requested: ", tool_call.id, "with arguments: ", tool_call.function.arguments)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: startSearch(" + tool_call.function.arguments + ")\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
             elif tool_call.function.name == "locomote":
                 parsed_data = json.loads(tool_call.function.arguments)
@@ -87,17 +96,45 @@ class EventHandler(AsyncAssistantEventHandler):
                 else:
                     output = self.brain.robot_controller.start_locomotion(xvel, yvel, theta, dur)
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
-                print("\n", "OpenAI Assistant - locomote tool call requested: ", tool_call.id)
+                print("\n", "OpenAI Assistant - locomote tool call requested: ", tool_call.id, "with arguments: ", tool_call.function.arguments)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: startLocomote(" + tool_call.function.arguments + ")\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
+
+            elif tool_call.function.name == "pose":
+                parsed_data = json.loads(tool_call.function.arguments)
+                x = float(parsed_data['x'])
+                y = float(parsed_data['y'])
+                z = float(parsed_data['z'])
+                try:
+                    dur = float(parsed_data['duration'])
+                except KeyError:
+                    dur = None
+                if dur is None:
+                    output = self.brain.robot_controller.start_pose(x, y, z)
+                else:
+                    output = self.brain.robot_controller.start_pose(x, y, z, dur)
+                tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
+                print("\n", "OpenAI Assistant - pose tool call requested: ", tool_call.id, "with arguments: ", tool_call.function.arguments)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: startPose(" + tool_call.function.arguments + ")\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
             elif tool_call.function.name == "stop":
                 output = self.brain.robot_controller.stop()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": str(output)})
                 print("\n", "OpenAI Assistant - stop tool call requested: ", tool_call.id)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: stop()\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
             elif tool_call.function.name == "getRunning":
                 output = self.brain.robot_controller.get_running()
                 tool_outputs.append({"tool_call_id": tool_call.id, "output": output})
                 print("\n", "OpenAI Assistant - getRunning tool call requested: ", tool_call.id)
+                if self.gui.show_tool_call_requests.get():
+                    log = "\nFunction Call Requested: getRunningFunctions()\n"
+                    self.gui.output_text.insert(tkinter.END, log, "system")
 
         # Submit all tool_outputs at the same time
         await self.submit_tool_outputs(tool_outputs)
