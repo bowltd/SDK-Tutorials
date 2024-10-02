@@ -318,9 +318,9 @@ class RobotController:
         self.pose = True
         self.poseComplete = None
         self.poseStopTime = time.time() + duration
-        self.poseX = x
+        self.poseX = z
         self.poseY = y
-        self.poseZ = z
+        self.poseZ = x
 
     def update_sonar(self):
         ext_sample, err = self.robot.get_modality("exteroception", False)
