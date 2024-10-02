@@ -50,7 +50,7 @@ class RobotController:
         self.rotateStopTime = 0.0
         self.locoYaw = 0.0
         self.dir = 1
-        self.safetyDelay = 0.5
+        self.safetyDelay = 2
 
         # Pose Init
         self.pose = False
@@ -263,6 +263,10 @@ class RobotController:
                     self.startSearchTime = time.time()
                     self.prevTime = 0
                     self.rotateStopTime = time.time() + self.searchPeriod
+                    self.safety_time = self.rotateStopTime + self.safetyDelay
+                    self.look_up_time = self.safety_time + self.upTime
+                    self.look_down_time = self.look_up_time + self.downTime
+                    self.safety_look_time = self.look_down_time + self.safetyDelay
                     self.periodCounter += 1
 
     def start_locomotion(self, xvel, yvel, theta, duration=3):
@@ -288,16 +292,8 @@ class RobotController:
             self.locoY = 0
             self.locoYaw = 0.0
         else:
-            if self.sonar_data[0] > 0.4:
-                if self.locoX > 0: self.locoX = self.linearVel
-            else:
-                self.locoX = 0
-
-            if self.sonar_data[1] > 0.4:
-                if self.locoX < 0: self.locoX = -self.linearVel
-            else:
-                self.locoX = 0
-
+            if self.locoX > 0: self.locoX = self.linearVel
+            if self.locoX < 0: self.locoX = -self.linearVel
             if self.locoY > 0: self.locoY = self.linearVel
             if self.locoY < 0: self.locoY = -self.linearVel
             if self.locoYaw > 0: self.locoYaw = self.rotationVel
