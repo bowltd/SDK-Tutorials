@@ -7,7 +7,7 @@ import logging
 
 class RobotController:
     def __init__(self):
-        self.log = utils.create_logger("BOW >< OpenAI", logging.INFO)
+        self.log = utils.create_logger("BOW x OpenAI", logging.INFO)
         self.log.info(bow.version())
         self.audio_params = utils.AudioParams(
             Backends=["alsa"],

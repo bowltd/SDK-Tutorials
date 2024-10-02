@@ -4,3 +4,4 @@ openai
 pygments
 imutils
 bow_client
+python-dotenv
