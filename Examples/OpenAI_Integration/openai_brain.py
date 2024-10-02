@@ -5,6 +5,7 @@ import tkinter
 
 from openai import AsyncOpenAI
 from openai.types.beta.threads import Message
+from openai.types.beta.threads.runs import RunStep, ToolCall
 from typing_extensions import override
 from openai import AsyncAssistantEventHandler
 

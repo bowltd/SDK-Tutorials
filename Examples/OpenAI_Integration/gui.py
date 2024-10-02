@@ -1,6 +1,7 @@
 import asyncio
 import math
 import os
+import time
 from pathlib import Path
 
 import dotenv
@@ -327,22 +328,36 @@ async def main():
     # Main loop
     while True:
         # Test for completed functions and relay results to openai assistant as "assistant" messages
+        message = None
         if controller.searchComplete is not None:
             if controller.searchComplete == "success":
-                await brain.request("Search Successful", "assistant", gui)
+                message = "Search Successful"
             elif controller.searchComplete == "failure":
-                await brain.request("Search Failed", "assistant", gui)
+                message = "Search Failed"
             controller.searchComplete = None
 
         if controller.locomoteComplete is not None:
             if controller.locomoteComplete == "success":
-                await brain.request("Locomote Complete", "assistant", gui)
+                message = "Locomote Complete"
             controller.locomoteComplete = None
 
         if controller.poseComplete is not None:
             if controller.poseComplete == "success":
-                await brain.request("Pose Complete", "assistant", gui)
+                message = "Pose Complete"
             controller.poseComplete = None
+
+        if message is not None:
+            report_back = False
+            while not report_back:
+                try:
+                    await brain.request(message, "assistant", gui)
+                except openai.BadRequestError as e:
+                    if e.type == "invalid_request_error":
+                        report_back = False
+                else:
+                    report_back = True
+                    break
+                time.sleep(0.05)
 
         # Get camera images from BOW robot
         image_list, err = controller.robot.get_modality("vision", False)
