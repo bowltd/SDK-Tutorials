@@ -1,4 +1,4 @@
-# Step 2 Sensing and Acting
+# Sensing and Acting
 
 To view the tutorial,
 head to our [write-up](https://docs.bow.software/tutorials/tutorials/basics/step-2-sensing-acting) otherwise feel
