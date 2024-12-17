@@ -24,7 +24,7 @@ def SendObjective(robots, effectors, x, y, z):
         objective_command.PoseTarget.TargetScheduleType = utils.PoseTarget.SchedulerEnum.INSTANTANEOUS
 
         objective_command.PoseTarget.LocalObjectiveWeights.Position = 1
-        objective_command.PoseTarget.LocalObjectiveWeights.Position = 0
+        objective_command.PoseTarget.LocalObjectiveWeights.Orientation = 0
 
         objective_command.PoseTarget.Transform.Position.X = x
         objective_command.PoseTarget.Transform.Position.Y = y
@@ -145,8 +145,11 @@ for robot in robots:
 circle_radius = 0.2
 circleHeight = 0.3
 stepSize = 0.05
+repeatCountLim = 10 # Number of repetitions of the loop
 
-while True:
+# Create and send movement coordinates
+repeatCount = 0
+while repeatCount < repeatCountLim:
     angle = 0.0
     while angle <= 2 * math.pi:
         x = circle_radius * math.cos(angle)
@@ -156,4 +159,5 @@ while True:
         SendObjective(robots, effectors, x, y, z)
 
         angle += stepSize
-        time.sleep(0.2)
+        time.sleep(stepSize)
+    repeatCount += 1
