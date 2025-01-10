@@ -1,8 +1,22 @@
 #include "display.h"
 
+class myDisplay : public Display { 
+public:
+    void SetCurrentJoint(void){
+        /* BASED ON FOLLOWING PYTHON
+        motorSample = bow_utils.MotorSample()
+        motorSample.ControlMode = bow_utils.MotorSample.USE_DIRECT_JOINTS
+        joint = self.list[self.listIndex]
+        motorSample.RawJoints.append(bow_utils.Joint(Name=joint.Name, Position=joint.Value))
+        Robot.set_modality("motor", motorSample)
+        time.sleep(0.03)
+        */
+    }
+};
+
 int main(void) {
 
-    Display display;
+    myDisplay display;
     std::vector<DisplayInfo> list;
     list.push_back(DisplayInfo("heads",0.0,1.0,0.5));
     list.push_back(DisplayInfo("shoulders",0.0,1.0,0.75));
