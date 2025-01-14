@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+0#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Bettering Our Worlds (BOW) Ltd.
 # All Rights Reserved
@@ -161,3 +161,8 @@ while repeatCount < repeatCountLim:
         angle += stepSize
         time.sleep(stepSize)
     repeatCount += 1
+
+# Properly disconnect
+for robot in robots:
+    robot.disconnect()  # Disconnect from the robot
+bow.close_client_interface()
