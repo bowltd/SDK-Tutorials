@@ -1,0 +1,390 @@
+Build output check failed:
+    Regex: 'argument .* is not valid'
+    Output line: 'cc1: warning: ‘-Werror=’ argument ‘-Werror=non-virtual-dtor’ is not valid for C'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type  -Werror=non-virtual-dtor'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_cbe31/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_cbe31.dir/build.make CMakeFiles/cmTC_cbe31.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_cbe31.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type  -Werror=non-virtual-dtor -o CMakeFiles/cmTC_cbe31.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: ‘-Werror=’ argument ‘-Werror=non-virtual-dtor’ is not valid for C
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking C executable cmTC_cbe31
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cbe31.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_cbe31.dir/src.c.o -o cmTC_cbe31 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command-line option ‘-Wmissing-prototypes’ is valid for C/ObjC but not for C++'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wmissing-prototypes'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_54ad8/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_54ad8.dir/build.make CMakeFiles/cmTC_54ad8.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_54ad8.dir/src.cxx.o
+/usr/bin/c++   -O3 -DNDEBUG -std=c++11 -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wmissing-prototypes -o CMakeFiles/cmTC_54ad8.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command-line option ‘-Wmissing-prototypes’ is valid for C/ObjC but not for C++
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking CXX executable cmTC_54ad8
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_54ad8.dir/link.txt --verbose=1
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/cmTC_54ad8.dir/src.cxx.o -o cmTC_54ad8 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command-line option ‘-Wstrict-prototypes’ is valid for C/ObjC but not for C++'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wstrict-prototypes'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_b446b/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_b446b.dir/build.make CMakeFiles/cmTC_b446b.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_b446b.dir/src.cxx.o
+/usr/bin/c++   -O3 -DNDEBUG -std=c++11 -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations  -Wstrict-prototypes -o CMakeFiles/cmTC_b446b.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command-line option ‘-Wstrict-prototypes’ is valid for C/ObjC but not for C++
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking CXX executable cmTC_b446b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b446b.dir/link.txt --verbose=1
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/cmTC_b446b.dir/src.cxx.o -o cmTC_b446b 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command-line option ‘-Wsign-promo’ is valid for C++/ObjC++ but not for C'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow  -Wsign-promo'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_93db9/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_93db9.dir/build.make CMakeFiles/cmTC_93db9.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_93db9.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow  -Wsign-promo -o CMakeFiles/cmTC_93db9.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command-line option ‘-Wsign-promo’ is valid for C++/ObjC++ but not for C
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking C executable cmTC_93db9
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_93db9.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_93db9.dir/src.c.o -o cmTC_93db9 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command-line option ‘-Wsuggest-override’ is valid for C++/ObjC++ but not for C'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wsuggest-override'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4df9f/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_4df9f.dir/build.make CMakeFiles/cmTC_4df9f.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4df9f.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wsuggest-override -o CMakeFiles/cmTC_4df9f.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command-line option ‘-Wsuggest-override’ is valid for C++/ObjC++ but not for C
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking C executable cmTC_4df9f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4df9f.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_4df9f.dir/src.c.o -o cmTC_4df9f 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command-line option ‘-Wno-delete-non-virtual-dtor’ is valid for C++/ObjC++ but not for C'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wno-delete-non-virtual-dtor'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_ede32/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_ede32.dir/build.make CMakeFiles/cmTC_ede32.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ede32.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wno-delete-non-virtual-dtor -o CMakeFiles/cmTC_ede32.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command-line option ‘-Wno-delete-non-virtual-dtor’ is valid for C++/ObjC++ but not for C
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking C executable cmTC_ede32
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ede32.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_ede32.dir/src.c.o -o cmTC_ede32 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-unnamed-type-template-args’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor  -Wno-unnamed-type-template-args'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_7ef4f/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_7ef4f.dir/build.make CMakeFiles/cmTC_7ef4f.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_7ef4f.dir/src.cxx.o
+/usr/bin/c++   -O3 -DNDEBUG -std=c++11 -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor  -Wno-unnamed-type-template-args -o CMakeFiles/cmTC_7ef4f.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-unnamed-type-template-args’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_7ef4f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7ef4f.dir/link.txt --verbose=1
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/cmTC_7ef4f.dir/src.cxx.o -o cmTC_7ef4f 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1: note: unrecognized command-line option ‘-Wno-unnamed-type-template-args’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wno-unnamed-type-template-args'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_29fbb/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_29fbb.dir/build.make CMakeFiles/cmTC_29fbb.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_29fbb.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized  -Wno-unnamed-type-template-args -o CMakeFiles/cmTC_29fbb.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1: note: unrecognized command-line option ‘-Wno-unnamed-type-template-args’ may have been intended to silence earlier diagnostics
+Linking C executable cmTC_29fbb
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_29fbb.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_29fbb.dir/src.c.o -o cmTC_29fbb 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C'
+    Output line: 'cc1: warning: command-line option ‘-fvisibility-inlines-hidden’ is valid for C++/ObjC++ but not for C'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c'
+    check option: ' -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -fvisibility-inlines-hidden'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e591e/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_e591e.dir/build.make CMakeFiles/cmTC_e591e.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_e591e.dir/src.c.o
+/usr/bin/cc   -O3 -DNDEBUG -fPIE    -fsigned-char -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden  -fvisibility-inlines-hidden -o CMakeFiles/cmTC_e591e.dir/src.c.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c
+cc1: warning: command-line option ‘-fvisibility-inlines-hidden’ is valid for C++/ObjC++ but not for C
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.c:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking C executable cmTC_e591e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e591e.dir/link.txt --verbose=1
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/cmTC_e591e.dir/src.c.o -o cmTC_e591e 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-inconsistent-missing-override’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-inconsistent-missing-override'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_cb37d/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_cb37d.dir/build.make CMakeFiles/cmTC_cb37d.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_cb37d.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-inconsistent-missing-override -o CMakeFiles/cmTC_cb37d.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-inconsistent-missing-override’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_cb37d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cb37d.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_cb37d.dir/src.cxx.o -o cmTC_cb37d 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'command[- ]line option .* is valid for .* but not for C\+\+'
+    Output line: 'cc1plus: warning: command-line option ‘-Wno-missing-prototypes’ is valid for C/ObjC but not for C++'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-missing-prototypes'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4c512/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_4c512.dir/build.make CMakeFiles/cmTC_4c512.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4c512.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override -Wno-implicit-fallthrough -Wno-tautological-compare  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-missing-prototypes -o CMakeFiles/cmTC_4c512.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+cc1plus: warning: command-line option ‘-Wno-missing-prototypes’ is valid for C/ObjC but not for C++
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+Linking CXX executable cmTC_4c512
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4c512.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override -Wno-implicit-fallthrough -Wno-tautological-compare  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_4c512.dir/src.cxx.o -o cmTC_4c512 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-implicit-const-int-float-conversion’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-implicit-const-int-float-conversion'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_ecc2f/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_ecc2f.dir/build.make CMakeFiles/cmTC_ecc2f.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ecc2f.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override -Wno-implicit-fallthrough -Wno-tautological-compare -Wno-reorder -Wno-unused-result  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-implicit-const-int-float-conversion -o CMakeFiles/cmTC_ecc2f.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-implicit-const-int-float-conversion’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_ecc2f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ecc2f.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wsign-promo -Wno-delete-non-virtual-dtor -Wno-comment -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-shadow -Wno-unused -Wno-sign-compare -Wno-undef -Wno-missing-declarations -Wno-uninitialized -Wno-switch -Wno-parentheses -Wno-array-bounds -Wno-extra -Wno-deprecated-declarations -Wno-misleading-indentation -Wno-deprecated -Wno-suggest-override -Wno-implicit-fallthrough -Wno-tautological-compare -Wno-reorder -Wno-unused-result  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_ecc2f.dir/src.cxx.o -o cmTC_ecc2f 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-tautological-undefined-compare’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-tautological-undefined-compare'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_01569/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_01569.dir/build.make CMakeFiles/cmTC_01569.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_01569.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-tautological-undefined-compare -o CMakeFiles/cmTC_01569.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-tautological-undefined-compare’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_01569
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_01569.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_01569.dir/src.cxx.o -o cmTC_01569 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-shorten-64-to-32’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-shorten-64-to-32'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4c464/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_4c464.dir/build.make CMakeFiles/cmTC_4c464.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4c464.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-unused-const-variable  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-shorten-64-to-32 -o CMakeFiles/cmTC_4c464.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-shorten-64-to-32’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_4c464
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4c464.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-unused-const-variable  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_4c464.dir/src.cxx.o -o cmTC_4c464 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
+Build output check failed:
+    Regex: 'unrecognized .*option'
+    Output line: 'cc1plus: note: unrecognized command-line option ‘-Wno-enum-compare-switch’ may have been intended to silence earlier diagnostics'
+Compilation failed:
+    source file: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx'
+    check option: ' -Wno-enum-compare-switch'
+===== BUILD LOG =====
+Change Dir: '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_846e7/fast
+/usr/bin/gmake  -f CMakeFiles/cmTC_846e7.dir/build.make CMakeFiles/cmTC_846e7.dir/build
+gmake[1]: Entering directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_846e7.dir/src.cxx.o
+/usr/bin/c++   -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-unused-const-variable -Wno-invalid-offsetof  -O3 -DNDEBUG  -DNDEBUG -std=c++11 -fPIE    -Wno-enum-compare-switch -o CMakeFiles/cmTC_846e7.dir/src.cxx.o -c /home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx
+/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp/src.cxx:1: warning: ignoring ‘#pragma  ’ [-Wunknown-pragmas]
+    1 | #pragma
+      | 
+cc1plus: note: unrecognized command-line option ‘-Wno-enum-compare-switch’ may have been intended to silence earlier diagnostics
+Linking CXX executable cmTC_846e7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_846e7.dir/link.txt --verbose=1
+/usr/bin/c++    -fsigned-char -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Winit-self -Wpointer-arith -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -fvisibility=hidden -fvisibility-inlines-hidden -Wno-deprecated -Wno-missing-declarations -Wno-shadow -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-sign-compare -Wno-sign-promo -Wno-undef -Wno-ignored-qualifiers -Wno-extra -Wno-unused-function -Wno-unused-const-variable -Wno-invalid-offsetof  -O3 -DNDEBUG  -DNDEBUG   -Wl,--gc-sections -Wl,--as-needed  CMakeFiles/cmTC_846e7.dir/src.cxx.o -o cmTC_846e7 
+gmake[1]: Leaving directory '/home/stuart/Projects/BOW/SDK-Tutorials/Tutorials/basics/Step_0_Dependencies/C++/Linux/opencv/build/CMakeFiles/CMakeTmp'
+
+
+===== END =====
+
