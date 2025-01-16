@@ -30,7 +30,7 @@ class Program{
         Console.WriteLine(BowClient.Version());
         List<string> modalities = new List<string>() { "proprioception", "motor" };
         Error quickConnectError;
-        var myRobot = BowClient.QuickConnect("BOW Tutorial", modalities, out quickConnectError);
+        var myRobot = BowClient.QuickConnect("BOW Tutorial", modalities, false, out quickConnectError);
         if (myRobot == null){
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
             System.Environment.Exit(1);
