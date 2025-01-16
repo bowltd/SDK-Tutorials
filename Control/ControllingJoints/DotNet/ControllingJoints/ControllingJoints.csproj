@@ -11,4 +11,8 @@
     <ProjectReference Include="../dotnet-curses/dotnet-curses.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="BOW.SDK.CoreTest" Version="0.1.1.355" />
+  </ItemGroup>
+
 </Project>

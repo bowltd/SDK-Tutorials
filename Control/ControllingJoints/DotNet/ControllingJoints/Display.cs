@@ -23,7 +23,6 @@ class DisplayInfo {
     	return value.Length <= length ? value : value.Substring(0, length);
     }
 
-
     public string GetBar(int length){
         float prop = (Value - ValueMin) / (ValueMax - ValueMin);
         int j = (int)Math.Round(prop * (length-1));
@@ -115,7 +114,7 @@ class Display{
         NCurses.EndWin();
 	}
 
-	public void SetCurrentJoint(){
+	public virtual void SetCurrentJoint(){
         return;
     }
 }
