@@ -1,3 +1,0 @@
-/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug/CMakeFiles/bow_ext_sonar.dir
-/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/george/lib/UneditedTutorials/SDK-Tutorials/Exteroception - Sonar/C++/cmake-build-debug/CMakeFiles/rebuild_cache.dir
