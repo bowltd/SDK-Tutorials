@@ -2,9 +2,10 @@
 cmake_minimum_required(VERSION 3.5...3.27)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(OpenCV_DIR ${OpenCV_DIR})
 
 # Projectenviu
-project(BOWApp)
+project(main)
 
 # Ensure BOW_ROOT environment variable is set
 if(BOW_ROOT)
@@ -21,9 +22,12 @@ endif()
 list(APPEND CMAKE_PREFIX_PATH "${BOW_ROOT_FINAL}")
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
+# Find the OpenCV package
+find_package(OpenCV REQUIRED)
+
 # Find the BOW_SDK package
 find_package(BOW_SDK REQUIRED)
-find_package(OpenCV REQUIRED)
+
 
 # Collect application source files
 file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
@@ -34,6 +38,9 @@ include_directories(
     ${BOW_SDK_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 )
+
+# Additional Library Directories
+#link_directories( ${OpenCV_LIB_DIR} )
 
 if(MSVC)
     foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
@@ -56,9 +63,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_link_options(${PROJECT_NAME} PRIVATE "/IGNORE:4098") # Ignore the runtime mismatch warning
 endif()
 
-set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
-
-
 # Link SDK libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${OpenCV_LIBS})
 
@@ -68,7 +72,3 @@ copy_animus_dll(${PROJECT_NAME})
 # Install the application executable and the DLL
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(FILES ${BOW_SDK_DLL_PATH} DESTINATION bin)
-
-
-
-#target_include_directories(bow_tutorial_1 PUBLIC ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include ${BOW_PROTO_DIR})
