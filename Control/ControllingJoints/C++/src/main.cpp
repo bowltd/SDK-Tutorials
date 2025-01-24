@@ -14,7 +14,7 @@ public:
     }
 };
 
-int main(void) {
+int main(int argc, char *argv[]) {
 
     myDisplay display;
     std::vector<DisplayInfo> list;
