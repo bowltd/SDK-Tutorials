@@ -1,81 +1,74 @@
-cmake_minimum_required(VERSION 3.10)
-project(bow_ext_sonar)
+# Minimum CMake required
+cmake_minimum_required(VERSION 3.5...3.27)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(OpenCV_DIR ${OpenCV_DIR})
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../Step_0_Dependencies/install/lib/cmake/opencv4/)
-# Depending on the platform, different libraries will be needed
-if(WIN32)
-    set(BOW_INCLUDE_ROOT /usr/local/include/bow_client)
-    set(BOW_LIB_DIR /usr/local/lib/bow/)
+# Projectenviu
+project(main)
 
-    set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} -lm -pthread -lws2_32 -lbcrypt -lole32 -lstrmiids -lmfuuid -lmfplat -lmf")
-    file(GLOB ABSL "${BOW_LIB_DIR}/lib_win/libabsl*")
-    set(BOW_LIBS
-            "${BOW_LIB_DIR}/libbow_client.dll"
-            "${BOW_LIB_DIR}/animus_client.dll"
-            "${BOW_LIB_DIR}/libprotobuf.dll"
-            "${BOW_LIB_DIR}/libwinpthread-1.dll"
-            ${ABSL}
-    )
-elseif(UNIX AND NOT APPLE)
-    set(BOW_INCLUDE_ROOT /usr/local/include/bow_client)
-    set(BOW_LIB_DIR /usr/local/lib/bow/)
-
-    set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} -lm -pthread")
-    file(GLOB ABSL "${BOW_LIB_DIR}/lib*")
-    set(BOW_LIBS
-            "${BOW_LIB_DIR}/libbow_client.so"
-            "${BOW_LIB_DIR}/libanimus_client.so"
-            "${BOW_LIB_DIR}/libprotobuf.so"
-            ${ABSL}
-    )
-elseif(APPLE)
-    set(BOW_INCLUDE_ROOT /usr/local/include/bow_client)
-    set(BOW_LIB_DIR /usr/local/lib/bow/)
-
-    set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} -lm -pthread")
-    file(GLOB ABSL "${BOW_LIB_DIR}/lib*")
-    set(BOW_LIBS
-            "${BOW_LIB_DIR}/libbow_client.so"
-            "${BOW_LIB_DIR}/libanimus_client.so"
-            "${BOW_LIB_DIR}/libprotobuf.so"
-            ${ABSL}
-    )
+# Ensure BOW_ROOT environment variable is set
+if(BOW_ROOT)
+    set(BOW_ROOT_FINAL ${BOW_ROOT})
+    message(STATUS "Using BOW_ROOT from CMake variable: ${BOW_ROOT_FINAL}")
+elseif(DEFINED ENV{BOW_ROOT})
+    set(BOW_ROOT_FINAL $ENV{BOW_ROOT})
+    message(STATUS "Using BOW_ROOT from environment variable: ${BOW_ROOT_FINAL}")
+else()
+    message(FATAL_ERROR "BOW_ROOT is not set. Please set it as a CMake variable or as an environment variable.")
 endif()
 
+# Add BOW_SDK location to CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "${BOW_ROOT_FINAL}")
+message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+
+# Find the OpenCV package
 find_package(OpenCV REQUIRED)
 
-# Where to find CMake modules and OpenCV
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-set(BOW_PROTO_DIR ${BOW_INCLUDE_ROOT})
-set(PROTO_HEADERS
-        "${BOW_PROTO_DIR}/bow_client.pb.h"
-        "${BOW_PROTO_DIR}/bow_client_sdk.pb.h"
-        "${BOW_PROTO_DIR}/bow_common.pb.h"
-        "${BOW_PROTO_DIR}/bow_data.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_audio.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_common.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_exteroception.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_interoception.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_motor.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_octree.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_tactile.pb.h"
-        "${BOW_PROTO_DIR}/bow_data_vision.pb.h"
-        "${BOW_PROTO_DIR}/bow_structs.pb.h"
-        "${BOW_PROTO_DIR}/bow_robot.pb.h"
+# Find the BOW_SDK package
+find_package(BOW_SDK REQUIRED)
+
+
+# Collect application source files
+file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
+
+# Include directories
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${BOW_SDK_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 )
-file(GLOB BOW_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/*)
 
-set(OpenCV_LIBS opencv_core opencv_imgproc opencv_highgui opencv_imgcodecs)
+# Additional Library Directories
+#link_directories( ${OpenCV_LIB_DIR} )
 
-# add libs you need
-include_directories(${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(MSVC)
+    foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        # Replace dynamic release `/MD` with debug `/MDd` for Debug builds
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            string(REGEX REPLACE "/MD" "/MDd" ${flag_var} "${${flag_var}}")
+        else()
+            # Ensure release configurations use `/MD`
+            string(REGEX REPLACE "/MDd" "/MD" ${flag_var} "${${flag_var}}")
+        endif()
+    endforeach()
+endif()
 
-add_executable(bow_ext_sonar
-        main.cpp
-        ${PROTO_HEADERS}
-        ${BOW_HEADERS}
-        ${BOW_LIBS}
-)
-target_include_directories(bow_ext_sonar PUBLIC ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include ${BOW_PROTO_DIR})
-target_link_libraries(bow_ext_sonar PUBLIC ${BOW_LIBS} ${OpenCV_LIBS})
+
+# Define the application executable
+add_executable(${PROJECT_NAME} ${APP_SRC} ${BOW_SDK_SRC})
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_link_options(${PROJECT_NAME} PRIVATE "/IGNORE:4098") # Ignore the runtime mismatch warning
+endif()
+
+# Link SDK libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${OpenCV_LIBS})
+
+# Ensure libanimus_client.dll is copied post-build
+copy_animus_dll(${PROJECT_NAME})
+
+# Install the application executable and the DLL
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(FILES ${BOW_SDK_DLL_PATH} DESTINATION bin)
