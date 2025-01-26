@@ -4,88 +4,125 @@
 # All Rights Reserved
 # Author: George Bridges <george.bridges@bow.ltd>
 
+import bow_api
+import bow_data
+
 import math
 import time
-import bow_client as bow
-import bow_utils as utils
 import sys
-import logging
 
-def SendObjective(robots, effectors, x, y, z):
-    for i, robot in enumerate(robots):
-        mSamp = utils.MotorSample()
-        mSamp.IKSettings.Preset = utils.IKOptimiser.HIGH_ACCURACY
+import bow_api
+import bow_data
 
-        objective_command = utils.ObjectiveCommand()
-        objective_command.TargetEffector = effectors[i]
-        objective_command.ControlMode = utils.ControllerEnum.POSITION_CONTROLLER
-        objective_command.PoseTarget.Action = utils.ActionEnum.GOTO
-        objective_command.PoseTarget.TargetType = utils.PoseTarget.TargetTypeEnum.TRANSFORM
-        objective_command.PoseTarget.TargetScheduleType = utils.PoseTarget.SchedulerEnum.INSTANTANEOUS
+import sys
+import cv2
+import numpy as np
+from pynput import keyboard
 
-        objective_command.PoseTarget.LocalObjectiveWeights.Position = 1
-        objective_command.PoseTarget.LocalObjectiveWeights.Orientation = 0
+stopFlag = False
+window_names = dict()
+windows_created = False
 
-        objective_command.PoseTarget.Transform.Position.X = x
-        objective_command.PoseTarget.Transform.Position.Y = y
-        objective_command.PoseTarget.Transform.Position.Z = z
+# A set to keep track of the pressed keys
+pressed_keys = set()
 
-        objective_command.Enabled = True
-        mSamp.Objectives.append(objective_command)
+def on_press(key):
+    try:
+        pressed_keys.add(key.char)
+    except AttributeError:
+        # Check for special keys (like spacebar)
+        if key == keyboard.Key.space:
+            pressed_keys.add("space")
 
-        setResult = robot.set_modality("motor", mSamp)
-        if not setResult.Success:
-            log.info("Failed to set motor modality")
+def on_release(key):
+    try:
+        pressed_keys.discard(key.char)
+    except AttributeError:
+        # Check for special keys (like spacebar)
+        if key == keyboard.Key.space:
+            pressed_keys.discard("space")
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
 
-# Initialize the logger
-log = utils.create_logger("BOW Tutorial", logging.INFO)
+def reset_locomotion(motorSample) :
+    motorSample.Locomotion.TranslationalVelocity.Y = 0
+    motorSample.Locomotion.TranslationalVelocity.X = 0
+    motorSample.Locomotion.TranslationalVelocity.Z = 0
+    motorSample.Locomotion.RotationalVelocity.X = 0
+    motorSample.Locomotion.RotationalVelocity.Y = 0
+    motorSample.Locomotion.RotationalVelocity.Z = 0
 
-# Audio parameters
-audio_params = utils.AudioParams(
-    Backends=[""],
-    SampleRate=16000,
-    Channels=1,
-    SizeInFrames=True,
-    TransmitRate=20
-)
+listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+listener.start()
 
-# Setup the BOW Client
-setup_result = bow.setup(audio_params, log.name, True)
-if not setup_result.Success:
-    sys.exit(-1)
+def show_all_images(images_list):
+    global windows_created, window_names
 
-# Login to BOW using systray login
-login_result = bow.login_user("", "", True)
-if login_result.Success:
-    log.info("Logged in")
-else:
-    sys.exit(-1)
+    if not windows_created:
+        for i in range(len(images_list)):
+            window_name = f"RobotView{i} - {images_list[i].Source}"
+            window_names[images_list[i].Source] = window_name
+            cv2.namedWindow(window_name)
+        windows_created = True
 
-# Get robots
-get_robots_result = bow.get_robots(True, True, False)
-if not get_robots_result.localSearchError.Success:
-    log.error(get_robots_result.localSearchError.Description)
+    for i, img_data in enumerate(images_list):
+        if len(img_data.Data) != 0:
+            if img_data.NewDataFlag:
+                if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
+                    npimage = np.frombuffer(img_data.Data, np.uint8).reshape(
+                        [int(img_data.DataShape[1] * 3 / 2), img_data.DataShape[0]])
+                    npimage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
+                    cv2.imshow(window_names[img_data.Source], npimage)
+                elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
+                    npimage = np.frombuffer(img_data.Data, np.uint16).reshape(
+                        [img_data.DataShape[1], img_data.DataShape[0]])
+                    cv2.imshow(window_names[img_data.Source], npimage)
+                else:
+                    print("Unhandled image type")
 
-if not get_robots_result.remoteSearchError.Success:
-    log.error(get_robots_result.remoteSearchError.Description)
-
-if len(get_robots_result.robots) == 0:
-    log.info("No Robots found")
-    bow.close_client_interface()
-    sys.exit(-1)
-
-# Filter out only the available robots
-available_robots = [r for r in get_robots_result.robots if r.robot_state.available]
-
-# Print out all found robots and whether they are available
-print("Robots discovered:")
-for i, robot in enumerate(available_robots):
-    print(f"{i}: {robot.name}")
-
-if len(available_robots) < 2:
-    log.info("Not enough available robots to select two.")
-    bow.close_client_interface()
-    sys.exit(-1)
+def keyboard_control():
+    motorSample = bow_data.MotorSample()
+    if 'w' in pressed_keys:
+        print("Moving forward")
+        motorSample.Locomotion.TranslationalVelocity.X = 0.2
+    if 's' in pressed_keys:
+        print("Moving backward")
+        motorSample.Locomotion.TranslationalVelocity.X = -0.2
+    if 'd' in pressed_keys:
+        print("Rotate right")
+        motorSample.Locomotion.RotationalVelocity.Z = -1
+    if 'a' in pressed_keys:
+        print("Rotate left")
+        motorSample.Locomotion.RotationalVelocity.Z = 1
+    if 'e' in pressed_keys:
+        print("Strafe right")
+        motorSample.Locomotion.TranslationalVelocity.Y = -1
+    if 'q' in pressed_keys:
+        print("Strafe left")
+        motorSample.Locomotion.TranslationalVelocity.Y = 1
+    if 'space' in pressed_keys:
+        print("Stop moving")
+        reset_locomotion(motorSample)
+    if 'i' in pressed_keys:
+        print("Look up")
+        motorSample.GazeTarget.GazeVector.Y = -0.2
+    if 'k' in pressed_keys:
+        print("Look down")
+        motorSample.GazeTarget.GazeVector.Y = 0.2
+    if 'j' in pressed_keys:
+        print("Look left")
+        motorSample.GazeTarget.GazeVector.X = -0.2
+    if 'l' in pressed_keys:
+        print("Look right")
+        motorSample.GazeTarget.GazeVector.X = 0.2
+    if 'o' in pressed_keys:
+        print("Tilt left")
+        motorSample.GazeTarget.GazeVector.Z = -0.2
+    if 'u' in pressed_keys:
+        print("Tilt right")
+        motorSample.GazeTarget.GazeVector.Z = 0.2
+    return motorSample
 
 # Prompt user to select two robots by their index from the displayed list of available robots
 def get_robot_selection(prompt):
@@ -99,70 +136,117 @@ def get_robot_selection(prompt):
         except ValueError:
             print("Invalid input. Please enter a valid integer index.")
 
+print(bow_api.version())
+
+# Setup the BOW Client
+setup_result = bow_api.setup(app_name="Multiple Robots", verbose=True)
+if not setup_result.Success:
+    sys.exit(-1)
+
+# Login to BOW using systray login
+login_result = bow_api.login_user("", "", True)
+if login_result.Success:
+    print("Logged in")
+else:
+    sys.exit(-1)
+
+# Get robots
+get_robots_result = bow_api.get_robots(get_remote=True, get_system=False)
+if not get_robots_result.localSearchError.Success:
+   print(get_robots_result.localSearchError.Description)
+
+if not get_robots_result.remoteSearchError.Success:
+    print(get_robots_result.remoteSearchError.Description)
+
+if len(get_robots_result.robots) == 0:
+    print("No Robots found")
+    bow_api.close_client_interface()
+    sys.exit(-1)
+
+# Filter out only the available robots
+available_robots = [r for r in get_robots_result.robots if r.robot_state.available]
+
+# Print out all found robots and whether they are available
+print("Robots discovered:")
+for i, robot in enumerate(available_robots):
+    print(f"{i}: {robot.name}")
+
+if len(available_robots) < 2:
+    print("Not enough available robots to select two.")
+    bow_api.close_client_interface()
+    sys.exit(-1)
+
 robot_idx_1 = get_robot_selection("Enter the index of the first robot you would like to select: ")
 robot_idx_2 = get_robot_selection("Enter the index of the second robot you would like to select: ")
 
 if robot_idx_1 == robot_idx_2:
     print("You selected the same robot twice. Please restart and select two distinct robots.")
-    bow.close_client_interface()
+    bow_api.close_client_interface()
     sys.exit(-1)
 
 selected_robots = [available_robots[robot_idx_1], available_robots[robot_idx_2]]
 
 # Create BOW Robot instances
-robots = [bow.Robot(r) for r in selected_robots]
+robots = [bow_api.Robot(r) for r in selected_robots]
 
 # Connect to each robot and open target modalities
-target_modalities = ["proprioception", "motor"]
+target_channels = ["vision", "motor"]
 for robot in robots:
     result = robot.connect()
     if not result.Success:
         print("Could not connect with robot {}".format(robot.robot_details.robot_id))
-        bow.close_client_interface()
+        bow_api.close_client_interface()
         sys.exit(-1)
 
-    for modality in target_modalities:
-        result = robot.open_modality(modality)
+    for channel in target_channels:
+        result = robot.open_channel(channel)
         if not result.Success:
-            log.info("Failed to open " + modality + " modality: " + result.Description)
-            bow.close_client_interface()
+            print("Failed to open " + channel + " channel: " + result.Description)
+            bow_api.close_client_interface()
             sys.exit(-1)
 
-# Identify the first effector for each robot
-effectors = []
-for robot in robots:
-    prop_sample = None
-    while prop_sample is None:
-        prop_sample, error = robot.get_modality("proprioception", True)
-        if not error.Success:
+try:
+    while True:
+        # Sense
+        robot_0_images, err = robots[0].vision.get(True)
+        if not err.Success:
             continue
-        if len(prop_sample.Effectors) == 0:
+
+        if len(robot_0_images) == 0:
             continue
-        effectors.append(prop_sample.Effectors[0].EffectorLinkName)
-        break
 
-## ACT ##
-circle_radius = 0.2
-circleHeight = 0.3
-stepSize = 0.05
-repeatCountLim = 10 # Number of repetitions of the loop
+        for image in robot_0_images:
+            image.Source = f"{robots[0].robot_details.name}_{image.Source}"
 
-# Create and send movement coordinates
-repeatCount = 0
-while repeatCount < repeatCountLim:
-    angle = 0.0
-    while angle <= 2 * math.pi:
-        x = circle_radius * math.cos(angle)
-        y = circle_radius * math.sin(angle)
-        z = circleHeight
+        robot_1_images, err = robots[1].vision.get(True)
+        if not err.Success:
+            continue
 
-        SendObjective(robots, effectors, x, y, z)
+        if len(robot_1_images) == 0:
+            continue
 
-        angle += stepSize
-        time.sleep(stepSize)
-    repeatCount += 1
+        for image in robot_1_images:
+            image.Source = f"{robots[1].robot_details.name}_{image.Source}"
 
-# Properly disconnect
-for robot in robots:
-    robot.disconnect()  # Disconnect from the robot
-bow.close_client_interface()
+        all_images = robot_0_images + robot_1_images
+        show_all_images(all_images)
+
+        # Decide
+        motorSample = keyboard_control()
+
+        # Act
+        for r in robots:
+            r.motor.set(motorSample)
+
+        # Allow for cv2 window operations and refresh rate
+        cv2.waitKey(1)
+
+except KeyboardInterrupt or SystemExit:
+    cv2.destroyAllWindows()
+    print("Closing down")
+    stopFlag = True
+
+cv2.destroyAllWindows()
+for r in robots:
+    r.disconnect()
+bow_api.close_client_interface()

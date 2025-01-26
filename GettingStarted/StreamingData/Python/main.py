@@ -4,55 +4,62 @@
 # All Rights Reserved
 # Author: Daniel Camilleri <daniel.camilleri@bow.ltd>
 
-import bow_client as bow
-import bow_utils
+import bow_api
+import bow_data
+
 import sys
-import logging
-import numpy as np
-import random
 import cv2
-import time
+import numpy as np
 
 stopFlag = False
 window_names = dict()
 windows_created = False
-
 
 def show_all_images(images_list):
     global windows_created, window_names
 
     if not windows_created:
         for i in range(len(images_list)):
-            window_name = f"RobotView{i} - {images_list[i].source}"
-            window_names[images_list[i].source] = window_name
+            window_name = f"RobotView{i} - {images_list[i].Source}"
+            window_names[images_list[i].Source] = window_name
             cv2.namedWindow(window_name)
         windows_created = True
 
     for i, img_data in enumerate(images_list):
-        myim = img_data.image
-        if img_data.new_data_flag:
-            cv2.imshow(window_names[img_data.source], myim)
+        if len(img_data.Data) != 0:
+            if img_data.NewDataFlag:
+                if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
+                    npimage = np.frombuffer(img_data.Data, np.uint8).reshape(
+                        [int(img_data.DataShape[1] * 3 / 2), img_data.DataShape[0]])
+                    npimage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
+                    cv2.imshow(window_names[img_data.Source], npimage)
+                elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
+                    npimage = np.frombuffer(img_data.Data, np.uint16).reshape(
+                        [img_data.DataShape[1], img_data.DataShape[0]])
+                    cv2.imshow(window_names[img_data.Source], npimage)
+                else:
+                    print("Unhandled image type")
 
 
-log = bow_utils.create_logger("BOW Tutorial", logging.INFO)
-log.info(bow.version())
 
-myrobot, error = bow.quick_connect(pylog=log, modalities=["vision", "motor"])
+print(bow_api.version())
+
+myrobot, error = bow_api.quick_connect(app_name="BOW Streaming Data", modalities=["vision"])
 if not error.Success:
-    log.error("Failed to connect to robot", error)
+    print("Failed to connect to robot", error)
     sys.exit()
 
 try:
     while True:
         # Sense
-        image_list, err = myrobot.get_modality("vision", True)
+        image_samples, err = myrobot.vision.get(True)
         if not err.Success:
+            print(err.Description)
             continue
 
-        if len(image_list) == 0:
+        if len(image_samples) == 0:
             continue
-
-        show_all_images(image_list)
+        show_all_images(image_samples)
 
         j = cv2.waitKeyEx(1)
         if j == 27:
@@ -60,9 +67,9 @@ try:
 
 except KeyboardInterrupt or SystemExit:
     cv2.destroyAllWindows()
-    log.info("Closing down")
+    print("Closing down")
     stopFlag = True
 
 cv2.destroyAllWindows()
 myrobot.disconnect()
-bow.close_client_interface()
+bow_api.close_client_interface()
