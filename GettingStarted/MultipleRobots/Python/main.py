@@ -208,27 +208,29 @@ for robot in robots:
 try:
     while True:
         # Sense
+        all_images = []
         robot_0_images, err = robots[0].vision.get(True)
         if not err.Success:
             continue
 
-        if len(robot_0_images) == 0:
+        if len(robot_0_images.Samples) == 0:
             continue
 
-        for image in robot_0_images:
+        for image in robot_0_images.Samples:
             image.Source = f"{robots[0].robot_details.name}_{image.Source}"
+            all_images.append(image)
 
         robot_1_images, err = robots[1].vision.get(True)
         if not err.Success:
             continue
 
-        if len(robot_1_images) == 0:
+        if len(robot_1_images.Samples) == 0:
             continue
 
-        for image in robot_1_images:
+        for image in robot_1_images.Samples:
             image.Source = f"{robots[1].robot_details.name}_{image.Source}"
+            all_images.append(image)
 
-        all_images = robot_0_images + robot_1_images
         show_all_images(all_images)
 
         # Decide

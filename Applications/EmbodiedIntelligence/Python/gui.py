@@ -1,20 +1,23 @@
+import bow_api
+import bow_data
+
 import math
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import cv2
 import imutils
+import numpy as np
 
 from openai_brain import Brain
 from PIL import Image, ImageTk
-import bow_client as bow
 from ultralytics import YOLO
 from robot_controller import RobotController
 
 class GUI:
     def __init__(self, master, brain, controller):
         self.master = master
-        self.master.title("BOW >< OpenAI")
+        self.master.title("BOW x OpenAI")
         self.master.geometry("1700x830")
         self.master.configure(bg="#656665")  # Updated background color to WHITE
 
@@ -119,7 +122,7 @@ def on_closing(window, robot):
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         window.destroy()
         robot.disconnect()
-        bow.close_client_interface()
+        bow_api.close_client_interface()
 
 
 def main():
@@ -139,91 +142,111 @@ def main():
     objects = []
 
     # Main loop
-    while True:
-        # Test for completed functions and relay results to openai assistant as "assistant" messages
-        if controller.searchComplete is not None:
-            if controller.searchComplete == "success":
-                brain.request("Search Successful", "assistant", gui)
-            elif controller.searchComplete == "failure":
-                brain.request("Search Failed", "assistant", gui)
-            controller.searchComplete = None
+    try:
+        while True:
+            # Test for completed functions and relay results to openai assistant as "assistant" messages
+            if controller.searchComplete is not None:
+                if controller.searchComplete == "success":
+                    brain.request("Search Successful", "assistant", gui)
+                elif controller.searchComplete == "failure":
+                    brain.request("Search Failed", "assistant", gui)
+                controller.searchComplete = None
 
-        # Get camera images from BOW robot
-        image_list, err = controller.robot.get_modality("vision", True)
-        if err.Success:
-            if len(image_list) > 0:
-                img_data = image_list[0]
-                img_data.image = imutils.rotate_bound(img_data.image, img_data.transform.EulerAngles.X * 180 / math.pi)
-                # Set camera parameters on first instance
-                if controller.VFOV is None:
-                    if img_data.vfov == 0:
-                        controller.VFOV = 40
+            # Get camera images from BOW robot
+            image_list, err = controller.robot.vision.get(True)
+            if err.Success:
+                if len(image_list.Samples) > 0:
+                    imsample = image_list.Samples[0]
+
+                    if imsample is None or not imsample.NewDataFlag:
+                        continue
+
+                    if imsample.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
+                        npimage = np.frombuffer(imsample.Data, np.uint8).reshape(
+                            [int(imsample.DataShape[1] * 3 / 2), imsample.DataShape[0]])
+                        cvImage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
+                    elif imsample.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
+                        cvImage = np.frombuffer(imsample.Data, np.uint16).reshape(
+                            [imsample.DataShape[1], imsample.DataShape[0]])
                     else:
-                        controller.VFOV = img_data.vfov
+                        continue
 
-                    if img_data.hfov == 0:
-                        controller.HFOV = 80
-                    else:
-                        controller.HFOV = img_data.hfov
+                    cvImage = imutils.rotate_bound(cvImage, imsample.Transform.EulerAngles.X * 180 / math.pi)
+                    # Set camera parameters on first instance
+                    if controller.VFOV is None:
+                        if imsample.VFOV == 0:
+                            controller.VFOV = 40
+                        else:
+                            controller.VFOV = imsample.VFOV
 
-                # Pass image into yolo model
-                results = model.predict(source=img_data.image, show=False, stream_buffer=False,
-                                        verbose=False)
+                        if imsample.HFOV == 0:
+                            controller.HFOV = 80
+                        else:
+                            controller.HFOV = imsample.HFOV
 
-                # Iterate though detected objects and populate objects list and details
-                if len(results) > 0:
-                    for box in results[0].boxes.cpu():
-                        obj = DetectedObject()
-                        obj.classification = model.names[int(box.data[0][-1])]
-                        obj.confidence = box.conf.numpy()[0]
-                        obj.box = box.xyxy.numpy()[0]
-                        width = obj.box[2] - obj.box[0]
-                        height = obj.box[3] - obj.box[1]
-                        area = width * height
-                        imgArea = img_data.shape[0] * img_data.shape[1]
-                        obj.area = area / imgArea
-                        center = (int(obj.box[0] + width / 2), int(obj.box[1] + height / 2))
-                        obj.center[0] = center[0] * (1/img_data.shape[0])
-                        obj.center[1] = 1-(center[1] * (1 / img_data.shape[1]))
-                        objects.append(obj)
+                    # Pass image into yolo model
+                    results = model.predict(source=cvImage, show=False, stream_buffer=False, verbose=False)
 
-                # Draw detections on image
-                annotated_img = img_data.image
-                for obj in objects:
-                    colour = (61, 201, 151)
-                    if controller.targetClass is not None or controller.prevTargetClass is not None:
-                        if obj.classification == controller.targetClass:
-                            colour = (36, 108, 243)
-                        if obj.classification == controller.prevTargetClass:
-                            colour = (36, 108, 243)
+                    # Iterate though detected objects and populate objects list and details
+                    if len(results) > 0:
+                        for box in results[0].boxes.cpu():
+                            obj = DetectedObject()
+                            obj.classification = model.names[int(box.data[0][-1])]
+                            obj.confidence = box.conf.numpy()[0]
+                            obj.box = box.xyxy.numpy()[0]
+                            width = obj.box[2] - obj.box[0]
+                            height = obj.box[3] - obj.box[1]
+                            area = width * height
+                            imgArea = imsample.DataShape[0] * imsample.DataShape[1]
+                            obj.area = area / imgArea
+                            center = (int(obj.box[0] + width / 2), int(obj.box[1] + height / 2))
+                            obj.center[0] = center[0] * (1/imsample.DataShape[0])
+                            obj.center[1] = 1-(center[1] * (1 / imsample.DataShape[1]))
+                            objects.append(obj)
 
-                    annotated_img = cv2.rectangle(annotated_img, (int(obj.box[0]), int(obj.box[1])),
-                                                  (int(obj.box[2]), int(obj.box[3])), colour, thickness=3)
-                    # Set the label position
-                    label_x = int(obj.box[0])
-                    label_y = int(obj.box[1]) - 10  # Position above the box by default
+                    # Draw detections on image
+                    annotated_img = cvImage
+                    for obj in objects:
+                        colour = (61, 201, 151)
+                        if controller.targetClass is not None or controller.prevTargetClass is not None:
+                            if obj.classification == controller.targetClass:
+                                colour = (36, 108, 243)
+                            if obj.classification == controller.prevTargetClass:
+                                colour = (36, 108, 243)
 
-                    # Check if the label is going off-screen
-                    if label_y < 10:
-                        label_y = int(obj.box[3]) + 20  # Position below the box
+                        annotated_img = cv2.rectangle(annotated_img, (int(obj.box[0]), int(obj.box[1])),
+                                                      (int(obj.box[2]), int(obj.box[3])), colour, thickness=3)
+                        # Set the label position
+                        label_x = int(obj.box[0])
+                        label_y = int(obj.box[1]) - 10  # Position above the box by default
 
-                    # Draw the label
-                    cv2.putText(annotated_img, obj.classification, (label_x, label_y),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, colour, 1)
+                        # Check if the label is going off-screen
+                        if label_y < 10:
+                            label_y = int(obj.box[3]) + 20  # Position below the box
 
-                # Pass objects list to robot controller
-                controller.object_list = objects
+                        # Draw the label
+                        cv2.putText(annotated_img, obj.classification, (label_x, label_y),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, colour, 1)
 
-                # Update gui image
-                gui.update_image(annotated_img)
+                    # Pass objects list to robot controller
+                    controller.object_list = objects
 
-                # Update controller
-                ret = controller.update()
+                    # Update gui image
+                    gui.update_image(annotated_img)
 
-            # Update the Tkinter window
-            objects = []
-            root.update_idletasks()
-            root.update()
+                    # Update controller
+                    ret = controller.update()
+
+                # Update the Tkinter window
+                objects = []
+                root.update_idletasks()
+                root.update()
+    except KeyboardInterrupt or SystemExit:
+        print("Closing down")
+        stopFlag = True
+
+    controller.robot.disconnect()
+    bow_api.close_client_interface()
 
 if __name__ == "__main__":
     main()

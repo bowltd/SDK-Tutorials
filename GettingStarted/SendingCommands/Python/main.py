@@ -53,13 +53,13 @@ def show_all_images(images_list):
     global windows_created, window_names
 
     if not windows_created:
-        for i in range(len(images_list)):
-            window_name = f"RobotView{i} - {images_list[i].Source}"
-            window_names[images_list[i].Source] = window_name
+        for i in range(len(images_list.Samples)):
+            window_name = f"RobotView{i} - {images_list.Samples[i].Source}"
+            window_names[images_list.Samples[i].Source] = window_name
             cv2.namedWindow(window_name)
         windows_created = True
 
-    for i, img_data in enumerate(images_list):
+    for i, img_data in enumerate(images_list.Samples):
         if len(img_data.Data) != 0:
             if img_data.NewDataFlag:
                 if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
@@ -120,7 +120,7 @@ def keyboard_control():
 
 print(bow_api.version())
 
-myrobot, error = bow_api.quick_connect(app_name="BOW Sending Commands", modalities=["vision", "motor"])
+myrobot, error = bow_api.quick_connect(app_name="BOW Sending Commands", channels=["vision", "motor"])
 if not error.Success:
     print("Failed to connect to robot", error)
     sys.exit()
@@ -132,7 +132,7 @@ try:
         if not err.Success:
             continue
 
-        if len(image_samples) == 0:
+        if len(image_samples.Samples) == 0:
             continue
 
         show_all_images(image_samples)

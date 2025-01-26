@@ -1,2 +1,4 @@
 pynput
-bow-client
+bow_api
+opencv-python
+numpy

@@ -6,7 +6,7 @@ from openai.types.beta.threads import Message, Text
 from typing_extensions import override
 from openai import AssistantEventHandler
 
-assistant_id = "asst_BF4jtnh3Mt0lAA2p4Uyvzm9f"
+assistant_id = "asst_NrS487lWUMCFJf0MhjCsprGe"
 
 class EventHandler(AssistantEventHandler):
     @override
@@ -41,7 +41,7 @@ class EventHandler(AssistantEventHandler):
         self.gui.output_text.see(tkinter.END)
         self.gui.master.update()
         full_message = message.content
-        self.robot.set_modality("speech", full_message[0].text.value)
+        self.robot.speech.set(full_message[0].text.value)
         print("\n", "OpenAI Assistant - Message Done")
 
 

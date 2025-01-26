@@ -23,15 +23,15 @@ class DisplayInfo:
 		return str(self.Value)[:length]
 
 	def GetBar(self,length):
-	   	prop = (self.Value - self.ValueMin) / (self.ValueMax - self.ValueMin)
-	   	j = round(prop * (length-1))
-	   	s = '|'
-	   	for i in range(length):
-	   		if i==j:
-	   			s+='!'
-	   		else:
-	   			s+="."
-	   	return s+'|'
+		prop = (self.Value - self.ValueMin) / (self.ValueMax - self.ValueMin)
+		j = round(prop * (length-1))
+		s = '|'
+		for i in range(length):
+			if i==j:
+				s+='!'
+			else:
+				s+="."
+		return s+'|'
 
 class Display:
 
@@ -46,7 +46,7 @@ class Display:
 		self.increment = 0.05
 		curses.noecho()
 		self.content = curses.newwin(self.height,self.width,1,5)
-		self.mainwin.keypad(1)
+		self.mainwin.keypad(True)
 		self.Update()
 
 	# update the ncurses display
@@ -82,11 +82,11 @@ class Display:
 	# main loop handling key presses
 	def Run(self):
 		self.Update()
-		while (True):
+		while True:
 			c = self.mainwin.getch()
 			ch = chr(c)
 			if ch == 'q':
-				break
+				raise SystemExit
 			elif c == curses.KEY_DOWN:
 				if self.listIndex<len(self.list)-1:
 					self.listIndex +=1		
@@ -108,6 +108,6 @@ class Display:
 	def __del__(self):
 		curses.nocbreak() 
 		curses.echo()
-		self.mainwin.keypad(0) 
-		self.mainwin.refresh();
-		curses.endwin();
+		self.mainwin.keypad(False)
+		self.mainwin.refresh()
+		curses.endwin()

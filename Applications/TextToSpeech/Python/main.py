@@ -11,16 +11,17 @@ import threading
 from queue import Queue
 from typing import List, Dict
 
-import bow_client as bow
-import bow_utils
+import bow_api
+import bow_data
 import cv2
+import numpy as np
 from pynput import keyboard
 from tts import TTS  # Import the TTS class
 
 # Constants for audio settings and control logic
 SAMPLE_RATE = 24_000
 NUM_CHANNELS = 1
-COMPRESSION_FORMAT = bow_utils.AudioSample.CompressionFormatEnum.RAW
+COMPRESSION_FORMAT = bow_data.AudioSample.CompressionFormatEnum.RAW
 AUDIO_BACKENDS = ["notinternal"]
 AUDIO_TRANSMIT_RATE = 25
 NUM_SAMPLES = SAMPLE_RATE // AUDIO_TRANSMIT_RATE
@@ -36,11 +37,10 @@ USE_OPENAI = os.getenv('USE_OPENAI', 'False')
 class RobotController:
     def __init__(self):
         # Initialize logger for debugging and information
-        self.log = bow_utils.create_logger("Bow Tutorial 6", logging.INFO)
-        self.log.info(bow.version())
+        print(bow_api.version())
 
-        # Audio parameters for voice modality
-        self.audio_params = bow_utils.AudioParams(
+        # Audio parameters for voice channel
+        self.audio_params = bow_data.AudioParams(
             Backends=AUDIO_BACKENDS,
             SampleRate=SAMPLE_RATE,
             Channels=NUM_CHANNELS,
@@ -65,17 +65,17 @@ class RobotController:
 
 
         # Connect to the robot
-        self.robot, error = bow.quick_connect(
-            pylog=self.log,
-            modalities=["voice", "vision", "motor"],
+        self.robot, error = bow_api.quick_connect(
+            app_name="Text to Speech",
+            channels=["voice", "vision", "motor"],
             verbose=True,
             audio_params=self.audio_params
         )
         if not error.Success:
-            self.log.error("Failed to connect to robot", error)
+            print("Failed to connect to robot", error)
             sys.exit()
 
-        # Print robot input and output modalities for debugging
+        # Print robot input and output channels for debugging
         print(self.robot.robot_details.robot_config.input_modalities)
         print(self.robot.robot_details.robot_config.output_modalities)
 
@@ -104,18 +104,29 @@ class RobotController:
         if key == keyboard.Key.esc:
             return False
 
-    def show_all_images(self, images_list: List[bow_utils.ImageSampleHelper]):
+    def show_all_images(self, images_list: List[bow_data.ImageSample]):
         """Display all images in the provided list."""
         if not self.windows_created:
-            for i, img_data in enumerate(images_list):
-                window_name = f"RobotView{i} - {img_data.source}"
-                self.window_names[img_data.source] = window_name
+            for i in range(len(images_list)):
+                window_name = f"RobotView{i} - {images_list[i].Source}"
+                self.window_names[images_list[i].Source] = window_name
                 cv2.namedWindow(window_name)
             self.windows_created = True
 
-        for img_data in images_list:
-            if img_data.new_data_flag:
-                cv2.imshow(self.window_names[img_data.source], img_data.image)
+        for i, img_data in enumerate(images_list):
+            if len(img_data.Data) != 0:
+                if img_data.NewDataFlag:
+                    if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
+                        npimage = np.frombuffer(img_data.Data, np.uint8).reshape(
+                            [int(img_data.DataShape[1] * 3 / 2), img_data.DataShape[0]])
+                        npimage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
+                        cv2.imshow(self.window_names[img_data.Source], npimage)
+                    elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
+                        npimage = np.frombuffer(img_data.Data, np.uint16).reshape(
+                            [img_data.DataShape[1], img_data.DataShape[0]])
+                        cv2.imshow(self.window_names[img_data.Source], npimage)
+                    else:
+                        print("Unhandled image type")
 
     def send_speech_command(self, text: str):
         # TODO open thread once and queue in speech to be processed.
@@ -131,7 +142,7 @@ class RobotController:
         audio_segment = tts_service.stream_text_to_speech(text, playback=False)
 
         if audio_segment is None:
-            self.log.error("Failed to retrieve audio segment.")
+            print("Failed to retrieve audio segment.")
             return
 
         raw_audio = audio_segment.raw_data
@@ -141,7 +152,7 @@ class RobotController:
         for i in range(0, len(raw_audio), CHUNK_SIZE):
             print("sending chunk")
             chunk = raw_audio[i:i + CHUNK_SIZE]
-            audio_sample = bow_utils.AudioSample(
+            audio_sample = bow_data.AudioSample(
                 Source="Client",
                 Data=chunk,
                 Channels=NUM_CHANNELS,
@@ -149,10 +160,10 @@ class RobotController:
                 NumSamples=CHUNK_SIZE // NUM_CHANNELS,
                 Compression=COMPRESSION_FORMAT
             )
-            result = self.robot.set_modality("voice", audio_sample)
+            result = self.robot.voice.set(audio_sample)
             if not result.Success:
-                self.log.error(result.Description, result.Code)
-                self.log.error(f"Failed to send audio sample chunk {i // CHUNK_SIZE} to the robot.")
+                print(result.Description, result.Code)
+                print(f"Failed to send audio sample chunk {i // CHUNK_SIZE} to the robot.")
                 break
             time.sleep(1 / (AUDIO_TRANSMIT_RATE * 2))
 
@@ -171,15 +182,15 @@ class RobotController:
         """Main control loop for handling vision, motor, and voice modalities."""
         try:
             while True:
-                # Fetch and display images from the robot's vision modality
-                image_list, err = self.robot.get_modality("vision", True)
+                # Fetch and display images from the robot's vision channel
+                image_list, err = self.robot.vision.get(True)
                 if not err.Success or not image_list:
                     continue
 
                 self.show_all_images(image_list)
 
                 # Handle motor commands based on key presses
-                motor_sample = bow_utils.MotorSample()
+                motor_sample = bow_data.MotorSample()
                 action = None
                 if 'w' in self.pressed_keys:
                     action = "Moving forward"
@@ -201,7 +212,7 @@ class RobotController:
                     motor_sample.Locomotion.TranslationalVelocity.Y = 1
 
                 # Send motor commands to the robot
-                self.robot.set_modality("motor", motor_sample)
+                self.robot.motor.set(motor_sample)
 
                 # Handle speech commands with rate limiting and debounce logic
                 current_time = time.time()
@@ -229,10 +240,10 @@ class RobotController:
         finally:
             # Clean up and close resources on exit
             cv2.destroyAllWindows()
-            self.log.info("Closing down")
+            print("Closing down")
             self.stop_flag = True
             self.robot.disconnect()
-            bow.close_client_interface()
+            bow_api.close_client_interface()
 
     def run(self):
         """Run the robot control loop."""

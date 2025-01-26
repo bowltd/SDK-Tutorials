@@ -4,23 +4,23 @@
 # All Rights Reserved
 # Author: George Bridges <george.bridges@bow.ltd>
 
+import bow_api
+import bow_data
+
 import math
 import time
-import bow_client as bow
-import bow_utils as utils
 import sys
-import logging
 
 def SendObjective(robot, effector, x, y, z):
-    mSamp = utils.MotorSample()
-    mSamp.IKSettings.Preset = utils.IKOptimiser.HIGH_ACCURACY
+    mSamp = bow_data.MotorSample()
+    mSamp.IKSettings.Preset = bow_data.IKOptimiser.HIGH_ACCURACY
 
-    objective_command = utils.ObjectiveCommand()
+    objective_command = bow_data.ObjectiveCommand()
     objective_command.TargetEffector = effector
-    objective_command.ControlMode = utils.ControllerEnum.POSITION_CONTROLLER
-    objective_command.PoseTarget.Action = utils.ActionEnum.GOTO
-    objective_command.PoseTarget.TargetType = utils.PoseTarget.TargetTypeEnum.TRANSFORM
-    objective_command.PoseTarget.TargetScheduleType = utils.PoseTarget.SchedulerEnum.INSTANTANEOUS
+    objective_command.ControlMode = bow_data.ControllerEnum.POSITION_CONTROLLER
+    objective_command.PoseTarget.Action = bow_data.ActionEnum.GOTO
+    objective_command.PoseTarget.TargetType = bow_data.PoseTarget.TargetTypeEnum.TRANSFORM
+    objective_command.PoseTarget.TargetScheduleType = bow_data.PoseTarget.SchedulerEnum.INSTANTANEOUS
 
     objective_command.PoseTarget.LocalObjectiveWeights.Position = 1
     objective_command.PoseTarget.LocalObjectiveWeights.Orientation = 0
@@ -32,21 +32,15 @@ def SendObjective(robot, effector, x, y, z):
     objective_command.Enabled = True
     mSamp.Objectives.append(objective_command)
 
-    setResult = myRobot.set_modality("motor", mSamp)
-    if not setResult.Success:
-        log.info("Failed to set motor modality")
+    set_result = myRobot.motor.set(mSamp)
+    if not set_result.Success:
+        print("Failed to set motor channel")
 
-# Initialize the logger
-log = utils.create_logger("BOW Tutorial - Inverse Kinematics", logging.INFO)
-
-# List of required modalities for this tutorial
-modalities = ["proprioception", "motor"]
-
-# Use quick connect to connect to robot
-myRobot, error = bow.quick_connect(log, modalities)
+# Use quick_connect to connect to robot
+myRobot, error = bow_api.quick_connect(app_name="Inverse Kinematics", channels=["proprioception", "motor"])
 
 if not error.Success:
-    log.error("Failed to connect to robot", error)
+    print("Failed to connect to robot", error)
     sys.exit()
 
 effectorsList = []
@@ -56,7 +50,7 @@ partsList = []
 
 # Wait for proprioception message so we can understand form of robot and get effectors
 while True:
-    propMsg, error = myRobot.get_modality("proprioception", True)
+    propMsg, error = myRobot.proprioception.get(True)
     if not error.Success:
         continue
 
@@ -124,19 +118,25 @@ stepSize = 0.05
 repeatCountLim = 10 # Number of repetitions of the loop
 
 # Create and send movement coordinates
-repeatCount = 0
-while repeatCount < repeatCountLim:
-    angle = 0
-    while angle <=2*math.pi:
-        x = circleRadius * math.cos(angle)
-        y = circleRadius * math.sin(angle)
-        z = selectedUpDown*(circleHeight + (wobbleAmplitude * math.cos(angle*wobbleFreqMultiplier)))
+try:
+    repeatCount = 0
+    while repeatCount < repeatCountLim:
+        angle = 0
+        while angle <=2*math.pi:
+            x = circleRadius * math.cos(angle)
+            y = circleRadius * math.sin(angle)
+            z = selectedUpDown*(circleHeight + (wobbleAmplitude * math.cos(angle*wobbleFreqMultiplier)))
 
-        SendObjective(myRobot, selectedEffector, x, y, z)
+            SendObjective(myRobot, selectedEffector, x, y, z)
 
-        angle += stepSize
-        time.sleep(stepSize)
-    repeatCount += 1
+            angle += stepSize
+            time.sleep(stepSize)
+        repeatCount += 1
+
+except KeyboardInterrupt or SystemExit:
+    print("Closing down")
+    stopFlag = True
 
 # Close the bow client
-bow.close_client_interface()
+myRobot.disconnect()
+bow_api.close_client_interface()

@@ -1,15 +1,15 @@
-import math
+import bow_api
+import bow_data
+
 import time
-import bow_client as bow
-import bow_utils as utils
 import logging
 
 
 class RobotController:
     def __init__(self):
-        self.log = utils.create_logger("BOW >< OpenAI", logging.INFO)
-        self.log.info(bow.version())
-        self.audio_params = utils.AudioParams(
+        self.log = bow_data.create_logger("BOW x OpenAI", logging.INFO)
+        self.log.info(bow_api.version())
+        self.audio_params = bow_data.AudioParams(
             Backends=["alsa"],
             SampleRate=16000,
             Channels=1,
@@ -27,7 +27,7 @@ class RobotController:
         self.object_list = []
 
         # Search Configuration
-        self.searchVelocity = 0.15  # The Angular velocity commanded during a search
+        self.searchVelocity = 0.4  # The Angular velocity commanded during a search
         self.searchPeriod = 1  # The length of time in seconds the robot will rotate/pause for as it searches
         self.searchCounterLim = 10  # The number of search periods the robot will go through before aborting the search
         self.frameCountTarget = 3  # The number of consecutive frames containing the target object for search success
@@ -48,10 +48,10 @@ class RobotController:
         self.safetyDelay = 0.5
 
         # Connect to robot
-        self.robot, error = bow.quick_connect(pylog=self.log,
-                                              modalities=["vision", "motor", "speech"],
-                                              verbose=False,
-                                              audio_params=self.audio_params)
+        self.robot, error = bow_api.quick_connect(app_name=self.log.name,
+                                                  channels=["vision", "motor", "speech"],
+                                                  verbose=False,
+                                                  audio_params=self.audio_params)
 
         print(self.robot.robot_details.robot_config.input_modalities)
         print(self.robot.robot_details.robot_config.output_modalities)
@@ -63,7 +63,7 @@ class RobotController:
 
         # Wait for sim to stabilise?
         time.sleep(1)
-        self.robot.set_modality("speech", "ChatGPT embodied successfully")
+        self.robot.speech.set("ChatGPT embodied successfully")
 
     def resetLoco(self):
         self.locoYaw = 0.0
@@ -76,13 +76,13 @@ class RobotController:
             self.updateSearch()
 
         # Create New motor message
-        motor_sample = utils.MotorSample()
+        motor_sample = bow_data.MotorSample()
 
         # Populate message with locomotion velocities
         motor_sample.Locomotion.RotationalVelocity.Z = self.locoYaw
 
         # Send Motor message to robot
-        ret = self.robot.set_modality("motor", motor_sample)
+        ret = self.robot.motor.set(motor_sample)
         if not ret.Success:
             print(ret)
         return ret
