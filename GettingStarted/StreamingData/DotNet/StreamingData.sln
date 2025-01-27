@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingData", "StreamingData.csproj", "{00E00DBD-210B-4583-8B1C-59AF1A4DF79E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingData", "StreamingData\StreamingData.csproj", "{00E00DBD-210B-4583-8B1C-59AF1A4DF79E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

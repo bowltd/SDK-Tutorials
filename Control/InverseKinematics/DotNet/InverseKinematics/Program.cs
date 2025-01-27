@@ -1,19 +1,23 @@
 ﻿using BOW.Common;
 using BOW.Data;
-using BOW.SDK.Core;
+using BOW.API;
 using BOW.Structs;
 
 class Program
 {
+    static BowRobot? myRobot;
+    
     static void Main(string[] args)
     {
-        
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
+        Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
+
         // Connect to Robot
-        Console.WriteLine(BowClient.Version());
+        Console.WriteLine(Bow.Version());
 
         List<string> modalities = new List<string>() { "proprioception", "motor" };
-        Error quickConnectError;
-        var myRobot = BowClient.QuickConnect("Tutorial 3 Dotnet", modalities, out quickConnectError);
+
+        myRobot = Bow.QuickConnect("Tutorial 3 Dotnet", modalities, true, out var quickConnectError);
         
         if (myRobot == null)
         {
@@ -129,6 +133,13 @@ class Program
                 Thread.Sleep(200);
             }
         }
+        
+        static void Cleanup()
+        {
+            Console.WriteLine("Closing down application");
+            myRobot?.Disconnect();
+            Bow.CloseClientInterface();
+        }
     }
     
     static void SendObjective(BowRobot myRobot, string selectedEffector, double x, double y, double z)
@@ -156,13 +167,22 @@ class Program
                             Z = (float)z
                         }
                     },
-                    OptimiserSettings = new IKOptimiser
+                    LocalObjectiveWeights = new LocalObjectiveWeights
                     {
-                        Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
-                    },
+                        Position = 1,
+                        Orientation = 0
+                    }
                 },
                 Enabled = true,
             });
+            mSamp.IKSettings = new IKOptimiser
+            {
+                Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
+                GlobalObjectiveWeights = new GlobalObjectiveWeights
+                {
+                    Displacement = 1f
+                }
+            };
 
             var setError = myRobot.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
             if (!setError.Success)

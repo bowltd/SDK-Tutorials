@@ -1,36 +1,38 @@
 ﻿using BOW.ClientSDK;
 using BOW.Common;
 using BOW.Data;
-using BOW.SDK.Core;
+using BOW.API;
 using BOW.Structs;
 
 class Program
 {
+    static private List<BowRobot> robotArray;
+    
     static void Main(string[] args)
     {
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
         
         // Connect to Robot
-        Console.WriteLine(BowClient.Version());
+        Console.WriteLine(Bow.Version());
 
         List<string> modalities = new List<string>() { "proprioception", "motor" };
         
-        Error error1 = BowClient.SetupClient("MultiRobot", (AudioParams) null, true, true);
+        Error error1 = Bow.SetupClient("MultiRobot", (AudioParams) null, true, true);
         var connectError = error1;
         if (!error1.Success)
         {
             System.Environment.Exit(1);
         }
         
-        Error error2 = BowClient.LoginUser("", "", true);
+        Error error2 = Bow.LoginUser("", "", true);
         connectError = error2;
         if (!error2.Success)
         {
             System.Environment.Exit(1);
         }
         
-        
         Console.WriteLine("Logged in");
-        GetRobotsProtoReply robots = BowClient.GetRobots(true, true, false);
+        GetRobotsProtoReply robots = Bow.GetRobots(false, true, false);
         if (!robots.LocalSearchError.Success)
         {
             connectError = robots.LocalSearchError;
@@ -51,14 +53,14 @@ class Program
                 Code = -1,
                 Description = "No robots found"
             };
-            BowClient.CloseClientInterface();
+            Bow.CloseClientInterface();
             System.Environment.Exit(1);
         }
         
         Console.WriteLine(robots.Robots.Count);
 
-        List<BowRobot> robotArray = new List<BowRobot>();
-        var robotNames = new List<string> { "leArm Sim", "mycobot_280_pi Sim" };
+        robotArray = new List<BowRobot>();
+        var robotNames = new List<string> { "SID1 Sim", "Rhino Sim" };
         
         foreach (var n in robotNames)
         {
@@ -87,7 +89,7 @@ class Program
             if (!error3.Success)
             {
                 Console.WriteLine("Could not connect with robot " + r.RobotDetails.RobotId);
-                BowClient.CloseClientInterface();
+                Bow.CloseClientInterface();
                 System.Environment.Exit(1);
             }
             
@@ -101,107 +103,69 @@ class Program
                 }
             }
         }
-        
-        var robotEffectors = new List<string>();
-        foreach (var r in robotArray)
+
+        char decision;
+        Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
+
+        while (true)
         {
-            var listOfEffectors = new List<string>();
-            // We will wait until we have successfully received a proprioception message in order to get a list of effectors
-            while (true)
+            if (Console.KeyAvailable)
             {
-                try
+                // Decide
+                decision = Console.ReadKey(true).KeyChar;
+                    
+                //Act
+                var mSamp = new MotorSample();
+                mSamp.Locomotion = new VelocityTarget();
+                mSamp.Locomotion.TranslationalVelocity = new Vector3();
+                mSamp.Locomotion.RotationalVelocity = new Vector3();
+                    
+                if (decision == 'w')
                 {
-                    var getMsg = r.GetModality("proprioception", true);
-                    if (getMsg.Error.Success)
-                    {
-                        if (getMsg.Data is ProprioceptionSample propSample)
-                        {
-                            if (propSample.Effectors.Count == 0)
-                            {
-                                continue;
-                            }
-                        
-                            robotEffectors.Add(propSample.Effectors[0].EffectorLinkName);
-                            break;
-                        }
-                    }
+                    Console.WriteLine("Moving forward");
+                    mSamp.Locomotion.TranslationalVelocity.X = 0.5f;
                 }
-                catch (Exception ex)
+                else if (decision == 's')
                 {
-                    Console.WriteLine("Exception occurred: " + ex.Message);
-                    Thread.Sleep(250);
+                    Console.WriteLine("Moving backward");
+                    mSamp.Locomotion.TranslationalVelocity.X = -0.5f;
                 }
-            }
-        }
-        
-        //Act
-        var circleRadius = 0.2; // Radius of the circle
-        var circleHeight = 0.3; // Z-axis height of the circle
-        var stepSize = 0.05; // Step size in radians
-        var repeatCount = 100; // Number of repetitions at the final angle
+                else if (decision == 'd')
+                {
+                    Console.WriteLine("Rotate right");
+                    mSamp.Locomotion.RotationalVelocity.Z = -1;
+                }
+                else if (decision == 'a')
+                {
+                    Console.WriteLine("Rotate left");
+                    mSamp.Locomotion.RotationalVelocity.Z = 1;
+                }
+                else if (decision == 'e')
+                {
+                    Console.WriteLine("Strafe right");
+                    mSamp.Locomotion.TranslationalVelocity.Y = -1;
+                }
+                else if (decision == 'q')
+                {
+                    Console.WriteLine("Strafe left");
+                    mSamp.Locomotion.TranslationalVelocity.Y = 1;
+                }
 
-        double x = 0, y = 0, z = 0;
-        while (true) // Loop continuously
-        {
-            for (double angle = 0; angle <= 2 * Math.PI; angle += stepSize)
-            { 
-                x = circleRadius * Math.Cos(angle);
-                y = circleRadius * Math.Sin(angle);
-                z = circleHeight;
-
-                SendObjective(robotArray, robotEffectors, x, y, z);
-                Thread.Sleep(200);
+                foreach (var r in robotArray)
+                {
+                    r.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
+                }
             }
         }
     }
     
-    static void SendObjective(List<BowRobot> robotsArray, List<string> robotEffectors, double x, double y, double z)
+    static void Cleanup()
     {
-        for (int i = 0; i < robotsArray.Count; i++)
+        Console.WriteLine("Closing down application");
+        foreach (var r in robotArray)
         {
-            var thisRobot = robotsArray[i];
-            Console.WriteLine($"Sending objective to {thisRobot.RobotDetails.Name}: {x}, {y}, {z}");
-            try
-            {
-                var mSamp = new MotorSample();
-                mSamp.Objectives.Clear();
-                mSamp.Objectives.Add(new ObjectiveCommand
-                {
-                    TargetEffector = robotEffectors[i],
-                    ControlMode = ControllerEnum.PositionController,
-                    PoseTarget = new PoseTarget
-                    {
-                        Action = ActionEnum.Goto,
-                        TargetType = PoseTarget.Types.TargetTypeEnum.Transform,
-                        TargetScheduleType = PoseTarget.Types.SchedulerEnum.Instantaneous,
-                        Transform = new Transform
-                        {
-                            Position = new Vector3
-                            {
-                                X = (float)x,
-                                Y = (float)y,
-                                Z = (float)z
-                            }
-                        },
-                        OptimiserSettings = new IKOptimiser
-                        {
-                            Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
-                        },
-                    },
-                    Enabled = true,
-                });
-
-                var setError = thisRobot.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
-                if (!setError.Success)
-                {
-                    Console.WriteLine($"Error calling setModality motor {thisRobot.RobotDetails.Name}: {setError.Description}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception occurred {thisRobot.RobotDetails.Name}: { ex.Message}");
-            }
+            r.Disconnect();
         }
-        
+        Bow.CloseClientInterface();
     }
 }

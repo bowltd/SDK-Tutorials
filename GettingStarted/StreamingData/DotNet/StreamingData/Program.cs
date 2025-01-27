@@ -1,28 +1,31 @@
 ﻿using BOW.Common;
 using BOW.Data;
-using BOW.SDK.Core;
-using BOW.Structs;
+using BOW.API;
 using OpenCvSharp;
 
 class Program
 {
+    static Mat yuvImage = null;
+    static Mat rgbImage = new Mat();
+    static Window window = new Window("Display Image", WindowFlags.AutoSize);
+    static BowRobot? myRobot;
+    
     static void Main(string[] args)
     {
-        Console.WriteLine(BowClient.Version());
+        Console.WriteLine(Bow.Version());
 
-        List<string> modalities = new List<string>() { "vision", "motor" };
-        Error quickConnectError;
-        var myRobot = BowClient.QuickConnect("Tutorial 1 Dotnet", modalities, out quickConnectError);
+        List<string> channels = new List<string>() { "vision"};
+        myRobot = Bow.QuickConnect("Streaming Data", channels, true, out var quickConnectError);
         
         if (myRobot == null)
         {
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
+            System.Environment.Exit(1);
         }
         
-        Mat yuvImage = null;
-        Mat rgbImage = new Mat();
-        Window window = new Window("Display Image", WindowFlags.AutoSize);
         int imgW, imgH;
+        Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
+        
         while (true)
         {
             try
@@ -31,11 +34,6 @@ class Program
                 var getModalitySample = myRobot.GetModality("vision", true);
                 if (getModalitySample.Data is ImageSamples imageSamples && imageSamples.Samples[0].NewDataFlag)
                 {
-                    if (window == null)
-                    {
-                        window = new Window("Display Image", WindowFlags.AutoSize);
-                    }
-
                     imgW = (int)imageSamples.Samples[0].DataShape[0];
                     imgH = (int)imageSamples.Samples[0].DataShape[1];
                     
@@ -54,8 +52,8 @@ class Program
                     yuvImage.SetArray(imageSamples.Samples[0].Data.ToByteArray());
                     Cv2.CvtColor(yuvImage, rgbImage, ColorConversionCodes.YUV2RGB_IYUV);
                     window.ShowImage(rgbImage);
+                    Cv2.WaitKey(1);
                 } 
-                Cv2.WaitKey(1);
             }
             catch (Exception ex)
             {
@@ -63,7 +61,14 @@ class Program
                 break;
             }
         }
+    }
+    
+    static void Cleanup()
+    {
+        Console.WriteLine("Closing down application");
         yuvImage.Dispose();
         rgbImage.Dispose();
+        myRobot?.Disconnect();
+        Bow.CloseClientInterface();
     }
 }

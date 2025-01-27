@@ -8,11 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../dotnet-curses/dotnet-curses.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BOW.SDK.CoreTest" Version="0.1.1.366" />
+    <PackageReference Include="BOW.API" Version="0.1.1.381" />
+    <PackageReference Include="dotnet-curses" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

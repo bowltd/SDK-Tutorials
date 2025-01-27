@@ -7,4 +7,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="BOW.API" Version="0.1.1.381" />
+    </ItemGroup>
+
 </Project>

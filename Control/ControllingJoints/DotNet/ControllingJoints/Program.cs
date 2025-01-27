@@ -1,6 +1,5 @@
-using BOW.Common;
 using BOW.Data;
-using BOW.SDK.Core;
+using BOW.API;
 using BOW.Structs;
 
 // Derive a Display class and override its dummy SetCurrentJoint method so we can see here how to contruct a motor message
@@ -24,13 +23,18 @@ class myDisplay : Display {
 }
 
 class Program{
+	
+	static BowRobot? myRobot;
+
 	static void Main(string[] args) {
 
         // Connect to Robot
-        Console.WriteLine(BowClient.Version());
-        List<string> modalities = new List<string>() { "proprioception", "motor" };
-        Error quickConnectError;
-        var myRobot = BowClient.QuickConnect("BOW Tutorial", modalities, false, out quickConnectError);
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
+
+        Console.WriteLine(Bow.Version());
+        List<string> channels = new List<string>() { "proprioception", "motor" };
+
+        myRobot = Bow.QuickConnect("Controlling Joints", channels, false, out var quickConnectError);
         if (myRobot == null){
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
             System.Environment.Exit(1);
@@ -44,7 +48,7 @@ class Program{
                 if (getMsg.Error.Success) {
                     if (getMsg.Data is ProprioceptionSample propSample) {
                         foreach (var joint in propSample.RawJoints) {
-                        	if (joint.Type == BOW.Data.Joint.Types.JointTypeEnum.Fixed) {
+                        	if (joint.Type == Joint.Types.JointTypeEnum.Fixed) {
                         		continue;
                         	}
                        		jointList.Add(new DisplayInfo(joint.Name,joint.Min,joint.Max,joint.Position));
@@ -66,5 +70,12 @@ class Program{
 		// Start the sampling loop
 		display.Run();	
     }
+	
+	static void Cleanup()
+	{
+		Console.WriteLine("Closing down application");
+		myRobot?.Disconnect();
+		Bow.CloseClientInterface();
+	}
 }
 
