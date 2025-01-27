@@ -1,0 +1,6 @@
+bow_api
+opencv-python
+numpy
+python-dotenv
+pynput
+ultralytics

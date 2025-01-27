@@ -1,0 +1,4 @@
+pynput
+bow_api
+opencv-python
+numpy
