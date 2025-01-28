@@ -1,4 +1,4 @@
-0#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Bettering Our Worlds (BOW) Ltd.
 # All Rights Reserved
