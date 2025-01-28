@@ -8,10 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BOW.API" Version="0.1.1.386" />
-      <PackageReference Include="Emgu.CV" Version="4.10.0.5680" />
-      <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.10.0.5680" />
-      <PackageReference Include="Emgu.CV.runtime.windows" Version="4.10.0.5680" />
+      <PackageReference Include="BOW.API.Test" Version="0.1.1.384" />
     </ItemGroup>
 
 </Project>

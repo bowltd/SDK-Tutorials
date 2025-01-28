@@ -5,7 +5,6 @@ using Emgu.CV;
 class Program
 {
     private static BowRobot? _myRobot;
-    private static bool _windowsCreated = false;
     private static Dictionary<string, string> _windowNames = new Dictionary<string, string>();
     
     static void ShowAllImages(ImageSamples imSamples)
