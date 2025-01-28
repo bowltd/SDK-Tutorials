@@ -3,8 +3,8 @@ using BOW.Common;
 using BOW.Data;
 using BOW.API;
 using BOW.RobotProto;
-using BOW.Structs;
-using OpenCvSharp;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
 
 class Program
 {
@@ -32,22 +32,22 @@ class Program
                     }
                     
                     var rgbImage = new Mat();
-                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, MatType.CV_8UC1);
-                    yuvImage.SetArray(thisIm.Data.ToByteArray());
+                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, DepthType.Cv8U, 1);
+                    yuvImage.SetTo(thisIm.Data.ToByteArray());
                     
-                    Cv2.CvtColor(yuvImage, rgbImage, ColorConversionCodes.YUV2RGB_IYUV);
+                    CvInvoke.CvtColor(yuvImage, rgbImage, ColorConversion.Yuv2RgbIyuv);
 
                     if (!_windowNames.ContainsKey(thisIm.Source))
                     {
                         var windowName = $"RobotView{_windowNames.Count} - {thisIm.Source}";
                         Console.WriteLine(windowName);
                         _windowNames[thisIm.Source] = windowName;
-                        Cv2.NamedWindow(windowName);
-                        Cv2.WaitKey(1);
+                        CvInvoke.NamedWindow(windowName);
+                        CvInvoke.WaitKey(1);
                     }
                     
-                    Cv2.ImShow(_windowNames[thisIm.Source], rgbImage);
-                    Cv2.WaitKey(1);
+                    CvInvoke.Imshow(_windowNames[thisIm.Source], rgbImage);
+                    CvInvoke.WaitKey(1);
                 } 
                 else if (thisIm.ImageType == ImageSample.Types.ImageTypeEnum.Depth)
                 {
@@ -57,20 +57,20 @@ class Program
                         continue;
                     }
                     
-                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, MatType.CV_16UC1);
-                    depthImage.SetArray(thisIm.Data.ToByteArray());
-                    
+                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, DepthType.Cv16U, 1);
+                    depthImage.SetTo(thisIm.Data.ToByteArray());
+
                     if (!_windowNames.ContainsKey(imSamples.Samples[i].Source))
                     {
                         var windowName = $"RobotView{_windowNames.Count} - {thisIm.Source}";
                         Console.WriteLine(windowName);
                         _windowNames[thisIm.Source] = windowName;
-                        Cv2.NamedWindow(windowName);
-                        Cv2.WaitKey(1);
+                        CvInvoke.NamedWindow(windowName);
+                        CvInvoke.WaitKey(1);
                     }
                     
-                    Cv2.ImShow(_windowNames[thisIm.Source], depthImage);
-                    Cv2.WaitKey(1);
+                    CvInvoke.Imshow(_windowNames[thisIm.Source], depthImage);
+                    CvInvoke.WaitKey(1);
                 }
                 else
                 {
