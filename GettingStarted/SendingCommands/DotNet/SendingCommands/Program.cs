@@ -1,6 +1,6 @@
 ﻿using BOW.Data;
 using BOW.API;
-using OpenCvSharp;
+using Emgu.CV;
 
 class Program
 {
@@ -28,10 +28,10 @@ class Program
                     }
 
                     var rgbImage = new Mat();
-                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, DepthType.Cv8U, 1);
+                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, Emgu.CV.CvEnum.DepthType.Cv8U, 1);
                     yuvImage.SetTo(thisIm.Data.ToByteArray());
 
-                    CvInvoke.CvtColor(yuvImage, rgbImage, ColorConversion.Yuv2RgbIyuv);
+                    CvInvoke.CvtColor(yuvImage, rgbImage, Emgu.CV.CvEnum.ColorConversion.Yuv2RgbIyuv);
 
                     if (!_windowNames.ContainsKey(thisIm.Source))
                     {
@@ -53,7 +53,7 @@ class Program
                         continue;
                     }
 
-                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, DepthType.Cv16U, 1);
+                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, Emgu.CV.CvEnum.DepthType.Cv16U, 1);
                     depthImage.SetTo(thisIm.Data.ToByteArray());
 
                     if (!_windowNames.ContainsKey(imSamples.Samples[i].Source))
