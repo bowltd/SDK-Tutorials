@@ -161,6 +161,7 @@ class Program
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
             System.Environment.Exit(-1);
         }
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
         Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
         
         while (true)

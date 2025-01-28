@@ -83,6 +83,7 @@ class Program
             System.Environment.Exit(1);
         }
         Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
         
         while (true)
         {

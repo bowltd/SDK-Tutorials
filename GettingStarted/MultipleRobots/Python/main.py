@@ -21,10 +21,10 @@ from pynput import keyboard
 
 stopFlag = False
 window_names = dict()
-windows_created = False
 
 # A set to keep track of the pressed keys
 pressed_keys = set()
+num_robots = 3
 
 def on_press(key):
     try:
@@ -57,14 +57,7 @@ listener = keyboard.Listener(on_press=on_press, on_release=on_release)
 listener.start()
 
 def show_all_images(images_list):
-    global windows_created, window_names
-
-    if not windows_created:
-        for i in range(len(images_list)):
-            window_name = f"RobotView{i} - {images_list[i].Source}"
-            window_names[images_list[i].Source] = window_name
-            cv2.namedWindow(window_name)
-        windows_created = True
+    global window_names
 
     for i, img_data in enumerate(images_list):
         if len(img_data.Data) != 0:
@@ -73,13 +66,20 @@ def show_all_images(images_list):
                     npimage = np.frombuffer(img_data.Data, np.uint8).reshape(
                         [int(img_data.DataShape[1] * 3 / 2), img_data.DataShape[0]])
                     npimage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
-                    cv2.imshow(window_names[img_data.Source], npimage)
                 elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
                     npimage = np.frombuffer(img_data.Data, np.uint16).reshape(
                         [img_data.DataShape[1], img_data.DataShape[0]])
-                    cv2.imshow(window_names[img_data.Source], npimage)
                 else:
                     print("Unhandled image type")
+                    continue
+
+                if not window_names.__contains__(img_data.Source):
+                    window_name = f"RobotView{len(window_names)} - {img_data.Source}"
+                    window_names[img_data.Source] = window_name
+                    cv2.namedWindow(window_name)
+
+                cv2.imshow(window_names[img_data.Source], npimage)
+
 
 def keyboard_control():
     motorSample = bow_data.MotorSample()
@@ -125,11 +125,14 @@ def keyboard_control():
     return motorSample
 
 # Prompt user to select two robots by their index from the displayed list of available robots
-def get_robot_selection(prompt):
+def get_robot_selection(prompt, selected):
     while True:
         try:
             idx = int(input(prompt))
             if 0 <= idx < len(get_robots_result.robots):
+                if idx in selected:
+                    print("Cannot choose the same robot again")
+                    continue
                 return idx
             else:
                 print("Invalid index. Please try again.")
@@ -171,23 +174,17 @@ print("Robots discovered:")
 for i, robot in enumerate(available_robots):
     print(f"{i}: {robot.name}")
 
-if len(available_robots) < 2:
-    print("Not enough available robots to select two.")
+if len(available_robots) < num_robots:
+    print(f"Not enough available robots. {num_robots} Expected.")
     bow_api.close_client_interface()
     sys.exit(-1)
 
-robot_idx_1 = get_robot_selection("Enter the index of the first robot you would like to select: ")
-robot_idx_2 = get_robot_selection("Enter the index of the second robot you would like to select: ")
-
-if robot_idx_1 == robot_idx_2:
-    print("You selected the same robot twice. Please restart and select two distinct robots.")
-    bow_api.close_client_interface()
-    sys.exit(-1)
-
-selected_robots = [available_robots[robot_idx_1], available_robots[robot_idx_2]]
+robot_indices = []
+for i in range(num_robots):
+    robot_indices.append(get_robot_selection(f"Select robot {i+1} of {num_robots}: ", robot_indices))
 
 # Create BOW Robot instances
-robots = [bow_api.Robot(r) for r in selected_robots]
+robots = [bow_api.Robot(available_robots[ridx]) for ridx in robot_indices]
 
 # Connect to each robot and open target modalities
 target_channels = ["vision", "motor"]
@@ -209,29 +206,16 @@ try:
     while True:
         # Sense
         all_images = []
-        robot_0_images, err = robots[0].vision.get(True)
-        if not err.Success:
-            continue
+        skip = False
+        for robot in robots:
+            robot_images, err = robot.vision.get(True)
+            if err.Success and robot_images is not None:
+                for image in robot_images.Samples:
+                    image.Source = f"{robot.robot_details.name}_{image.Source}"
+                    all_images.append(image)
 
-        if len(robot_0_images.Samples) == 0:
-            continue
-
-        for image in robot_0_images.Samples:
-            image.Source = f"{robots[0].robot_details.name}_{image.Source}"
-            all_images.append(image)
-
-        robot_1_images, err = robots[1].vision.get(True)
-        if not err.Success:
-            continue
-
-        if len(robot_1_images.Samples) == 0:
-            continue
-
-        for image in robot_1_images.Samples:
-            image.Source = f"{robots[1].robot_details.name}_{image.Source}"
-            all_images.append(image)
-
-        show_all_images(all_images)
+        if len(all_images) > 0:
+            show_all_images(all_images)
 
         # Decide
         motorSample = keyboard_control()
