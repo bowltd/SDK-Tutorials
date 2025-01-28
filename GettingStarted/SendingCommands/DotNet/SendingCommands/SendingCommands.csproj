@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BOW.API" Version="0.1.1.379" />
+      <PackageReference Include="BOW.API" Version="0.1.1.386" />
     </ItemGroup>
 
 </Project>

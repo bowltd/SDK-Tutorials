@@ -77,6 +77,16 @@ def show_all_images(images_list):
 
 def keyboard_control():
     motorSample = bow_data.MotorSample()
+    motorSample.Locomotion.TranslationalVelocity.X = 0
+    motorSample.Locomotion.TranslationalVelocity.Y = 0
+    motorSample.Locomotion.TranslationalVelocity.Z = 0
+    motorSample.Locomotion.RotationalVelocity.X = 0
+    motorSample.Locomotion.RotationalVelocity.Y = 0
+    motorSample.Locomotion.RotationalVelocity.Z = 0
+    motorSample.GazeTarget.GazeVector.X = 0
+    motorSample.GazeTarget.GazeVector.Y = 0
+    motorSample.GazeTarget.GazeVector.Z = 0
+
     if 'w' in pressed_keys:
         print("Moving forward")
         motorSample.Locomotion.TranslationalVelocity.X = 0.2
@@ -95,21 +105,18 @@ def keyboard_control():
     if 'q' in pressed_keys:
         print("Strafe left")
         motorSample.Locomotion.TranslationalVelocity.Y = 1
-    if 'space' in pressed_keys:
-        print("Stop moving")
-        reset_locomotion(motorSample)
     if 'i' in pressed_keys:
         print("Look up")
-        motorSample.GazeTarget.GazeVector.Y = -0.2
+        motorSample.GazeTarget.GazeVector.X = -0.2
     if 'k' in pressed_keys:
         print("Look down")
-        motorSample.GazeTarget.GazeVector.Y = 0.2
+        motorSample.GazeTarget.GazeVector.X = 0.2
     if 'j' in pressed_keys:
         print("Look left")
-        motorSample.GazeTarget.GazeVector.X = -0.2
+        motorSample.GazeTarget.GazeVector.Y = 0.2
     if 'l' in pressed_keys:
         print("Look right")
-        motorSample.GazeTarget.GazeVector.X = 0.2
+        motorSample.GazeTarget.GazeVector.Y = -0.2
     if 'o' in pressed_keys:
         print("Tilt left")
         motorSample.GazeTarget.GazeVector.Z = -0.2

@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BOW.API" Version="0.1.1.381" />
+      <PackageReference Include="BOW.API" Version="0.1.1.386" />
       <PackageReference Include="Google.Protobuf" Version="3.26.1" />
       <PackageReference Include="OpenCvSharp4" Version="4.9.0.20240103" />
       <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
