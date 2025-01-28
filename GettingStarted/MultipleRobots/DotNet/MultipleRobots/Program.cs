@@ -10,7 +10,7 @@ class Program
 {
     static private List<BowRobot> robotArray;
     private static Dictionary<string, string> _windowNames = new Dictionary<string, string>();
-    private static int _numRobots = 3;
+    private static int _numRobots = 2;
     
     static void ShowAllImages(ImageSamples imSamples)
     {
