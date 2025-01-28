@@ -1,7 +1,10 @@
 ﻿using BOW.Common;
 using BOW.Data;
 using BOW.API;
-using OpenCvSharp;
+using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.UI;
+using Emgu.CV.Structure;
 
 class Program
 {
@@ -18,8 +21,8 @@ class Program
                 var windowName = $"RobotView{i} - {imSamples.Samples[i].Source}";
                 Console.WriteLine(windowName);
                 _windowNames[imSamples.Samples[i].Source] = windowName;
-                Cv2.NamedWindow(windowName);
-                Cv2.WaitKey(1);
+                CvInvoke.NamedWindow(windowName);
+                CvInvoke.WaitKey(1);
             }
             _windowsCreated = true;
         }
@@ -27,7 +30,7 @@ class Program
         for (int i = 0; i < imSamples.Samples.Count; i++)
         {
             var thisIm = imSamples.Samples[i];
-
+        
             var imageWidth = (int)thisIm.DataShape[0];
             var imageHeigth = (int)thisIm.DataShape[1];
             
@@ -41,13 +44,13 @@ class Program
                         continue;
                     }
                     
-                    var rgbImage = new Mat();
-                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, MatType.CV_8UC1);
-                    yuvImage.SetArray(thisIm.Data.ToByteArray());
+                    var rgbImage = new Emgu.CV.Mat();
+                    var yuvImage = new Emgu.CV.Mat(imageHeigth*3/2, imageWidth, DepthType.Cv8U, 1);
+                    yuvImage.SetTo(thisIm.Data.ToByteArray());
                     
-                    Cv2.CvtColor(yuvImage, rgbImage, ColorConversionCodes.YUV2RGB_IYUV);
-                    Cv2.ImShow(_windowNames[imSamples.Samples[i].Source], rgbImage);
-                    Cv2.WaitKey(1);
+                    CvInvoke.CvtColor(yuvImage, rgbImage, ColorConversion.Yuv2RgbIyuv);
+                    CvInvoke.Imshow(_windowNames[imSamples.Samples[i].Source], rgbImage);
+                    CvInvoke.WaitKey(1);
                 } 
                 else if (thisIm.ImageType == ImageSample.Types.ImageTypeEnum.Depth)
                 {
@@ -57,10 +60,10 @@ class Program
                         continue;
                     }
                     
-                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, MatType.CV_16UC1);
-                    depthImage.SetArray(thisIm.Data.ToByteArray());
-                    Cv2.ImShow(_windowNames[imSamples.Samples[i].Source], depthImage);
-                    Cv2.WaitKey(1);
+                    // var depthImage = new Mat(imageHeigth*3/2, imageWidth, MatType.CV_16UC1);
+                    // depthImage.SetArray(thisIm.Data.ToByteArray());
+                    // Cv2.ImShow(_windowNames[imSamples.Samples[i].Source], depthImage);
+                    // Cv2.WaitKey(1);
                 }
                 else
                 {
@@ -72,6 +75,7 @@ class Program
     
     static void Main(string[] args)
     {
+        
         Console.WriteLine(Bow.Version());
 
         List<string> channels = new List<string>() { "vision"};
@@ -98,7 +102,7 @@ class Program
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception occurred: " + ex.Message);
+                Console.WriteLine("Exception occurred: " + ex); 
                 break;
             }
         }
@@ -109,5 +113,6 @@ class Program
         Console.WriteLine("Closing down application");
         _myRobot?.Disconnect();
         Bow.CloseClientInterface();
+        CvInvoke.DestroyAllWindows();
     }
 }
