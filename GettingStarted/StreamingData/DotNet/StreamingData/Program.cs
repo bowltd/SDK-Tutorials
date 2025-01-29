@@ -88,6 +88,7 @@ class Program
         {
             Console.WriteLine("Failed to load Emgu OpenCV library. Check installed runtimes.");
             Console.WriteLine(ex);
+            System.Environment.Exit(-1);
         }
         
         Console.WriteLine(Bow.Version());
