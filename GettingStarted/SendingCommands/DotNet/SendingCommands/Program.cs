@@ -156,6 +156,16 @@ class Program
     
     static void Main(string[] args)
     {
+        try
+        {
+            var buildinfo = Emgu.CV.CvInvoke.BuildInformation;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Failed to load Emgu OpenCV library. Check installed runtimes.");
+            Console.WriteLine(ex);
+        }
+        
         Console.WriteLine(Bow.Version());
 
         List<string> channels = new List<string>() { "vision", "motor" };
