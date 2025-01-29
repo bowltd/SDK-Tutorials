@@ -15,9 +15,9 @@ class Program
         // Connect to Robot
         Console.WriteLine(Bow.Version());
 
-        List<string> modalities = new List<string>() { "proprioception", "motor" };
+        List<string> channels = new List<string>() { "proprioception", "motor" };
 
-        myRobot = Bow.QuickConnect("Tutorial 3 Dotnet", modalities, true, out var quickConnectError);
+        myRobot = Bow.QuickConnect("Inverse Kinematics", channels, true, null, out var quickConnectError);
         
         if (myRobot == null)
         {
@@ -34,43 +34,40 @@ class Program
         {
             try
             {
-                var getMsg = myRobot.GetModality("proprioception", true);
-                if (getMsg.Error.Success)
+                var propSample = myRobot.Proprioception.Get(true);
+                if (propSample != null)
                 {
-                    if (getMsg.Data is ProprioceptionSample propSample)
+                    if (propSample.Effectors.Count == 0)
                     {
-                        if (propSample.Effectors.Count == 0)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        foreach (var b in propSample.Parts)
+                    foreach (var b in propSample.Parts)
+                    {
+                        foreach (var eff in b.Effectors)
                         {
-                            foreach (var eff in b.Effectors)
+                            //only get controllable effectors. This removes all effectors that don't have moveable joints within their kinematic chain
+                            if (!eff.IsControllable)
                             {
-                                //only get controllable effectors. This removes all effectors that don't have moveable joints within their kinematic chain
-                                if (!eff.IsControllable)
-                                {
-                                    continue;
-                                }
+                                continue;
+                            }
 
-                                listOfParts.Add(eff.Type.ToString());
-                                listOfEffectors.Add(eff.EffectorLinkName);
-                                listOfReach.Add(eff.Reach);
-                                if (eff.EndTransform.Position.Z > eff.RootTransform.Position.Z)
-                                {
-                                    //Effector is by default higher than root hence height offset should be positive
-                                    listOfUpDown.Add(1f);
-                                }
-                                else
-                                {
-                                    //Effector is by default lower than effector root hence height offset should be negative
-                                    listOfUpDown.Add(-1f);
-                                }
+                            listOfParts.Add(eff.Type.ToString());
+                            listOfEffectors.Add(eff.EffectorLinkName);
+                            listOfReach.Add(eff.Reach);
+                            if (eff.EndTransform.Position.Z > eff.RootTransform.Position.Z)
+                            {
+                                //Effector is by default higher than root hence height offset should be positive
+                                listOfUpDown.Add(1f);
+                            }
+                            else
+                            {
+                                //Effector is by default lower than effector root hence height offset should be negative
+                                listOfUpDown.Add(-1f);
                             }
                         }
-                        break;
                     }
+                    break;
                 }
             }
             catch (Exception ex)
@@ -184,10 +181,10 @@ class Program
                 }
             };
 
-            var setError = myRobot.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
+            var setError = myRobot.Motor.Set(mSamp);
             if (!setError.Success)
             {
-                Console.WriteLine($"Error calling setModality motor: {setError.Description}");
+                Console.WriteLine($"Error calling Motor.Set: {setError.Description}");
             }
         }
         catch (Exception ex)

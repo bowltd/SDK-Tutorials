@@ -1,6 +1,5 @@
 using BOW.Data;
 using BOW.API;
-using BOW.Structs;
 
 // Derive a Display class and override its dummy SetCurrentJoint method so we can see here how to contruct a motor message
 class myDisplay : Display {
@@ -17,8 +16,9 @@ class myDisplay : Display {
         		Name=joint.Name, 
         		Position=joint.Value,
         	});
-        Robot.SetModality("motor",(int)DataMessage.Types.DataType.Motor,motorSample);
-        System.Threading.Thread.Sleep(30);
+
+        Robot.Motor.Set(motorSample);
+        Thread.Sleep(30);
 	}
 }
 
@@ -34,7 +34,7 @@ class Program{
         Console.WriteLine(Bow.Version());
         List<string> channels = new List<string>() { "proprioception", "motor" };
 
-        myRobot = Bow.QuickConnect("Controlling Joints", channels, false, out var quickConnectError);
+        myRobot = Bow.QuickConnect("Controlling Joints", channels, false, null, out var quickConnectError);
         if (myRobot == null){
             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
             System.Environment.Exit(1);
@@ -44,17 +44,15 @@ class Program{
 		List<DisplayInfo> jointList = new List<DisplayInfo>();
         while(true){
             try {
-                var getMsg = myRobot.GetModality("proprioception", true);
-                if (getMsg.Error.Success) {
-                    if (getMsg.Data is ProprioceptionSample propSample) {
-                        foreach (var joint in propSample.RawJoints) {
-                        	if (joint.Type == Joint.Types.JointTypeEnum.Fixed) {
-                        		continue;
-                        	}
-                       		jointList.Add(new DisplayInfo(joint.Name,joint.Min,joint.Max,joint.Position));
-                        }
-                        break;
-                    }
+                var propSample = myRobot.Proprioception.Get(true);
+                if (propSample != null) {
+	                foreach (var joint in propSample.RawJoints) {
+		                if (joint.Type == Joint.Types.JointTypeEnum.Fixed) {
+			                continue;
+		                }
+		                jointList.Add(new DisplayInfo(joint.Name,joint.Min,joint.Max,joint.Position));
+	                }
+	                break;
                 }
             }
             catch (Exception ex) {

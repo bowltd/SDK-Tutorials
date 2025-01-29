@@ -8,11 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BOW.API" Version="0.1.1.381" />
+      <PackageReference Include="BOW.API.Test" Version="0.1.1.384" />
       <PackageReference Include="Google.Protobuf" Version="3.26.1" />
-      <PackageReference Include="OpenCvSharp4" Version="4.9.0.20240103" />
-      <PackageReference Include="OpenCvSharp4.Extensions" Version="4.9.0.20240103" />
-      <PackageReference Include="OpenCvSharp4_.runtime.ubuntu.20.04-x64" Version="4.9.0.20240103" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.0-preview.3.24172.9" />
       <PackageReference Include="System.Memory" Version="4.5.5" />
       <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />

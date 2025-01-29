@@ -2,159 +2,314 @@
 using BOW.Common;
 using BOW.Data;
 using BOW.API;
-using BOW.Structs;
+using BOW.RobotProto;
+using Emgu.CV;
 
 class Program
 {
     static private List<BowRobot> robotArray;
+    private static Dictionary<string, string> _windowNames = new Dictionary<string, string>();
+    private static int _numRobots = 2;
+    
+    static void ShowAllImages(ImageSamples imSamples)
+    {
+        for (int i = 0; i < imSamples.Samples.Count; i++)
+        {
+            var thisIm = imSamples.Samples[i];
+
+            var imageWidth = (int)thisIm.DataShape[0];
+            var imageHeigth = (int)thisIm.DataShape[1];
+            
+            if (thisIm.NewDataFlag)
+            {
+                if (thisIm.ImageType == ImageSample.Types.ImageTypeEnum.Rgb)
+                {
+                    var expectedSize = imageWidth * imageHeigth * 3 / 2;
+                    if (thisIm.Data.Length < expectedSize)
+                    {
+                        continue;
+                    }
+                    
+                    var rgbImage = new Mat();
+                    var yuvImage = new Mat(imageHeigth*3/2, imageWidth, Emgu.CV.CvEnum.DepthType.Cv8U, 1);
+                    yuvImage.SetTo(thisIm.Data.ToByteArray());
+                    
+                    CvInvoke.CvtColor(yuvImage, rgbImage, Emgu.CV.CvEnum.ColorConversion.Yuv2RgbIyuv);
+
+                    if (!_windowNames.ContainsKey(thisIm.Source))
+                    {
+                        var windowName = $"RobotView{_windowNames.Count} - {thisIm.Source}";
+                        Console.WriteLine(windowName);
+                        _windowNames[thisIm.Source] = windowName;
+                        CvInvoke.NamedWindow(windowName);
+                        CvInvoke.WaitKey(1);
+                    }
+                    
+                    CvInvoke.Imshow(_windowNames[thisIm.Source], rgbImage);
+                    CvInvoke.WaitKey(1);
+                } 
+                else if (thisIm.ImageType == ImageSample.Types.ImageTypeEnum.Depth)
+                {
+                    var expectedSize = imageWidth * imageHeigth;
+                    if (thisIm.Data.Length < expectedSize)
+                    {
+                        continue;
+                    }
+                    
+                    var depthImage = new Mat(imageHeigth*3/2, imageWidth, Emgu.CV.CvEnum.DepthType.Cv16U, 1);
+                    depthImage.SetTo(thisIm.Data.ToByteArray());
+
+                    if (!_windowNames.ContainsKey(imSamples.Samples[i].Source))
+                    {
+                        var windowName = $"RobotView{_windowNames.Count} - {thisIm.Source}";
+                        Console.WriteLine(windowName);
+                        _windowNames[thisIm.Source] = windowName;
+                        CvInvoke.NamedWindow(windowName);
+                        CvInvoke.WaitKey(1);
+                    }
+                    
+                    CvInvoke.Imshow(_windowNames[thisIm.Source], depthImage);
+                    CvInvoke.WaitKey(1);
+                }
+                else
+                {
+                    Console.WriteLine("Unknown image type");
+                }
+            }
+        }
+    }
+
+    static MotorSample KeyboardControl()
+    {
+        var mSamp = new MotorSample();
+        mSamp.Locomotion = new VelocityTarget();
+        mSamp.Locomotion.TranslationalVelocity = new Vector3();
+        mSamp.Locomotion.RotationalVelocity = new Vector3();
+        mSamp.GazeTarget = new GazeTarget();
+        mSamp.GazeTarget.GazeVector = new Vector3();
+        
+        if (Console.KeyAvailable)
+        {
+            char decision;
+            decision = Console.ReadKey(true).KeyChar;
+            
+            if (decision == 'w')
+            {
+                Console.WriteLine("Moving forward");
+                mSamp.Locomotion.TranslationalVelocity.X = 0.5f;
+            }
+            else if (decision == 's')
+            {
+                Console.WriteLine("Moving backward");
+                mSamp.Locomotion.TranslationalVelocity.X = -0.5f;
+            }
+            else if (decision == 'd')
+            {
+                Console.WriteLine("Rotate right");
+                mSamp.Locomotion.RotationalVelocity.Z = -1;
+            }
+            else if (decision == 'a')
+            {
+                Console.WriteLine("Rotate left");
+                mSamp.Locomotion.RotationalVelocity.Z = 1;
+            }
+            else if (decision == 'e')
+            {
+                Console.WriteLine("Strafe right");
+                mSamp.Locomotion.TranslationalVelocity.Y = -1;
+            }
+            else if (decision == 'q')
+            {
+                Console.WriteLine("Strafe left");
+                mSamp.Locomotion.TranslationalVelocity.Y = 1;
+            }
+            else if (decision == 'i')
+            {
+                Console.WriteLine("Look up");
+                mSamp.GazeTarget.GazeVector.X = -0.2f;
+            }
+            else if (decision == 'k')
+            {
+                Console.WriteLine("Look down");
+                mSamp.GazeTarget.GazeVector.X = 0.2f;
+            }
+            else if (decision == 'j')
+            {
+                Console.WriteLine("Look left");
+                mSamp.GazeTarget.GazeVector.Y = 0.2f;
+            }
+            else if (decision == 'l')
+            {
+                Console.WriteLine("Look right");
+                mSamp.GazeTarget.GazeVector.Y = -0.2f;
+            }
+            else if (decision == 'o')
+            {
+                Console.WriteLine("Tilt left");
+                mSamp.GazeTarget.GazeVector.Z = -0.2f;
+            }
+            else if (decision == 'u')
+            {
+                Console.WriteLine("Tilt right");
+                mSamp.GazeTarget.GazeVector.Z = 0.2f;
+            }
+        }
+
+        return mSamp;
+    }
+
+    static int GetRobotSelection(string prompt, int robotCount, List<int> selected)
+    {
+        while (true)
+        {
+            try
+            {
+                Console.Write(prompt);
+                string input = Console.ReadLine();
+                int idx = int.Parse(input);
+
+                if (idx >= 0 && idx < robotCount)
+                {
+                    if (selected.Contains(idx))
+                    {
+                        Console.WriteLine("Cannot choose the same robot again");
+                        continue;
+                    }
+                    return idx;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid index. Please try again.");
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid input. Please enter a valid integer index.");
+            }
+        }
+    }
     
     static void Main(string[] args)
     {
-        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
-        
-        // Connect to Robot
         Console.WriteLine(Bow.Version());
 
-        List<string> modalities = new List<string>() { "proprioception", "motor" };
+        List<string> channels = new List<string>() { "vision", "motor" };
         
-        Error error1 = Bow.SetupClient("MultiRobot", (AudioParams) null, true, true);
-        var connectError = error1;
-        if (!error1.Success)
+        Error setupError = Bow.Setup("Multiple Robots",  true, true, null);
+        if (!setupError.Success)
         {
+            Console.WriteLine($"Setup failed: {setupError.Description}");
             System.Environment.Exit(1);
         }
         
-        Error error2 = Bow.LoginUser("", "", true);
-        connectError = error2;
-        if (!error2.Success)
+        Error loginError = Bow.LoginUser("", "", true);
+        if (!loginError.Success)
         {
+            Console.WriteLine($"Login failed: {loginError.Description}");
             System.Environment.Exit(1);
         }
-        
         Console.WriteLine("Logged in");
+        
         GetRobotsProtoReply robots = Bow.GetRobots(false, true, false);
         if (!robots.LocalSearchError.Success)
         {
-            connectError = robots.LocalSearchError;
             Console.WriteLine(robots.LocalSearchError.Description);
         }
         
         if (!robots.RemoteSearchError.Success)
         {
-            connectError = robots.RemoteSearchError;
-            Console.WriteLine(robots.RemoteSearchError.Description);
+            Console.WriteLine($"Get Robots failed: {robots.RemoteSearchError.Description}");
+            System.Environment.Exit(1);
         }
         
         if (robots.Robots.Count == 0)
         {
-            connectError = new Error()
+            Console.WriteLine("No robots found");
+            System.Environment.Exit(1);
+        }
+
+        var availableRobots = new List<Robot>();
+        foreach (var robot in robots.Robots)
+        {
+            if (robot.RobotState.Available)
             {
-                Success = false,
-                Code = -1,
-                Description = "No robots found"
-            };
-            Bow.CloseClientInterface();
+                availableRobots.Add(robot);
+            }
+        }
+        
+        Console.WriteLine("Available Robots:");
+        for (int i = 0; i < availableRobots.Count; i++)
+        {
+            Console.WriteLine($"{i}: {availableRobots[i].Name}");
+        }
+
+
+        if (availableRobots.Count < _numRobots)
+        {
+            Console.WriteLine($"Not enough available robots. {_numRobots} expected");
             System.Environment.Exit(1);
         }
         
-        Console.WriteLine(robots.Robots.Count);
-
-        robotArray = new List<BowRobot>();
-        var robotNames = new List<string> { "SID1 Sim", "Rhino Sim" };
-        
-        foreach (var n in robotNames)
+        var robotIndices = new List<int>();
+        for (int i = 0; i < _numRobots; i++)
         {
-            var found = false;
-            foreach (var r in robots.Robots)
-            {
-                Console.WriteLine(r.Name);
-                if (r.Name == n)
-                {
-                    found = true;
-                    robotArray.Add(new BowRobot(r));
-                }
-            }
-            
-            if (!found)
-            {
-                Console.WriteLine($"Failed to find robot: {n}");
-                System.Environment.Exit(1);
-            }
+            robotIndices.Add(GetRobotSelection($"Select robot {i+1} of {_numRobots}: ", availableRobots.Count, robotIndices));
         }
+        
+        robotArray = new List<BowRobot>();
+        foreach (var idx in robotIndices)
+        {
+            robotArray.Add(new BowRobot(availableRobots[idx]));
+        }
+        
+        AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
+        Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
         
         foreach (var r in robotArray)
         {
-            Error error3 = r.Connect();
-            connectError = error3;
-            if (!error3.Success)
+            Error connectError = r.Connect();
+            if (!connectError.Success)
             {
                 Console.WriteLine("Could not connect with robot " + r.RobotDetails.RobotId);
-                Bow.CloseClientInterface();
                 System.Environment.Exit(1);
             }
             
-            foreach (string modality in modalities)
+            foreach (string channel in channels)
             {
-                Error error4 = r.OpenModality(modality);
-                if (!error4.Success)
+                Error openModError = r.OpenChannel(channel);
+                if (!openModError.Success)
                 {
-                    connectError = error3;
-                    Console.WriteLine("Failed to open " + modality + " modality: " + error4.Description);
+                    Console.WriteLine("Failed to open " + channel + " channel: " + openModError.Description);
                 }
             }
         }
-
-        char decision;
-        Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
-
+        
+        ImageSamples allImages = new ImageSamples();
         while (true)
         {
-            if (Console.KeyAvailable)
+            allImages.Samples.Clear();
+            foreach (var r in robotArray)
             {
-                // Decide
-                decision = Console.ReadKey(true).KeyChar;
-                    
-                //Act
-                var mSamp = new MotorSample();
-                mSamp.Locomotion = new VelocityTarget();
-                mSamp.Locomotion.TranslationalVelocity = new Vector3();
-                mSamp.Locomotion.RotationalVelocity = new Vector3();
-                    
-                if (decision == 'w')
+                var rImages = r.Vision.Get(true);
+                if (rImages != null)
                 {
-                    Console.WriteLine("Moving forward");
-                    mSamp.Locomotion.TranslationalVelocity.X = 0.5f;
+                    foreach (var rImage in rImages.Samples)
+                    {
+                        rImage.Source = $"{r.RobotDetails.Name}_{rImage.Source}";
+                        allImages.Samples.Add(rImage);
+                    }
                 }
-                else if (decision == 's')
-                {
-                    Console.WriteLine("Moving backward");
-                    mSamp.Locomotion.TranslationalVelocity.X = -0.5f;
-                }
-                else if (decision == 'd')
-                {
-                    Console.WriteLine("Rotate right");
-                    mSamp.Locomotion.RotationalVelocity.Z = -1;
-                }
-                else if (decision == 'a')
-                {
-                    Console.WriteLine("Rotate left");
-                    mSamp.Locomotion.RotationalVelocity.Z = 1;
-                }
-                else if (decision == 'e')
-                {
-                    Console.WriteLine("Strafe right");
-                    mSamp.Locomotion.TranslationalVelocity.Y = -1;
-                }
-                else if (decision == 'q')
-                {
-                    Console.WriteLine("Strafe left");
-                    mSamp.Locomotion.TranslationalVelocity.Y = 1;
-                }
+            }
 
-                foreach (var r in robotArray)
-                {
-                    r.SetModality("motor", (int)DataMessage.Types.DataType.Motor, mSamp);
-                }
+            if (allImages.Samples.Count > 0)
+            {
+                ShowAllImages(allImages);
+            }
+            
+            var mSamp = KeyboardControl();
+            foreach (var r in robotArray)
+            {
+                r.Motor.Set(mSamp);
             }
         }
     }
