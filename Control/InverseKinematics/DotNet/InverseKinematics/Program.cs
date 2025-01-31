@@ -5,6 +5,56 @@ using BOW.Structs;
 
 class Program
 {
+    static void SendObjective(BowRobot myRobot, string selectedEffector, double x, double y, double z)
+    {
+        Console.WriteLine($"Sending objective: {x}, {y}, {z}");
+        try {
+            var mSamp = new MotorSample();
+            mSamp.IKSettings = new IKOptimiser {
+                Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
+                GlobalObjectiveWeights = new GlobalObjectiveWeights {
+                    Displacement = 1f
+                }
+            };
+
+            var objectiveCommand = new ObjectiveCommand {
+                TargetEffector = selectedEffector,
+                ControlMode = ControllerEnum.PositionController,
+                PoseTarget = new PoseTarget {
+                    Action = ActionEnum.Goto,
+                    TargetType = PoseTarget.Types.TargetTypeEnum.Transform,
+                    TargetScheduleType = PoseTarget.Types.SchedulerEnum.Instantaneous,
+                }
+            };
+
+            objectiveCommand.PoseTarget.LocalObjectiveWeights = new LocalObjectiveWeights {
+                Position = 1,
+                Orientation = 0
+            };
+            
+            objectiveCommand.PoseTarget.Transform = new Transform {
+                Position = new Vector3 {
+                    X = (float)x,
+                    Y = (float)y,
+                    Z = (float)z
+                }
+            };
+
+            objectiveCommand.Enabled = true;
+            mSamp.Objectives.Clear();
+            mSamp.Objectives.Add(objectiveCommand);
+            
+            var setError = myRobot.Motor.Set(mSamp);
+            if (!setError.Success) {
+                Console.WriteLine($"Error calling Motor.Set: {setError.Description}");
+            }
+        }
+        catch (Exception ex) {
+            Console.WriteLine("Exception occurred: " + ex.Message);
+            return;
+        }
+    }
+    
     static BowRobot? myRobot;
     
     static void Main(string[] args)
@@ -150,58 +200,4 @@ class Program
         }
     }
     
-    static void SendObjective(BowRobot myRobot, string selectedEffector, double x, double y, double z)
-    {
-        Console.WriteLine($"Sending objective: {x}, {y}, {z}");
-        try
-        {
-            var mSamp = new MotorSample();
-            mSamp.Objectives.Clear();
-            mSamp.Objectives.Add(new ObjectiveCommand
-            {
-                TargetEffector = selectedEffector,
-                ControlMode = ControllerEnum.PositionController,
-                PoseTarget = new PoseTarget
-                {
-                    Action = ActionEnum.Goto,
-                    TargetType = PoseTarget.Types.TargetTypeEnum.Transform,
-                    TargetScheduleType = PoseTarget.Types.SchedulerEnum.Instantaneous,
-                    Transform = new Transform
-                    {
-                        Position = new Vector3
-                        {
-                            X = (float)x,
-                            Y = (float)y,
-                            Z = (float)z
-                        }
-                    },
-                    LocalObjectiveWeights = new LocalObjectiveWeights
-                    {
-                        Position = 1,
-                        Orientation = 0
-                    }
-                },
-                Enabled = true,
-            });
-            mSamp.IKSettings = new IKOptimiser
-            {
-                Preset = IKOptimiser.Types.OptimiserPreset.HighAccuracy,
-                GlobalObjectiveWeights = new GlobalObjectiveWeights
-                {
-                    Displacement = 1f
-                }
-            };
-
-            var setError = myRobot.Motor.Set(mSamp);
-            if (!setError.Success)
-            {
-                Console.WriteLine($"Error calling Motor.Set: {setError.Description}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Exception occurred: " + ex.Message);
-            return;
-        }
-    }
 }
