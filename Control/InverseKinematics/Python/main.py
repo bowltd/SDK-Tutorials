@@ -37,7 +37,7 @@ def SendObjective(robot, effector, x, y, z):
         print("Failed to set motor channel")
 
 # Use quick_connect to connect to robot
-myRobot, error = bow_api.quick_connect(app_name="Inverse Kinematics", channels=["proprioception", "motor"])
+myRobot, error = bow_api.quick_connect(app_name="Inverse Kinematics", channels=["proprioception", "motor"], verbose=False)
 
 if not error.Success:
     print("Failed to connect to robot", error)
