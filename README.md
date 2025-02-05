@@ -32,17 +32,8 @@ cd SDK-Tutorials
 
 #### Starting Point
 
-Navigate to the `Tutorials/basics/Step_0_Dependencies` directory
-to set up the necessary environment for your chosen language and operating system.
+For a guided tour on the tutorials and further explanation please follow our [tutorial documentation](https://docs.bow.software/Tutorials).
 
-#### Explore
-
-After setting up the dependencies,
-feel free to explore the tutorials in order or go directly to the one that is the most interesting. 
-
-Every tutorial contains its own README describing a different aspect of the BOW SDK and how it can be used. 
-
-Within every tutorial, you will find subfolders implementing that specific aspect using different programming languages.
 ## Support
 
 For any issues or queries, please refer to our support guidelines or contact the community support team through the BOW Developer Portal at https://bow.software.
