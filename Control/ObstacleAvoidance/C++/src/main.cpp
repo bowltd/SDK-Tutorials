@@ -12,11 +12,95 @@
 #include <opencv2/imgproc.hpp>
 
 #include <bow_structs.pb.h>
-#include <bow_sdk.h>
+#include <bow_api.h>
 
 using namespace bow;
 using namespace cv;
 using namespace std;
+
+static std::map<std::string, std::string> window_names;
+void show_all_images(bow::data::ImageSamples* images_list)
+{
+    for (int i = 0; i < images_list->samples_size(); ++i)
+    {
+        const auto& img_data = images_list->samples(i);
+
+        // We will store the image to display here
+        cv::Mat show_image;
+
+        if (img_data.newdataflag())
+        {
+            int image_width = img_data.datashape(0);
+            int image_height = img_data.datashape(1);
+
+            if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_RGB)
+            {
+                // Expecting YUV I420 data with size (width * height * 3/2)
+                int expected_size = image_width * image_height * 3 / 2;
+                if (static_cast<int>(img_data.data().size()) < expected_size)
+                {
+                    continue; // not enough data
+                }
+
+                // Create a cv::Mat pointing to the raw YUV buffer
+                // The image layout is height*3/2 rows (Y then U, V), width columns, 1 channel
+                cv::Mat yuv_image(image_height * 3 / 2, image_width, CV_8UC1, const_cast<char*>(img_data.data().data()));
+
+                // Convert from I420 YUV to RGB
+                cv::cvtColor(yuv_image, show_image, cv::COLOR_YUV2RGB_IYUV);
+            }
+            else if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_DEPTH)
+            {
+                // Expecting 16-bit unsigned depth data with size (width * height)
+                // Each pixel is 2 bytes => total Data size = (width * height * 2)
+                int expected_pixel_count = image_width * image_height;
+                int expected_size_bytes = expected_pixel_count * static_cast<int>(sizeof(uint16_t));
+                if (static_cast<int>(img_data.data().size()) < expected_size_bytes)
+                {
+                    continue; // not enough data
+                }
+
+                // Interpret Data as 16-bit depth
+                cv::Mat depth_image(image_height, image_width, CV_16UC1,const_cast<char*>(img_data.data().data()));
+
+                // Normalize depth range to 0-255 (8-bit) so we can visualize
+                cv::Mat normalized_depth;
+                cv::normalize(depth_image, normalized_depth, 0, 255, cv::NORM_MINMAX, CV_8UC1);
+
+                // Apply a colormap for visualization
+                cv::applyColorMap(normalized_depth, show_image, cv::COLORMAP_JET);
+            }
+            else
+            {
+                std::cout << "Unknown image type" << std::endl;
+            }
+        }
+
+        //If we got a valid image to display, show it
+        if (!show_image.empty())
+        {
+            // If we haven't seen this Source name before, create a new window
+            if (window_names.find(img_data.source()) == window_names.end())
+            {
+                std::string window_name = "RobotView" + std::to_string(window_names.size())
+                                          + " - " + img_data.source();
+                std::cout << window_name << std::endl;
+
+                window_names[img_data.source()] = window_name;
+
+                // Create the window
+                cv::namedWindow(window_name, cv::WINDOW_AUTOSIZE);
+                // Just a small wait so the window can be created
+                cv::waitKey(1);
+            }
+
+            // Show the image in the existing or new window
+            cv::imshow(window_names[img_data.source()], show_image);
+            // A minimal waitKey(1) ensures the image is actually updated
+            cv::waitKey(1);
+        }
+    }
+}
 
 std::atomic<bool> shutdownFlag(false);
 
@@ -59,24 +143,25 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
 }
 
 int main(int argc, char *argv[]) {
-    // Standard robot quick connection procedure
-    auto* Robot = new bow_sdk::bow_robot();
-    std::vector<std::string> strArray = {"vision", "motor", "exteroception"};
-    bow::common::Error* setup_result = bow_sdk::client_sdk::QuickConnect(Robot, "CppBOWTutorial", strArray, true);
-    if (!setup_result->success()) {
-        cout << setup_result->description() << endl;
+    std::cout << bow_api::version() << std::endl;
+
+    // Setup
+    std::vector<std::string> strArray = {"vision", "motor"};
+    std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
+    auto* Robot= bow_api::quickConnect("SendingCommands", strArray, true, nullptr, setup_result.get());
+    if (!setup_result->success() || !Robot) {
+        std::cout << setup_result->description() << std::endl;
         return -1;
     }
 
+
     // Wait for a valid exteroception sample
-    auto* ext = Robot->GetModality("exteroception", true);
-    auto ext_sample = new bow::data::ExteroceptionSample();
-    ext_sample->MergeFromString(ext->mutable_sample()->data());
+    auto ext = Robot->exteroception->get(true);
+    auto ext_sample = ext.value();
     while (ext_sample->range().empty()) {
         cout << "Range Sensors Empty" << endl;
-        ext = Robot->GetModality("exteroception", true);
-        ext_sample = new bow::data::ExteroceptionSample();
-        ext_sample->MergeFromString(ext->mutable_sample()->data());
+        ext = Robot->exteroception->get(true);
+        ext_sample->range().empty();
     }
 
     // Identify the forward most sonar sensor
@@ -94,29 +179,15 @@ int main(int argc, char *argv[]) {
         // SENSE
         // Vision
         // Get and display all images
-        auto* sample = Robot->GetModality("vision", true);
-        auto image_samples = new bow::data::ImageSamples();
-        image_samples->MergeFromString(sample->mutable_sample()->data());
-        try {
-            if (image_samples->samples_size() > 0) {
-                auto s = image_samples->samples(0);
-                if (s.newdataflag()) {
-                    auto receivedYuv = new cv::Mat(s.datashape(1)*3/2, s.datashape(0), CV_8UC1, const_cast<char*>(s.data().data()));
-                    cv::cvtColor(*receivedYuv, *receivedRGB, cv::COLOR_YUV2RGB_IYUV);
-                    cv::imshow("Image", *receivedRGB);
-                    cv::waitKey(1);
-                }
-            }
-        } catch (const std::exception& ex) {
-            std::cerr << "Exception caught: " << ex.what() << std::endl;
+        auto imageSamples = Robot->vision->get(true);
+        if (imageSamples.has_value()) {
+            show_all_images(imageSamples.value());
         }
 
         // Exteroception
         // Get exteroception sample
-        ext = Robot->GetModality("exteroception", true);
-        ext_sample = new bow::data::ExteroceptionSample();
-        ext_sample->MergeFromString(ext->mutable_sample()->data());
-
+        ext = Robot->exteroception->get(true);
+        ext_sample = ext.value();
         // Iterate through range sensors until front sensor
         bow::data::Range sonar;
         for (const auto& range_sensor : ext_sample->range()) {
@@ -149,7 +220,7 @@ int main(int argc, char *argv[]) {
 
         // ACT
         // Send the motor command
-        Robot->SetModality("motor", bow::structs::DataMessage_DataType_MOTOR, motor_command);
+        Robot->motor->set(motor_command);
 
         // Delay to control the rate of loop execution
         std::this_thread::sleep_for(delay);
@@ -157,12 +228,12 @@ int main(int argc, char *argv[]) {
 
     cv::destroyWindow(window_name);
 
-    bow::common::Error* disconnect_result = Robot->Disconnect();
+    bow::common::Error* disconnect_result = Robot->disconnect();
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
         return -1;
     }
 
-    bow_sdk::client_sdk::CloseClientInterface();
+    bow_api::stopEngine();
     return 0;
 }

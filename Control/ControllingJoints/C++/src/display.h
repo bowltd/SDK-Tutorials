@@ -127,7 +127,7 @@ class Display{
         }
     }
 
-    void SetCurrentJoint(){
+    virtual void SetCurrentJoint(){
         return;
     }
 
