@@ -6,9 +6,9 @@ Welcome to the BOW SDK Tutorials repository. This repository contains tutorial p
 
 The repository is organized into 2 sections, examples and tutorials:
 
-- Tutorials are step by step guides, each focusing on a specific aspect of using the BOW SDK or answering a common question in robotics. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/tutorials)
+- Tutorials are step by step guides, each focusing on a specific aspect of using the BOW SDK or answering a common question in robotics. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/Tutorials)
 
-- Examples are designed to showcase some complete applications which combine multiple elements from the tutorials and demonstrate how you can integrate external applications and programs with BOW to bring your robots alive. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/tutorials#examples)
+- Applications are designed to showcase some complete applications which combine multiple elements from the tutorials and demonstrate how you can integrate external applications and programs with BOW to bring your robots alive. A breakdown of these tutorials can be found on our [tutorials documentation page](https://docs.bow.software/Tutorials#applications)
 
  
 ## Getting Started
