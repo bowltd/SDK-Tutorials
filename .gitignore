@@ -1,6 +1,7 @@
 .idea/
 __pycache__
-*/C++/build
+cmake-build-debug
+build
 bow_tutorial_2
 bin
 obj

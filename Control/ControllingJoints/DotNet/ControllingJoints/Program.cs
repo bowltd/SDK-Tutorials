@@ -58,7 +58,7 @@ class Program{
                 var propSample = myRobot.Proprioception.Get(true);
                 if (propSample != null) {
 	                foreach (var joint in propSample.RawJoints) {
-		                if (joint.Type == Joint.Types.JointTypeEnum.Fixed) {
+		                if (joint.Type == Joint.Types.JointTypeEnum.Fixed && !joint.Mimic) {
 			                continue;
 		                }
 		                jointList.Add(new DisplayInfo(joint.Name,joint.Min,joint.Max,joint.Position));

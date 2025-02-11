@@ -13,33 +13,48 @@ import numpy as np
 
 stopFlag = False
 window_names = dict()
-windows_created = False
 
 def show_all_images(images_list):
-    global windows_created, window_names
-
-    if not windows_created:
-        for i in range(len(images_list.Samples)):
-            window_name = f"RobotView{i} - {images_list.Samples[i].Source}"
-            window_names[images_list.Samples[i].Source] = window_name
-            cv2.namedWindow(window_name)
-        windows_created = True
+    global window_names
 
     for i, img_data in enumerate(images_list.Samples):
-        if len(img_data.Data) != 0:
-            if img_data.NewDataFlag:
-                if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
-                    npimage = np.frombuffer(img_data.Data, np.uint8).reshape(
-                        [int(img_data.DataShape[1] * 3 / 2), img_data.DataShape[0]])
-                    npimage = cv2.cvtColor(npimage, cv2.COLOR_YUV2RGB_I420)
-                    cv2.imshow(window_names[img_data.Source], npimage)
-                elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
-                    npimage = np.frombuffer(img_data.Data, np.uint16).reshape(
-                        [img_data.DataShape[1], img_data.DataShape[0]])
-                    cv2.imshow(window_names[img_data.Source], npimage)
-                else:
-                    print("Unhandled image type")
+        show_image = None
+        if img_data.NewDataFlag:
+            image_width = int(img_data.DataShape[0])
+            image_height = int(img_data.DataShape[1])
 
+            if img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.RGB:
+                expected_size = image_width * image_height * 3 // 2
+                if len(img_data.Data) < expected_size:
+                    continue
+
+                yuv_image = np.frombuffer(img_data.Data, np.uint8).reshape(
+                    [int(img_data.DataShape[1] * 3 // 2), img_data.DataShape[0]])
+                show_image = cv2.cvtColor(yuv_image, cv2.COLOR_YUV2RGB_IYUV)
+
+            elif img_data.ImageType == bow_data.ImageSample.ImageTypeEnum.DEPTH:
+                expected_size = image_width * image_height
+                if len(img_data.Data) < expected_size:
+                    continue
+
+                depth_image = np.frombuffer(img_data.Data, np.uint16).reshape(
+                    [img_data.DataShape[1], img_data.DataShape[0]])
+                normalized_depth = cv2.normalize(depth_image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+                show_image = cv2.applyColorMap(normalized_depth, cv2.COLORMAP_JET)
+
+            else:
+                print("Unknown image type")
+
+        if show_image is not None:
+            if img_data.Source not in window_names.keys():
+                window_name = f"RobotView{len(window_names)} - {img_data.Source}"
+                print(window_name)
+                window_names[img_data.Source] = window_name
+                cv2.namedWindow(window_name)
+                cv2.waitKey(1)
+
+            cv2.imshow(window_names[img_data.Source], show_image)
+            cv2.waitKey(1)
 
 
 print(bow_api.version())
@@ -72,4 +87,4 @@ except KeyboardInterrupt or SystemExit:
 
 cv2.destroyAllWindows()
 myrobot.disconnect()
-bow_api.close_client_interface()
+bow_api.stop_engine()

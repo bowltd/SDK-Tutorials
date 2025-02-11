@@ -209,6 +209,6 @@ class Program
     {
         Console.WriteLine("Closing down application");
         _myRobot?.Disconnect();
-        Bow.CloseClientInterface();
+        Bow.StopEngine();
     }
 }

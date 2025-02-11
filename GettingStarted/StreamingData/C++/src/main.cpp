@@ -84,7 +84,7 @@ void show_all_images(bow::data::ImageSamples* images_list){
     }
 }
 
-// ✅ 4️⃣ Handle CTRL+C (SIGINT)
+// Handle CTRL+C (SIGINT)
 void handle_sigint(int sig) {
     std::cout << "Interrupt signal received. Closing program...\n";
     shutdownFlag.store(true);

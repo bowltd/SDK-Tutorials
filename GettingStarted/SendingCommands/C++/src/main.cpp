@@ -236,7 +236,7 @@ void visionThread(double rate, bow_robot* Robot)
     }
 }
 
-// ✅ 4️⃣ Handle CTRL+C (SIGINT)
+// Handle CTRL+C (SIGINT)
 void handle_sigint(int sig) {
     std::cout << "Interrupt signal received. Closing program...\n";
     shutdownFlag.store(true);
@@ -284,5 +284,3 @@ int main(int argc, char *argv[]) {
     bow_api::stopEngine();
     return 0;
 }
-
-
