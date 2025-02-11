@@ -2,15 +2,17 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <iostream>
+#include <cstring>
 using namespace std;
 
 class DisplayInfo{
-public:    
-    
+public:
+
     string Name;
     char* NameChar;
     float Value, ValueMax, ValueMin;
-    
+
     DisplayInfo(string name, float valueMin, float valueMax, float value){
         Name = name;
         ValueMin = valueMin;
@@ -25,31 +27,34 @@ public:
         if (Value>ValueMax){ Value = ValueMax;}
     }
 
-    void SetName(int length){ 
+    void SetName(int length){
         NameChar = (char*)malloc(sizeof(char)*(length));
         for (int i=0;i<length;i++){
             NameChar[i] = (char)Name[i];
         }
+        NameChar[sizeof(NameChar) - 1] = 0;
     }
-    
-    const char* GetValue(int length) { 
-        return to_string(Value).substr(0,length).c_str(); 
+
+    const char* GetValue(int length) {
+        return to_string(Value).substr(0,length).c_str();
     }
-    
+
     const char* GetBar(int length){
         float prop = (Value - ValueMin) / (ValueMax - ValueMin);
         int j = round(prop * (length-1));
-        char * s = (char*)malloc(sizeof(char)*(length+2));
-        s[0]='|';
+        string s = "|";
         for (int i=0;i<length;i++){
             if (i==j){
-                s[i+1]= '!';
+                s += '!';
             } else {
-                s[i+1]='.';
+                s+='.';
             }
         }
-        s[length+1] = '|';
-        return s;
+        s+= "|";
+        char * ss = new char [s.length()+1];
+        strcpy (ss, s.c_str());
+        return ss;
+
     }
 };
 
@@ -83,11 +88,11 @@ class Display{
         wclear(content);
         mvwaddstr(content, 2, 2, "Joints:");
         int org = listIndex - listFlankers;
-        if (org<0){ org = 0;}       
+        if (org<0){ org = 0;}
         int end = org + 2*listFlankers + 1;
         if (end>=list.size()){ end = list.size();}
         org = end - 2*listFlankers-1;
-        if (org<0){ org = 0; }       
+        if (org<0){ org = 0; }
         int j=listStart;
         for(int i=org;i<end;i++){
             if(i==listIndex){
@@ -96,7 +101,7 @@ class Display{
             mvwaddstr(content,j,5,list[i].NameChar);
             mvwaddstr(content,j,20,list[i].GetBar(11));
             mvwaddstr(content,j,40,list[i].GetValue(6));
-            j++;        
+            j++;
         }
         box(content, 0, 0);
         mvwaddstr(content, 0, 2, " BOW Tutorial ");
@@ -127,7 +132,7 @@ class Display{
         }
     }
 
-    void SetCurrentJoint(){
+    virtual void SetCurrentJoint(){
         return;
     }
 

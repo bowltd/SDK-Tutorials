@@ -4,28 +4,28 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Projectenviu
-project(main)
+project(BOWApp)
 
-# Ensure BOW_ROOT environment variable is set
-if(BOW_ROOT)
-    set(BOW_ROOT_FINAL ${BOW_ROOT})
-    message(STATUS "Using BOW_ROOT from CMake variable: ${BOW_ROOT_FINAL}")
-elseif(DEFINED ENV{BOW_ROOT})
-    set(BOW_ROOT_FINAL $ENV{BOW_ROOT})
-    message(STATUS "Using BOW_ROOT from environment variable: ${BOW_ROOT_FINAL}")
+# Ensure BOW_API environment variable is set
+if(BOW_API)
+    set(BOW_API_FINAL ${BOW_API})
+    message(STATUS "Using BOW_API from CMake variable: ${BOW_API_FINAL}")
+elseif(DEFINED ENV{BOW_API})
+    set(BOW_API_FINAL $ENV{BOW_API})
+    message(STATUS "Using BOW_API from environment variable: ${BOW_API_FINAL}")
 else()
-    message(FATAL_ERROR "BOW_ROOT is not set. Please set it as a CMake variable or as an environment variable.")
+    message(FATAL_ERROR "BOW_API is not set. Please set it as a CMake variable or as an environment variable.")
 endif()
 
 # Add BOW_SDK location to CMAKE_PREFIX_PATH
-list(APPEND CMAKE_PREFIX_PATH "${BOW_ROOT_FINAL}")
+list(APPEND CMAKE_PREFIX_PATH "${BOW_API_FINAL}")
 message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 # Find the BOW_SDK package
 find_package(BOW_SDK REQUIRED)
-
-# Find the ncurses package
+find_package(OpenCV REQUIRED )
 find_package(Curses REQUIRED)
+
 
 # Collect application source files
 file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
@@ -34,6 +34,7 @@ file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
     ${BOW_SDK_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
     ${CURSES_INCLUDE_DIR}
 )
 
@@ -52,14 +53,15 @@ endif()
 
 
 # Define the application executable
-add_executable(${PROJECT_NAME} ${APP_SRC} ${BOW_SDK_SRC})
+add_executable(${PROJECT_NAME} ${APP_SRC} ${BOW_SDK_SRC}
+        src/display.h)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_link_options(${PROJECT_NAME} PRIVATE "/IGNORE:4098") # Ignore the runtime mismatch warning
 endif()
 
 # Link SDK libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${CURSES_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${OpenCV_LIBS} ${CURSES_LIBRARIES})
 
 # Ensure libanimus_client.dll is copied post-build
 copy_animus_dll(${PROJECT_NAME})
