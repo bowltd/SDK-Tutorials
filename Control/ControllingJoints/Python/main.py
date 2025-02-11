@@ -30,7 +30,7 @@ while True:
 	prop_msg, err = robot.proprioception.get(True)
 	if err.Success and len(prop_msg.RawJoints) > 0:
 		for joint in prop_msg.RawJoints:
-			if joint.Type == bow_data.Joint.FIXED:
+			if joint.Type == bow_data.Joint.FIXED or joint.Mimic:
 				continue
 			jointList.append(display.DisplayInfo(joint.Name,joint.Min,joint.Max,joint.Position))
 		break			
