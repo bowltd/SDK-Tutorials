@@ -130,7 +130,7 @@ try:
 
         elif sonar.Data < sonar.Min + 0.5:
             print("Obstruction too close to maneuver, reverse: ", sonar.Data, " meters")
-            motor_command.Locomotion.RotationalVelocity.X = -0.2
+            motor_command.Locomotion.TranslationalVelocity.X = -0.2
 
         else:
             print("Obstruction detected at safe range", sonar.Data, " meters")
