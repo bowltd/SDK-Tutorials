@@ -22,16 +22,19 @@ message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 
 # Find the BOW_SDK package
 find_package(BOW_SDK REQUIRED)
-find_package(Curses REQUIRED )
+find_package(OpenCV REQUIRED )
+find_package(Curses REQUIRED)
+
 
 # Collect application source files
 file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Include directories
 include_directories(
-        ${CMAKE_SOURCE_DIR}/include
-        ${BOW_SDK_INCLUDE_DIRS}
-        ${CURSES_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
+    ${BOW_SDK_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${CURSES_INCLUDE_DIR}
 )
 
 if(MSVC)
@@ -49,14 +52,15 @@ endif()
 
 
 # Define the application executable
-add_executable(${PROJECT_NAME} ${APP_SRC} ${BOW_SDK_SRC})
+add_executable(${PROJECT_NAME} ${APP_SRC} ${BOW_SDK_SRC}
+        src/display.h)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_link_options(${PROJECT_NAME} PRIVATE "/IGNORE:4098") # Ignore the runtime mismatch warning
 endif()
 
 # Link SDK libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${CURSES_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${BOW_SDK_LIBRARIES} ${OpenCV_LIBS} ${CURSES_LIBRARIES})
 
 # Ensure libanimus_client.dll is copied post-build
 copy_animus_dll(${PROJECT_NAME})

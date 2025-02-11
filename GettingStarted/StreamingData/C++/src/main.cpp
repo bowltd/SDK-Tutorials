@@ -1,46 +1,33 @@
 #include <iostream>
-#include <unistd.h>
 #include <csignal>
-#include <chrono>
 #include <thread>
 #include <map>
 #include <string>
-
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
-#include <bow_structs.pb.h>
-#include <bow_api.h>
+#include <atomic>
+#include <vector>
+#include <opencv2/opencv.hpp>
+#include "bow_api.h"
 
 using namespace bow;
-using namespace cv;
 using namespace std;
+using namespace cv;
 
 std::atomic<bool> shutdownFlag(false);
+
 static std::map<std::string, std::string> window_names;
-
-void show_all_images(bow::data::ImageSamples* images_list)
-{
-    for (int i = 0; i < images_list->samples_size(); ++i)
-    {
+void show_all_images(bow::data::ImageSamples* images_list){
+    for (int i = 0; i < images_list->samples_size(); ++i){
         const auto& img_data = images_list->samples(i);
-
         // We will store the image to display here
         cv::Mat show_image;
-
-        if (img_data.newdataflag())
-        {
+        if (img_data.newdataflag()){
             int image_width = img_data.datashape(0);
             int image_height = img_data.datashape(1);
 
-            if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_RGB)
-            {
+            if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_RGB){
                 // Expecting YUV I420 data with size (width * height * 3/2)
                 int expected_size = image_width * image_height * 3 / 2;
-                if (static_cast<int>(img_data.data().size()) < expected_size)
-                {
+                if (static_cast<int>(img_data.data().size()) < expected_size){
                     continue; // not enough data
                 }
 
@@ -50,15 +37,12 @@ void show_all_images(bow::data::ImageSamples* images_list)
 
                 // Convert from I420 YUV to RGB
                 cv::cvtColor(yuv_image, show_image, cv::COLOR_YUV2RGB_IYUV);
-            }
-            else if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_DEPTH)
-            {
+            } else if (img_data.imagetype() == bow::data::ImageSample::ImageTypeEnum::ImageSample_ImageTypeEnum_DEPTH){
                 // Expecting 16-bit unsigned depth data with size (width * height)
                 // Each pixel is 2 bytes => total Data size = (width * height * 2)
                 int expected_pixel_count = image_width * image_height;
                 int expected_size_bytes = expected_pixel_count * static_cast<int>(sizeof(uint16_t));
-                if (static_cast<int>(img_data.data().size()) < expected_size_bytes)
-                {
+                if (static_cast<int>(img_data.data().size()) < expected_size_bytes){
                     continue; // not enough data
                 }
 
@@ -71,19 +55,15 @@ void show_all_images(bow::data::ImageSamples* images_list)
 
                 // Apply a colormap for visualization
                 cv::applyColorMap(normalized_depth, show_image, cv::COLORMAP_JET);
-            }
-            else
-            {
+            } else {
                 std::cout << "Unknown image type" << std::endl;
             }
         }
 
         //If we got a valid image to display, show it
-        if (!show_image.empty())
-        {
+        if (!show_image.empty()) {
             // If we haven't seen this Source name before, create a new window
-            if (window_names.find(img_data.source()) == window_names.end())
-            {
+            if (window_names.find(img_data.source()) == window_names.end()) {
                 std::string window_name = "RobotView" + std::to_string(window_names.size())
                                           + " - " + img_data.source();
                 std::cout << window_name << std::endl;
@@ -104,16 +84,7 @@ void show_all_images(bow::data::ImageSamples* images_list)
     }
 }
 
-std::chrono::nanoseconds rateToTimerDelay(double hertz) {
-    double delayInSeconds = 1 / hertz;
-    double delayInNanoseconds = delayInSeconds * 1e9;
-    return std::chrono::nanoseconds(static_cast<long>(delayInNanoseconds));
-}
-
-bool hasModality(const std::string& str, const std::vector<std::string>& vec) {
-    return std::find(vec.begin(), vec.end(), str) != vec.end();
-}
-
+// Handle CTRL+C (SIGINT)
 void handle_sigint(int sig) {
     std::cout << "Interrupt signal received. Closing program...\n";
     shutdownFlag.store(true);
@@ -124,7 +95,9 @@ int main(int argc, char *argv[]) {
 
     std::vector<std::string> strArray = {"vision"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
-    auto* Robot = bow_api::quickConnect("Streaming Data", strArray, true, nullptr, setup_result.get());
+
+    auto* Robot= bow_api::quickConnect("BOW_Tutorial", strArray, true, nullptr, setup_result.get());
+
     if (!setup_result->success() || !Robot) {
         std::cout << setup_result->description() << std::endl;
         return -1;
@@ -132,11 +105,8 @@ int main(int argc, char *argv[]) {
 
     signal(SIGINT, handle_sigint);
 
-    auto delay = rateToTimerDelay(30);
-
+    // Main sampling loop
     while (!shutdownFlag.load()) {
-        std::this_thread::sleep_for(delay);
-
         auto imageSamples = Robot->vision->get(true);
         if (imageSamples.has_value()) {
             show_all_images(imageSamples.value());
@@ -144,14 +114,13 @@ int main(int argc, char *argv[]) {
         imageSamples.reset();
     }
 
-    bow::common::Error* disconnect_result = Robot->disconnect();
+    // Disconnect
+    std::unique_ptr<bow::common::Error> disconnect_result(Robot->disconnect());
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
         return -1;
     }
-
     cv::destroyAllWindows();
     bow_api::stopEngine();
-    delete Robot;
     return 0;
 }

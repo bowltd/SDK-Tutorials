@@ -29,9 +29,9 @@ file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Include directories
 include_directories(
-        ${CMAKE_SOURCE_DIR}/include
-        ${BOW_SDK_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include
+    ${BOW_SDK_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 if(MSVC)

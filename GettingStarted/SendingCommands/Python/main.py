@@ -6,7 +6,6 @@
 
 import bow_api
 import bow_data
-import time
 import sys
 import cv2
 import numpy as np
@@ -104,7 +103,6 @@ def keyboard_control():
     motorSample.GazeTarget.GazeVector.Y = 0
     motorSample.GazeTarget.GazeVector.Z = 0
 
-    motorSample.Locomotion.RotationalVelocity.Z = -1
     if 'w' in pressed_keys:
         print("Moving forward")
         motorSample.Locomotion.TranslationalVelocity.X = 0.2
@@ -150,15 +148,8 @@ if not error.Success:
     print("Failed to connect to robot", error)
     sys.exit()
 
-start_time = time.time()
-timeout = 5 * 60  # 3 minutes in seconds
-
 try:
     while True:
-        if time.time() - start_time > timeout:
-            print("Exiting loop after 3 minutes")
-            break
-
         # Sense
         image_samples, err = myrobot.vision.get(True)
         if not err.Success:
