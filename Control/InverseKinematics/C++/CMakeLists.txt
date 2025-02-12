@@ -25,14 +25,15 @@ message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
 find_package(BOW_SDK REQUIRED)
 find_package(OpenCV REQUIRED )
 
+
 # Collect application source files
 file(GLOB_RECURSE APP_SRC "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Include directories
 include_directories(
-        ${CMAKE_SOURCE_DIR}/include
-        ${BOW_SDK_INCLUDE_DIRS}
-        ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/include
+    ${BOW_SDK_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 )
 
 if(MSVC)
