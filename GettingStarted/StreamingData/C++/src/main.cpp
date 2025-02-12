@@ -93,12 +93,10 @@ void handle_sigint(int sig) {
 int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
 
-    std::vector<std::string> strArray = {"vision"};
+    std::vector<std::string> channels = {"vision"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
-
-    auto* Robot= bow_api::quickConnect("BOW_Tutorial", strArray, true, nullptr, setup_result.get());
-
-    if (!setup_result->success() || !Robot) {
+    bow_robot* myRobot= bow_api::quickConnect("BOW_Tutorial", channels, true, nullptr, setup_result.get());
+    if (!setup_result->success() || !myRobot) {
         std::cout << setup_result->description() << std::endl;
         return -1;
     }
@@ -107,7 +105,7 @@ int main(int argc, char *argv[]) {
 
     // Main sampling loop
     while (!shutdownFlag.load()) {
-        auto imageSamples = Robot->vision->get(true);
+        auto imageSamples = myRobot->vision->get(true);
         if (imageSamples.has_value()) {
             show_all_images(imageSamples.value());
         }
@@ -115,7 +113,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Disconnect
-    std::unique_ptr<bow::common::Error> disconnect_result(Robot->disconnect());
+    std::unique_ptr<bow::common::Error> disconnect_result(myRobot->disconnect());
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
         return -1;
