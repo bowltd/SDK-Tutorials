@@ -164,17 +164,6 @@ int main(int argc, char *argv[]) {
             break;
         }
     }
-    /*
-    // Wait for a valid exteroception sample
-    auto ext = Robot->exteroception->get(true);
-    auto ext_sample = ext.value();
-    while (ext_sample->range().empty()) {
-        cout << "Range Sensors Empty" << endl;
-        ext = Robot->exteroception->get(true);
-        ext_sample->range().empty();
-    }
-    */
-
 
     // Identify the forward most sonar sensor
     string front_sonar = identify_front_sonar(exSample.value()->range());
@@ -205,34 +194,35 @@ int main(int argc, char *argv[]) {
         for (const auto& range_sensor : exSample.value()->range()) {
             if (range_sensor.source() == front_sonar) {
                 sonar = range_sensor;
+                break;
             }
         }
 
         // DECIDE
         // Create a motor message to populate
-        auto* motor_command = new bow::data::MotorSample();
+        auto* motorSample = new bow::data::MotorSample();
 
         // Base the velocity command on the sonar reading
         if (sonar.data() == -1) {
             cout << "Invalid Sonar Data: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
+            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
         } else if (sonar.data() == 0) {
             cout << "No obstruction in range: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
         } else if (sonar.min() + 0.5 < sonar.data() < sonar.min() + 1.5) {
             cout << "Obstruction approaching sensor minimum: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
+            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
         } else if (sonar.data() <sonar.min() + 0.5) {
             cout << "Obstruction too close to maneuver, reverse: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
         } else {
             cout << "Obstruction detected at safe range: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
         }
 
         // ACT
         // Send the motor command
-        Robot->motor->set(motor_command);
+        Robot->motor->set(motorSample);
 
         // Delay to control the rate of loop execution
         std::this_thread::sleep_for(delay);
