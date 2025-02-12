@@ -1,6 +1,4 @@
 #include <iostream>
-#include <unistd.h>
-#include <csignal>
 #include <chrono>
 #include <thread>
 #include <map>
@@ -145,8 +143,11 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
 int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
 
+
+
+
     // Setup
-    std::vector<std::string> strArray = {"vision", "motor"};
+    std::vector<std::string> strArray = {"vision", "motor","exteroception"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
     auto* Robot= bow_api::quickConnect("SendingCommands", strArray, true, nullptr, setup_result.get());
     if (!setup_result->success() || !Robot) {
@@ -155,6 +156,15 @@ int main(int argc, char *argv[]) {
     }
 
 
+    std::optional<bow::data::ExteroceptionSample*> exSample;
+    while (true) {
+        //auto exSample = Robot->exteroception->get(true);
+        exSample = Robot->exteroception->get(true);
+        if (exSample.has_value()) {
+            break;
+        }
+    }
+    /*
     // Wait for a valid exteroception sample
     auto ext = Robot->exteroception->get(true);
     auto ext_sample = ext.value();
@@ -163,9 +173,11 @@ int main(int argc, char *argv[]) {
         ext = Robot->exteroception->get(true);
         ext_sample->range().empty();
     }
+    */
+
 
     // Identify the forward most sonar sensor
-    string front_sonar = identify_front_sonar(ext_sample->range());
+    string front_sonar = identify_front_sonar(exSample.value()->range());
 
     // OpenCV Configuration
     cv::namedWindow("Image", cv::WINDOW_NORMAL);
@@ -186,11 +198,11 @@ int main(int argc, char *argv[]) {
 
         // Exteroception
         // Get exteroception sample
-        ext = Robot->exteroception->get(true);
-        ext_sample = ext.value();
+        exSample = Robot->exteroception->get(true);
+
         // Iterate through range sensors until front sensor
         bow::data::Range sonar;
-        for (const auto& range_sensor : ext_sample->range()) {
+        for (const auto& range_sensor : exSample.value()->range()) {
             if (range_sensor.source() == front_sonar) {
                 sonar = range_sensor;
             }
