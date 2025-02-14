@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.5...3.27)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(SendingCommands)
+project(MultipleRobots)
 
 # Ensure BOW_API environment variable is set
 if(BOW_API)

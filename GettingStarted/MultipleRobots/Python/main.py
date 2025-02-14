@@ -24,7 +24,7 @@ window_names = dict()
 
 # A set to keep track of the pressed keys
 pressed_keys = set()
-num_robots = 3
+num_robots = 2
 
 def on_press(key):
     try:
@@ -154,7 +154,7 @@ else:
     sys.exit(-1)
 
 # Get robots
-get_robots_result = bow_api.get_robots(get_remote=True, get_system=False)
+get_robots_result = bow_api.get_robots(get_local=True, get_remote=True, get_bow_hub=False)
 if not get_robots_result.localSearchError.Success:
    print(get_robots_result.localSearchError.Description)
 
@@ -235,4 +235,4 @@ except KeyboardInterrupt or SystemExit:
 cv2.destroyAllWindows()
 for r in robots:
     r.disconnect()
-bow_api.close_client_interface()
+bow_api.stop_engine()

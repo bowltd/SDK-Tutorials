@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
     }
 
     // get robots
-    bow::sdk::GetRobotsProtoReply* robotsResult = bow_api::getRobots(true,true,false);
+    bow::sdk::GetRobotsProtoReply* robotsResult = bow_api::getRobots(false,true,false);
     if (!robotsResult->localsearcherror().success()) {
         std::cout << "Local search error: " << robotsResult->localsearcherror().description() << std::endl;
     }

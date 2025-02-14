@@ -176,4 +176,4 @@ except KeyboardInterrupt or SystemExit:
 
 cv2.destroyAllWindows()
 myrobot.disconnect()
-bow_api.close_client_interface()
+bow_api.stop_engine()
