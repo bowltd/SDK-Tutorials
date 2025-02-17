@@ -1,6 +1,4 @@
 #include <iostream>
-#include <unistd.h>
-#include <csignal>
 #include <chrono>
 #include <thread>
 #include <map>
@@ -146,7 +144,7 @@ int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
 
     // Setup
-    std::vector<std::string> strArray = {"vision", "motor"};
+    std::vector<std::string> strArray = {"vision", "motor","exteroception"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
     auto* Robot= bow_api::quickConnect("SendingCommands", strArray, true, nullptr, setup_result.get());
     if (!setup_result->success() || !Robot) {
@@ -155,17 +153,17 @@ int main(int argc, char *argv[]) {
     }
 
 
-    // Wait for a valid exteroception sample
-    auto ext = Robot->exteroception->get(true);
-    auto ext_sample = ext.value();
-    while (ext_sample->range().empty()) {
-        cout << "Range Sensors Empty" << endl;
-        ext = Robot->exteroception->get(true);
-        ext_sample->range().empty();
+    std::optional<bow::data::ExteroceptionSample*> exSample;
+    while (true) {
+        //auto exSample = Robot->exteroception->get(true);
+        exSample = Robot->exteroception->get(true);
+        if (exSample.has_value()) {
+            break;
+        }
     }
 
     // Identify the forward most sonar sensor
-    string front_sonar = identify_front_sonar(ext_sample->range());
+    string front_sonar = identify_front_sonar(exSample.value()->range());
 
     // OpenCV Configuration
     cv::namedWindow("Image", cv::WINDOW_NORMAL);
@@ -186,41 +184,42 @@ int main(int argc, char *argv[]) {
 
         // Exteroception
         // Get exteroception sample
-        ext = Robot->exteroception->get(true);
-        ext_sample = ext.value();
+        exSample = Robot->exteroception->get(true);
+
         // Iterate through range sensors until front sensor
         bow::data::Range sonar;
-        for (const auto& range_sensor : ext_sample->range()) {
+        for (const auto& range_sensor : exSample.value()->range()) {
             if (range_sensor.source() == front_sonar) {
                 sonar = range_sensor;
+                break;
             }
         }
 
         // DECIDE
         // Create a motor message to populate
-        auto* motor_command = new bow::data::MotorSample();
+        auto* motorSample = new bow::data::MotorSample();
 
         // Base the velocity command on the sonar reading
         if (sonar.data() == -1) {
             cout << "Invalid Sonar Data: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
+            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
         } else if (sonar.data() == 0) {
             cout << "No obstruction in range: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
         } else if (sonar.min() + 0.5 < sonar.data() < sonar.min() + 1.5) {
             cout << "Obstruction approaching sensor minimum: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
+            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
         } else if (sonar.data() <sonar.min() + 0.5) {
             cout << "Obstruction too close to maneuver, reverse: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
         } else {
             cout << "Obstruction detected at safe range: " << sonar.data() << " meters" << endl;
-            motor_command->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
+            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
         }
 
         // ACT
         // Send the motor command
-        Robot->motor->set(motor_command);
+        Robot->motor->set(motorSample);
 
         // Delay to control the rate of loop execution
         std::this_thread::sleep_for(delay);

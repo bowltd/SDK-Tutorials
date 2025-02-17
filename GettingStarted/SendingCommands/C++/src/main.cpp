@@ -1,146 +1,49 @@
 #include <iostream>
+#include <unistd.h>
 #include <csignal>
 #include <chrono>
 #include <thread>
 #include <map>
 #include <string>
-#include <atomic>
-#include <vector>
+
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
+#include <bow_structs.pb.h>
 #include "bow_api.h"
-#include <opencv2/opencv.hpp>
-
-#ifdef _WIN32
-#include <conio.h>
-bool kbhit() {
-    return _kbhit();
-}
-char getch() {
-    return _getch();
-}
-#else
-#include <termios.h>
-#include <unistd.h>
-#include <fcntl.h>
-bool kbhit() {
-    struct termios oldt, newt;
-    int ch;
-    int oldf;
-
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
-    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
-    ch = getchar();
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-    fcntl(STDIN_FILENO, F_SETFL, oldf);
-
-    if (ch != EOF) {
-        ungetc(ch, stdin);
-        return true;
-    }
-    return false;
-}
-char getch() {
-    return getchar();
-}
-#endif
 
 using namespace bow;
-using namespace std;
 using namespace cv;
+using namespace std;
 
-std::vector<std::thread> threads;
-std::atomic<bool> shutdownFlag(false);
-std::map<int, std::string> keyMappings = {
-        {'w', "MoveForward"}, {'s', "MoveBack"},
-        {'a', "RotateLeft"}, {'d', "RotateRight"},
-        {'q', "MoveLeft"}, {'e', "MoveRight"},
-        {'r', "MoveUp"}, {'f', "MoveDown"},
-        {'j', "LookLeft"}, {'l', "LookRight"},
-        {'i', "LookUp"}, {'k', "LookDown"},
-};
-
-
-std::chrono::nanoseconds rateToTimerDelay(double hertz) {
-    double delayInSeconds = 1 / hertz;
-    double delayInNanoseconds = delayInSeconds * 1e9;
-    return std::chrono::nanoseconds(static_cast<long>(delayInNanoseconds));
-}
-
-std::map<std::string, bool> movements;
-
-void keyboardListener() {
-    while (!shutdownFlag.load()) {
-        if (kbhit()) {
-            char key = getch();
-            if (key == 'x') {
-                shutdownFlag.store(true);
-                break;
-            }
-            if (keyMappings.count(key)) {
-                movements[keyMappings[key]] = true;
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+bow::data::MotorSample* keyboard_control(int keyID){
+    auto motorSample = new bow::data::MotorSample();
+    if (keyID == 'w') {
+        motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(1);
+        std::cout << "Moving forward" << std::endl;
+    } else if (keyID == 's') {
+        motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(-1);
+        std::cout << "Moving backward" << std::endl;
+    } else if (keyID == 'd') {
+        motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(-1);
+        std::cout << "Rotate right" << std::endl;
+    } else if (keyID == 'a') {
+        motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(1);
+        std::cout << "Rotate left" << std::endl;
+    } else if (keyID == 'e') {
+        motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_y(-1);
+        std::cout << "Strafe right" << std::endl;
+    } else if (keyID == 'q') {
+        motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_y(1);
+        std::cout << "Strafe left" << std::endl;
     }
-}
-
-void motorThread(double rate, bow_robot *Robot) {
-    auto delay = rateToTimerDelay(rate);
-    while (!shutdownFlag.load()) {
-        std::this_thread::sleep_for(delay);
-
-        auto motor = new bow::data::MotorSample();
-
-        // Set movement flags
-        if (movements["MoveBack"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
-        } else if (movements["MoveForward"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
-        } else {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_x(0);
-        }
-
-        if (movements["MoveLeft"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_y(1);
-        } else if (movements["MoveRight"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_y(-1);
-        } else {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_y(0);
-        }
-
-        if (movements["MoveUp"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_z(1);
-        } else if (movements["MoveDown"]) {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_z(-1);
-        } else {
-            motor->mutable_locomotion()->mutable_translationalvelocity()->set_z(0);
-        }
-
-        if (movements["RotateLeft"]) {
-            motor->mutable_locomotion()->mutable_rotationalvelocity()->set_z(1);
-        } else if (movements["RotateRight"]) {
-            motor->mutable_locomotion()->mutable_rotationalvelocity()->set_z(-1);
-        } else {
-            motor->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0);
-        }
-
-        // Reset movement states (optional)
-        for (auto& movement : movements) {
-            movement.second = false;
-        }
-
-        Robot->motor->set(motor);
-    }
+    return motorSample;
 }
 
 static std::map<std::string, std::string> window_names;
-void show_all_images(bow::data::ImageSamples* images_list)
-{
+void show_all_images(bow::data::ImageSamples* images_list) {
     for (int i = 0; i < images_list->samples_size(); ++i)
     {
         const auto& img_data = images_list->samples(i);
@@ -222,65 +125,68 @@ void show_all_images(bow::data::ImageSamples* images_list)
     }
 }
 
-void visionThread(double rate, bow_robot* Robot)
-{
-    auto delay = rateToTimerDelay(rate);
-    while (!shutdownFlag.load()) {
-        std::this_thread::sleep_for(delay);
 
-        auto imageSamples = Robot->vision->get(true);
-        if (imageSamples.has_value()) {
-            show_all_images(imageSamples.value());
-        }
-        imageSamples.reset();
-    }
+std::atomic<bool> shutdownFlag(false);
+
+std::chrono::nanoseconds rateToTimerDelay(double hertz) {
+    double delayInSeconds = 1 / hertz;
+    double delayInNanoseconds = delayInSeconds * 1e9;
+    return std::chrono::nanoseconds(static_cast<long>(delayInNanoseconds));
 }
 
-// Handle CTRL+C (SIGINT)
+bool hasModality(const std::string& str, const std::vector<std::string>& vec) {
+    return std::find(vec.begin(), vec.end(), str) != vec.end();
+}
+
 void handle_sigint(int sig) {
     std::cout << "Interrupt signal received. Closing program...\n";
-    shutdownFlag.store(true);
+    shutdownFlag.store(true); // Set the shutdown flag
 }
 
 int main(int argc, char *argv[]) {
-    std::cout << bow_api::version() << std::endl;
 
     std::vector<std::string> strArray = {"vision", "motor"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
 
-    auto* Robot= bow_api::quickConnect("CppBOWTutorial", strArray, true, nullptr, setup_result.get());
+    auto* myRobot= bow_api::quickConnect("CppBOWTutorial", strArray, true, nullptr, setup_result.get());
 
-    if (!setup_result->success() || !Robot) {
+    if (!setup_result->success() || !myRobot) {
         std::cout << setup_result->description() << std::endl;
         return -1;
     }
 
     signal(SIGINT, handle_sigint);
 
-    // Start keyboard listener thread
-    threads.emplace_back(keyboardListener);
 
-    // Start movement thread
-    if (std::find(strArray.begin(), strArray.end(), "motor") != strArray.end()) {
-        threads.emplace_back(motorThread, 20, Robot);
+    auto delay = rateToTimerDelay(30);
+    while (!shutdownFlag.load()) {
+        auto imageSamples = myRobot->vision->get(true);
+        if (imageSamples.has_value()) {
+            show_all_images(imageSamples.value());
+        }
+        imageSamples.reset();
+
+        // Step 2 - Plan
+        int keyID = cv::waitKey(1);
+        if (keyID != -1) {
+            std::cout << "Key pressed has ASCII value: " << keyID << std::endl;
+        }
+
+        bow::data::MotorSample* motorSample = keyboard_control(keyID);
+
+        myRobot->motor->set(motorSample);
     }
 
-    if (std::find(strArray.begin(), strArray.end(), "vision") != strArray.end()) {
-        threads.emplace_back(visionThread, 30, Robot);
-    }
+    cv::destroyAllWindows();
 
-    // Join all threads
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    // Disconnect
-    std::unique_ptr<bow::common::Error> disconnect_result(Robot->disconnect());
+    bow::common::Error* disconnect_result = myRobot->disconnect();
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
+        delete myRobot; // Free allocated memory
         return -1;
     }
-    cv::destroyAllWindows();
-    bow_api::stopEngine();
+
+    bow_api::stopEngine();                                                                        //Close Client
+    delete myRobot; // Free allocated memory
     return 0;
 }

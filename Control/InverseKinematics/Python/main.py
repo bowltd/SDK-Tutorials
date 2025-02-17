@@ -12,6 +12,8 @@ import time
 import sys
 
 def SendObjective(robot, effector, x, y, z):
+
+    print("Sending objective: "+str(x)+", "+str(y)+", "+str(z))
     mSamp = bow_data.MotorSample()
     mSamp.IKSettings.Preset = bow_data.IKOptimiser.HIGH_ACCURACY
 
@@ -139,4 +141,4 @@ except KeyboardInterrupt or SystemExit:
 
 # Close the bow client
 myRobot.disconnect()
-bow_api.close_client_interface()
+bow_api.stop_engine()

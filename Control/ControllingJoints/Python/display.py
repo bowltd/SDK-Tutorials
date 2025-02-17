@@ -45,7 +45,7 @@ class Display:
 		self.listFlankers = 3
 		self.increment = 0.05
 		curses.noecho()
-		self.content = curses.newwin(self.height,self.width,1,5)
+		self.content = self.mainwin.subwin(self.height,self.width,1,5)
 		self.mainwin.keypad(True)
 		self.Update()
 

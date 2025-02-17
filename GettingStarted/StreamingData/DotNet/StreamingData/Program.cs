@@ -94,13 +94,14 @@ class Program
         Console.WriteLine(Bow.Version());
 
         List<string> channels = new List<string>() { "vision"};
-        _myRobot = Bow.QuickConnect("Streaming Data", channels, true, null, out var quickConnectError);
         
-        if (_myRobot == null)
-        {
-            Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
-            System.Environment.Exit(1);
+        _myRobot = Bow.QuickConnect("StreamingData", channels, true, null, out var quickConnectError);
+        
+        if (_myRobot == null) {
+             Console.WriteLine($"Failed to set up robot: {quickConnectError.Description}");
+             System.Environment.Exit(1);
         }
+        
         Console.CancelKeyPress += (sender, eventArgs) => { Cleanup(); };
         AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => { Cleanup(); };
         
@@ -127,7 +128,7 @@ class Program
     {
         Console.WriteLine("Closing down application");
         _myRobot?.Disconnect();
-        Bow.CloseClientInterface();
+        Bow.StopEngine();
         CvInvoke.DestroyAllWindows();
     }
 }
