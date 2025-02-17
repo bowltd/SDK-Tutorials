@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
     // Main sampling loop
     while (!shutdownFlag.load()) {
         auto imageSamples = myRobot->vision->get(true);
+
         if (imageSamples.has_value()) {
             show_all_images(imageSamples.value());
         }
@@ -114,6 +115,7 @@ int main(int argc, char *argv[]) {
 
     // Disconnect
     std::unique_ptr<bow::common::Error> disconnect_result(myRobot->disconnect());
+
     if (!disconnect_result->success()) {
         std::cout << disconnect_result->description() << std::endl;
         return -1;

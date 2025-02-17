@@ -143,9 +143,6 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
 int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
 
-
-
-
     // Setup
     std::vector<std::string> strArray = {"vision", "motor","exteroception"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
