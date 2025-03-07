@@ -4,4 +4,4 @@ numpy
 requests
 python-dotenv
 pydub
-pynput
+pynput==1.7.6
