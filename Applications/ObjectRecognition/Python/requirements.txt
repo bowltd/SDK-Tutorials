@@ -2,5 +2,5 @@ bow_api
 opencv-python
 numpy
 python-dotenv
-pynput
+pynput==1.7.6
 ultralytics
