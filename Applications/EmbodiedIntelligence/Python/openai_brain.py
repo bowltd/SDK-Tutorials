@@ -6,7 +6,7 @@ from openai.types.beta.threads import Message, Text
 from typing_extensions import override
 from openai import AssistantEventHandler
 
-assistant_id = "asst_NrS487lWUMCFJf0MhjCsprGe"
+assistant_id = "asst_Xx9SULUDQNDoPmhdMrWUNaJD"
 
 class EventHandler(AssistantEventHandler):
     @override

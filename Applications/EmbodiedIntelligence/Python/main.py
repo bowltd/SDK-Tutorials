@@ -1,3 +1,5 @@
+import sys
+
 import bow_api
 import bow_data
 
@@ -13,6 +15,8 @@ from openai_brain import Brain
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 from robot_controller import RobotController
+
+stopFlag = False
 
 class GUI:
     def __init__(self, master, brain, controller):
@@ -119,13 +123,18 @@ class DetectedObject:
         self.area = 0.0
 
 def on_closing(window, robot):
+    global stopFlag
+
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         window.destroy()
         robot.disconnect()
-        bow_api.close_client_interface()
+        stopFlag = True
+
 
 
 def main():
+    global stopFlag
+
     # Create a Tkinter window
     root = tk.Tk()
 
@@ -143,7 +152,7 @@ def main():
 
     # Main loop
     try:
-        while True:
+        while not stopFlag:
             # Test for completed functions and relay results to openai assistant as "assistant" messages
             if controller.searchComplete is not None:
                 if controller.searchComplete == "success":
@@ -245,8 +254,7 @@ def main():
         print("Closing down")
         stopFlag = True
 
-    controller.robot.disconnect()
-    bow_api.close_client_interface()
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

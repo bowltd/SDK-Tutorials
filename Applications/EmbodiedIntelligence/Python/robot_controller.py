@@ -1,3 +1,5 @@
+import sys
+
 import bow_api
 import bow_data
 
@@ -53,8 +55,12 @@ class RobotController:
                                                   verbose=False,
                                                   audio_params=self.audio_params)
 
-        print(self.robot.robot_details.robot_config.input_modalities)
-        print(self.robot.robot_details.robot_config.output_modalities)
+        if error is not None and error.Success is False:
+            self.log.error(error)
+            sys.exit(1)
+
+        print(self.robot.details.robot_config.input_modalities)
+        print(self.robot.details.robot_config.output_modalities)
 
         # Initialise robot orientation (repeat until successful)
         while not self.resetLoco().Success:
