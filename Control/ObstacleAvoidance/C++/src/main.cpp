@@ -1,4 +1,4 @@
-#include <iostream>
+ #include <iostream>
 #include <chrono>
 #include <thread>
 #include <map>
@@ -128,7 +128,7 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
 
     // Iterate through the sonars and find the sensor with the largest X position (furthest forward)
     float front_sonar_x_pos = -100.0;
-    string front_sonar_name;
+    string front_sonar_name = "none";
     for (const auto& sonar : sonars) {
         if (sonar.transform().position().x() > front_sonar_x_pos) {
             front_sonar_x_pos = sonar.transform().position().x();
@@ -136,9 +136,12 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
         }
     }
 
+    cout << "front_sonar_name: " << front_sonar_name << endl;
+
     // Return the name of the forward most sonar sensor
     return front_sonar_name;
 }
+
 
 int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
@@ -164,6 +167,10 @@ int main(int argc, char *argv[]) {
 
     // Identify the forward most sonar sensor
     string front_sonar = identify_front_sonar(exSample.value()->range());
+    if (front_sonar == "none") {
+        std::cout << "no sonar sensor found" << std::endl;
+        exit(1);
+    }
 
     // OpenCV Configuration
     cv::namedWindow("Image", cv::WINDOW_NORMAL);
@@ -172,6 +179,19 @@ int main(int argc, char *argv[]) {
     // Calculate delay needed for rate of loop execution
     auto delay = rateToTimerDelay(10);
     string window_name = "Robot view";
+
+    // control variables for approach
+
+    float target_distance = 0.2;
+    float slowing_rate = 4.0;
+    float max_speed = 0.5;
+
+    // control variables for
+    float rotation_speed = 0.5;
+    int min_rotation_steps = 50;
+    int max_rotation_steps = 100;
+    int rotation_steps = min_rotation_steps;
+    int rotation_counter = 0;
 
     while (!shutdownFlag.load()) {
         // SENSE
@@ -199,26 +219,37 @@ int main(int argc, char *argv[]) {
         // Create a motor message to populate
         auto* motorSample = new bow::data::MotorSample();
 
-        // Base the velocity command on the sonar reading
-        if (sonar.data() == -1) {
-            cout << "Invalid Sonar Data: " << sonar.data() << " meters" << endl;
-            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
-        } else if (sonar.data() == 0) {
-            cout << "No obstruction in range: " << sonar.data() << " meters" << endl;
-            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
-        } else if (sonar.min() + 0.5 < sonar.data() < sonar.min() + 1.5) {
-            cout << "Obstruction approaching sensor minimum: " << sonar.data() << " meters" << endl;
-            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(0.5);
-        } else if (sonar.data() <sonar.min() + 0.5) {
-            cout << "Obstruction too close to maneuver, reverse: " << sonar.data() << " meters" << endl;
-            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(-0.2);
+        // ROTATION STEPS
+        if (rotation_counter < rotation_steps) {
+            // Rotating
+            motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(rotation_speed);
         } else {
-            cout << "Obstruction detected at safe range: " << sonar.data() << " meters" << endl;
-            motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(0.2);
+            if (sonar.data() <= sonar.min()) {
+                // Obstruction below minimum range, so reverse
+                motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(-max_speed);
+            } else if (sonar.data() >= sonar.max()) {
+                // Obstruction beyond maximum range, so move forward quickly
+                motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(max_speed);
+            } else if (fabs(sonar.data()-target_distance)<0.05) {
+                // Obstruction at target range, so restart the rotation loop
+                rotation_counter = 0;
+                if ((float)rand()/(float)RAND_MAX < 0.5) {
+                    rotation_speed *= -1;
+                }
+                rotation_steps = min_rotation_steps + int((max_rotation_steps-min_rotation_steps)*(float)rand()/(float)RAND_MAX);
+            } else {
+                // Obstruction in sensing range, so slowing the approach
+                float target_offset_distance = sonar.data()-target_distance;
+                float unit_speed = 1.0-exp(-target_offset_distance/slowing_rate);
+                float speed = max_speed*unit_speed;
+                motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(speed);
+            }
         }
+        rotation_counter++;
 
         // ACT
         // Send the motor command
+        //
         Robot->motor->set(motorSample);
 
         // Delay to control the rate of loop execution
