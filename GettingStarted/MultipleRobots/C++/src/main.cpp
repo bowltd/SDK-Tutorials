@@ -242,7 +242,6 @@ void handle_sigint(int sig) {
     shutdownFlag.store(true);
 }
 
-
 int GetRobotSelection(std::string prompt, int robotCount, std::vector<int> selected){
     while (true) {
         try {
@@ -363,6 +362,7 @@ int main(int argc, char** argv) {
     }
 
     signal(SIGINT, handle_sigint);
+
     // Start keyboard listener thread
     threads.emplace_back(keyboardListener);
 

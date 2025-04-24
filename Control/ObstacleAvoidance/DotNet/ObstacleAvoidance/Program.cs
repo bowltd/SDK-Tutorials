@@ -69,7 +69,7 @@ class Program {
     // Identify the ultrasound that is furthest forward on the robot
     static string IdentifyFrontSonar(RepeatedField<BOW.Data.Range>? RangeSensors) {
         float front_sonar_x_pos = -100;
-        string front_sonar_name = "";
+        string front_sonar_name = "none";
         foreach (var Sensor in RangeSensors){
             if (Sensor.OperationType == Range.Types.OperationTypeEnum.Ultrasound) {
                 if (Sensor.Transform.Position.X > front_sonar_x_pos) {
@@ -118,21 +118,39 @@ class Program {
         }
         string FrontSonar = IdentifyFrontSonar(ExtSample.Range);
         
+        if (FrontSonar == "none") {
+            Console.WriteLine($"no sonar sensor found");
+            return;
+        }
+        
+        // control variables for approach
+        float target_distance = 0.2f;
+        float slowing_rate = 4.0f;
+        float max_speed = 0.5f;
+
+        // control variables for rotation
+        float rotation_speed = 0.5f;
+        int min_rotation_steps = 50;
+        int max_rotation_steps = 100;
+        int rotation_steps = min_rotation_steps;
+        int rotation_counter = 0;
+        
         // Step 3: Begin closed loop control
         while (true) {
-            
+
             // Step 4: get/show vision
             var ImageList = robot.Vision.Get(true);
             if (ImageList == null || ImageList.Samples.Count == 0) {
                 continue;
             }
             ShowAllImages(ImageList);
-            
+
             // Step 5: sample front-most ultrasound sensor
             ExtSample = robot.Exteroception.Get(true);
             if (ExtSample == null) {
                 continue;
             }
+
             Range Sonar = null;
             foreach (var Sensor in ExtSample.Range) {
                 if (Sensor.Source == FrontSonar) {
@@ -140,30 +158,41 @@ class Program {
                     break;
                 }
             }
-            
+
             // Step 6: construct motor message and implement decision-making logic
             var motorSample = new MotorSample();
             motorSample.Locomotion = new VelocityTarget();
             motorSample.Locomotion.TranslationalVelocity = new Vector3();
             motorSample.Locomotion.RotationalVelocity = new Vector3();
-            
-            if (Sonar.Data == -1) {
-                Console.WriteLine($"Invalid Sonar Data: {Sonar.Data} meters");
-                motorSample.Locomotion.RotationalVelocity.Z = 0.5f;
-            } else if (Sonar.Data == 0) {
-                Console.WriteLine($"No obstruction in range: {Sonar.Data} meters");
-                motorSample.Locomotion.TranslationalVelocity.X = 0.2f;
-            } else if ((Sonar.Min +0.5 < Sonar.Data) && (Sonar.Data <  Sonar.Min + 1.5)) {
-                Console.WriteLine($"Obstruction approaching sensor minimum: {Sonar.Data} meters");
-                motorSample.Locomotion.RotationalVelocity.Z = 0.5f;
-            } else if (Sonar.Data <  Sonar.Min + 0.5) {
-                Console.WriteLine($"Obstruction too close to maneuver, reverse: {Sonar.Data} meters");
-                motorSample.Locomotion.RotationalVelocity.X = -0.2f;
-            }else {
-                Console.WriteLine($"Obstruction detected at safe range: {Sonar.Data} meters");
-                motorSample.Locomotion.TranslationalVelocity.X = 0.2f;
-            }
 
+            if (rotation_counter < rotation_steps) {
+                //Console.WriteLine($"Invalid Sonar Data: {Sonar.Data} meters");
+                //Rotating
+                motorSample.Locomotion.RotationalVelocity.Z = rotation_speed;
+            } else {
+                if (Sonar.Data <= Sonar.Min) {
+                    // Obstruction below minimum range, so reverse
+                    motorSample.Locomotion.TranslationalVelocity.X = -max_speed;
+                } else if (Sonar.Data >= Sonar.Max) {
+                    // Obstruction beyond maximum range, so move forward quickly
+                    motorSample.Locomotion.TranslationalVelocity.X = max_speed;
+                
+                } else if (Single.Abs(Sonar.Data-target_distance)<0.05) {
+                    // Obstruction at target range, so restart the rotation loop
+                    rotation_counter = 0;
+                    if (Random.Shared.NextSingle() < 0.5) {
+                        rotation_speed *= -1;
+                    }
+                    rotation_steps = min_rotation_steps + Convert.ToInt32((max_rotation_steps-min_rotation_steps)*Random.Shared.NextSingle());
+                } else {
+                    // Obstruction in sensing range, so slowing the approach
+                    float target_offset_distance = Sonar.Data-target_distance;
+                    float unit_velocity = Convert.ToSingle(1.0-Single.Exp(-target_offset_distance/slowing_rate));
+                    motorSample.Locomotion.TranslationalVelocity.X = max_speed*unit_velocity;
+                } 
+            }
+            rotation_counter++;
+            
             // Step 7: Send the motor command
             robot.Motor.Set(motorSample);
         }

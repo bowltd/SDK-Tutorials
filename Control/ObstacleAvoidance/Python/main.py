@@ -3,6 +3,7 @@
 # Copyright (c) 2023, Bettering Our Worlds (BOW) Ltd.
 # All Rights Reserved
 # Author: George Bridges <george.bridges@bow.ltd>
+import math
 import time
 
 # Imports
@@ -82,38 +83,91 @@ while not err.Success:
 # Identify the forward most sonar sensor
 front_sonar = identify_front_sonar(ext_sample.Range)
 
+if front_sonar == None:
+    print("Failed to connect to robot", error)
+    sys.exit()
+
 # Calculate delay needed for rate of loop execution
 delay = 1/rate
 delay_ms = int(delay * 1000)
 
-# Main Loop
+# control variables for approach
+target_distance = 0.2
+slowing_rate = 4.0
+max_speed = 0.5
+
+# control variables for rotation
+rotation_speed = 0.5
+min_rotation_steps = 50
+max_rotation_steps = 100
+rotation_steps = min_rotation_steps
+rotation_counter = 0
+
+
+# Step 3: Begin closed loop control
 try:
     while not stopFlag:
-        # SENSE
-        ##### Vision #####
-        # Get and display all images
+        # Step 4: get/show vision
         image_list, err = myrobot.vision.get(True)
         if not err.Success or len(image_list.Samples) == 0:
             continue
         show_all_images(image_list)
 
-        ##### Exteroception #####
-        # Get exteroception sample and check for valid result
+        # Step 5: sample front-most ultrasound sensor
         ext_sample, err = myrobot.exteroception.get(True)
         if not err.Success or ext_sample is None:
             continue
 
-        # Iterate through range sensors until front sensor
         sonar = None
         for range_sensor in ext_sample.Range:
             if range_sensor.Source == front_sonar:
                 sonar = range_sensor
                 break
 
-        # DECIDE
 
-        # Create a motor message to populate
-        motor_command = bow_data.MotorSample()
+        # Step 6: construct motor message and implement decision-making logic
+        motorSample = bow_data.MotorSample()
+
+        if rotation_counter < rotation_steps:
+            # Rotating
+            motorSample.Locomotion.RotationalVelocity.Z = rotation_speed
+        else:
+            if sonar.Data <= sonar.Min:
+                # Obstruction below minimum range, so reverse
+                motorSample.Locomotion.TranslationalVelocity.X = -max_speed
+            elif sonar.Data >= sonar.Max:
+                # Obstruction beyond maximum range, so move forward quickly
+                motorSample.Locomotion.TranslationalVelocity.X = max_speed
+            elif abs(sonar.Data-target_distance)<0.05:
+                rotation_counter = 0
+                if random.random<0.5:
+                    rotation_speed *=-1
+                rotation_steps = min_rotation_steps + math.floor((max_rotation_steps-min_rotation_steps)*random.random)
+            else:
+                # Obstruction in sensing range, so slowing the approach
+                target_offset_distance = sonar.Data-target_distance
+                unit_velocity = 1-math.exp(-target_offset_distance/slowing_rate)
+                motorSample.Locomotion.TranslationalVelocity.X = max_speed*unit_velocity
+        rotation_counter+=1
+
+        myrobot.motor.set(motor_command)
+
+        # Delay to control the rate of loop execution
+        j = cv2.waitKeyEx(delay_ms)
+        if j == 27:
+            break
+
+except KeyboardInterrupt or SystemExit:
+    cv2.destroyAllWindows()
+    print("Closing down")
+    stopFlag = True
+
+cv2.destroyAllWindows()
+myrobot.disconnect()
+bow_api.close_client_interface()
+
+
+'''
 
         # Base the velocity command on the sonar reading
         if sonar.Data == -1:
@@ -136,20 +190,4 @@ try:
             print("Obstruction detected at safe range", sonar.Data, " meters")
             motor_command.Locomotion.TranslationalVelocity.X = 0.2
 
-        # ACT
-        # Send the motor command
-        myrobot.motor.set(motor_command)
-
-        # Delay to control the rate of loop execution
-        j = cv2.waitKeyEx(delay_ms)
-        if j == 27:
-            break
-
-except KeyboardInterrupt or SystemExit:
-    cv2.destroyAllWindows()
-    print("Closing down")
-    stopFlag = True
-
-cv2.destroyAllWindows()
-myrobot.disconnect()
-bow_api.close_client_interface()
+'''

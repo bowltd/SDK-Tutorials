@@ -3,6 +3,7 @@
 #include <thread>
 #include <map>
 #include <string>
+#include <csignal>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
@@ -146,26 +147,26 @@ string identify_front_sonar(const google::protobuf::RepeatedPtrField<data::Range
 int main(int argc, char *argv[]) {
     std::cout << bow_api::version() << std::endl;
 
-    // Setup
+    signal(SIGINT, handle_sigint);
+
+    // Step 1: Quick Connect
     std::vector<std::string> strArray = {"vision", "motor","exteroception"};
     std::unique_ptr<bow::common::Error> setup_result = std::make_unique<bow::common::Error>();
-    auto* Robot= bow_api::quickConnect("SendingCommands", strArray, true, nullptr, setup_result.get());
+    auto* Robot= bow_api::quickConnect("BOW_Example", strArray, true, nullptr, setup_result.get());
     if (!setup_result->success() || !Robot) {
         std::cout << setup_result->description() << std::endl;
         return -1;
     }
 
-
     std::optional<bow::data::ExteroceptionSample*> exSample;
     while (true) {
-        //auto exSample = Robot->exteroception->get(true);
         exSample = Robot->exteroception->get(true);
         if (exSample.has_value()) {
             break;
         }
     }
 
-    // Identify the forward most sonar sensor
+    // Step 2: Sample the exteroception channel to identify front-most ultrasound sensor
     string front_sonar = identify_front_sonar(exSample.value()->range());
     if (front_sonar == "none") {
         std::cout << "no sonar sensor found" << std::endl;
@@ -186,27 +187,24 @@ int main(int argc, char *argv[]) {
     float slowing_rate = 4.0;
     float max_speed = 0.5;
 
-    // control variables for
+    // control variables for rotation
     float rotation_speed = 0.5;
     int min_rotation_steps = 50;
     int max_rotation_steps = 100;
     int rotation_steps = min_rotation_steps;
     int rotation_counter = 0;
 
+    // Step 3: Begin closed loop control
     while (!shutdownFlag.load()) {
-        // SENSE
-        // Vision
-        // Get and display all images
+
+        // Step 4: get/show vision
         auto imageSamples = Robot->vision->get(true);
         if (imageSamples.has_value()) {
             show_all_images(imageSamples.value());
         }
 
-        // Exteroception
-        // Get exteroception sample
+        // Step 5: sample front-most ultrasound sensor
         exSample = Robot->exteroception->get(true);
-
-        // Iterate through range sensors until front sensor
         bow::data::Range sonar;
         for (const auto& range_sensor : exSample.value()->range()) {
             if (range_sensor.source() == front_sonar) {
@@ -215,11 +213,8 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // DECIDE
-        // Create a motor message to populate
+        // Step 6: construct motor message and implement decision-making logic
         auto* motorSample = new bow::data::MotorSample();
-
-        // ROTATION STEPS
         if (rotation_counter < rotation_steps) {
             // Rotating
             motorSample->mutable_locomotion()->mutable_rotationalvelocity()->set_z(rotation_speed);
@@ -240,16 +235,13 @@ int main(int argc, char *argv[]) {
             } else {
                 // Obstruction in sensing range, so slowing the approach
                 float target_offset_distance = sonar.data()-target_distance;
-                float unit_speed = 1.0-exp(-target_offset_distance/slowing_rate);
-                float speed = max_speed*unit_speed;
-                motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(speed);
+                float unit_velocity = 1.0-exp(-target_offset_distance/slowing_rate);
+                motorSample->mutable_locomotion()->mutable_translationalvelocity()->set_x(max_speed*unit_velocity);
             }
         }
         rotation_counter++;
 
-        // ACT
-        // Send the motor command
-        //
+        // Step 7: Send the motor command
         Robot->motor->set(motorSample);
 
         // Delay to control the rate of loop execution
