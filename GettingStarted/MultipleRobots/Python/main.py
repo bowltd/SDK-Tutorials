@@ -211,7 +211,7 @@ try:
             robot_images, err = robot.vision.get(True)
             if err.Success and robot_images is not None:
                 for image in robot_images.Samples:
-                    image.Source = f"{robot.robot_details.name}_{image.Source}"
+                    image.Source = f"{robot.details.name}_{image.Source}"
                     all_images.append(image)
 
         if len(all_images) > 0:
